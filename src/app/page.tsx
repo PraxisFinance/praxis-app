@@ -1,65 +1,76 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const [referralCode, setReferralCode] = useState("");
+  const router = useRouter();
+
+  const handleGetStarted = () => {
+    router.push("/main");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="relative min-h-screen w-full bg-white overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/1.png')" }}
+      />
+
+      {/* Content Container */}
+      <div className="relative z-10 flex min-h-screen flex-col justify-between px-5 py-11 max-w-md mx-auto">
+        {/* Title Section */}
+        <h1 className="text-center text-3xl sm:text-4xl font-bold leading-tight sm:leading-10 text-indigo-950">
+          Welcome to Praxis: new view on prediction market!
+        </h1>
+
+        {/* Bottom Section */}
+        <div className="flex flex-col gap-4">
+          {/* Referral Input */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={referralCode}
+              onChange={(e) => setReferralCode(e.target.value)}
+              placeholder="Enter referral link"
+              className="flex-1 h-10 sm:h-11 px-4 bg-slate-200 rounded-[5px] text-sm text-indigo-950 placeholder:text-indigo-950/50 outline-none focus:ring-2 focus:ring-violet-400"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <button 
+              className="h-10 sm:h-11 w-10 sm:w-11 flex-shrink-0 bg-violet-400 rounded-[5px] flex items-center justify-center hover:bg-violet-500 active:bg-violet-600 transition-colors"
+              aria-label="Submit referral"
+            >
+              <svg 
+                width="14" 
+                height="14" 
+                viewBox="0 0 14 11" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-3.5 h-3.5"
+              >
+                <path 
+                  d="M1 5.5H13M13 5.5L8.5 1M13 5.5L8.5 10" 
+                  stroke="white" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Get Started Button */}
+          <button 
+            onClick={handleGetStarted}
+            className="w-full h-10 sm:h-11 bg-violet-400 rounded-[5px] flex items-center justify-center hover:bg-violet-500 active:bg-violet-600 transition-colors"
           >
-            Documentation
-          </a>
+            <span className="text-white text-base font-medium">
+              Get Started!
+            </span>
+          </button>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
