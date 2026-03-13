@@ -5,6 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Custom font sizes */
+  --text-3xs: 0.5rem;      /* 8px  — Text 9/10 */
+  --text-2xs: 0.625rem;    /* 10px — Header 7, Numbers 5, Text 7/8 */
+  --text-h2:  1.5625rem;   /* 25px — Header 2 */
+  --text-h1:  2.1875rem;   /* 35px — Header 1 */
+  --text-num1:2.8125rem;   /* 45px — Numbers 1 */
+
   /* Brand palette */
   --color-main-darkPurple: #2D274B;
   --color-main-purple:     #9787F4;
