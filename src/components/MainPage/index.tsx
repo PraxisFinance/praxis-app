@@ -1,6 +1,6 @@
 "use client";
 
-import { Balances } from "@/components/Balances";
+import { Balances } from "@/components/MainPage/Balances";
 import { MenuGrid } from "@/components/MenuGrid";
 import { MainMenu } from "./MainMenu";
 
