@@ -8,6 +8,7 @@ export interface EarnPosition {
   depositCurrencyIconUrl: string;
   yourDeposit: string;
   yieldApyPercent: string;
+  yieldGenerated: string;
   stakeTime: string;
   stakeDate: string;
   status: EarnPositionStatus;

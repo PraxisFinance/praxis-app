@@ -3,9 +3,11 @@ import type { EarnPosition } from "@/shared/types/earn";
 
 interface EarnMyPositionsCardProps {
   item: EarnPosition;
+  onWithdraw: (item: EarnPosition) => void;
+  onClaim: (item: EarnPosition) => void;
 }
 
-export function EarnMyPositionsCard({ item }: EarnMyPositionsCardProps) {
+export function EarnMyPositionsCard({ item, onWithdraw, onClaim }: EarnMyPositionsCardProps) {
   const isEnded = item.status === "ended";
 
   return (
@@ -54,6 +56,7 @@ export function EarnMyPositionsCard({ item }: EarnMyPositionsCardProps) {
       </div>
 
       <button
+        onClick={() => (isEnded ? onClaim(item) : onWithdraw(item))}
         className={`w-full py-3 rounded-[10px] flex items-center justify-center transition-transform active:scale-[0.98] ${
           isEnded ? "bg-main-purple" : "bg-[#E57373]"
         }`}
