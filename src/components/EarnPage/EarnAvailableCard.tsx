@@ -3,9 +3,10 @@ import type { EarnAvailableItem } from "@/shared/types/earn";
 
 interface EarnAvailableCardProps {
   item: EarnAvailableItem;
+  onDeposit: (item: EarnAvailableItem) => void;
 }
 
-export function EarnAvailableCard({ item }: EarnAvailableCardProps) {
+export function EarnAvailableCard({ item, onDeposit }: EarnAvailableCardProps) {
   return (
     <div className="w-full bg-main-lightGray rounded-[10px] p-4 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
@@ -43,7 +44,10 @@ export function EarnAvailableCard({ item }: EarnAvailableCardProps) {
         </div>
       </div>
 
-      <button className="w-full py-3 bg-[#6FCF97] rounded-[10px] flex items-center justify-center transition-transform active:scale-[0.98]">
+      <button
+        onClick={() => onDeposit(item)}
+        className="w-full py-3 bg-[#6FCF97] rounded-[10px] flex items-center justify-center transition-transform active:scale-[0.98]"
+      >
         <span className="text-white text-sm leading-4">Deposit</span>
       </button>
     </div>
