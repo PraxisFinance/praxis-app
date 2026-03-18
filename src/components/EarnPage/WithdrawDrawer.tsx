@@ -103,7 +103,7 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
               </div>
             </div>
 
-            <button className="w-full py-3 bg-[#E57373] rounded-[10px] flex items-center justify-center transition-transform active:scale-[0.98]">
+            <button className="w-full py-3 bg-main-red opacity-60 rounded-[10px] flex items-center justify-center transition-transform active:scale-[0.98]">
               <span className="text-white text-sm leading-4">Withdraw</span>
             </button>
           </div>
