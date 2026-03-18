@@ -1,0 +1,64 @@
+import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
+
+export const EARN_AVAILABLE_ITEMS: EarnAvailableItem[] = [
+  {
+    queueName: "Steakhouse USDC",
+    poolLifetime: "1d 24h 54m 3s",
+    depositCurrency: "USDC",
+    depositCurrencyIcon: "usdc",
+    depositCurrencyIconUrl: "/icons/usdc.png",
+    depositsAmount: "96.11M",
+    liquidityAmount: "84.114M",
+    yieldApyPercent: "5.55",
+    ytPayoutTime: "30 days",
+  },
+  {
+    queueName: "wUSDC Yield Queue",
+    poolLifetime: "12d 6h 20m 0s",
+    depositCurrency: "wUSDC",
+    depositCurrencyIcon: "w-usdc",
+    depositCurrencyIconUrl: "/icons/w-usdc.png",
+    depositsAmount: "12.5M",
+    liquidityAmount: "10.2M",
+    yieldApyPercent: "18.7",
+    ytPayoutTime: "60 days",
+  },
+  {
+    queueName: "Smart Predictions Pool",
+    poolLifetime: "30d 0h 0m 0s",
+    depositCurrency: "USDC",
+    depositCurrencyIcon: "usdc",
+    depositCurrencyIconUrl: "/icons/usdc.png",
+    depositsAmount: "310.0M",
+    liquidityAmount: "275.0M",
+    yieldApyPercent: "24.1",
+    ytPayoutTime: "90 days",
+  },
+];
+
+export const EARN_MY_POSITIONS: EarnPosition[] = [
+  {
+    queueName: "Steakhouse USDT",
+    poolLifetime: "1d 24h 54m 3s",
+    depositCurrency: "USDT",
+    depositCurrencyIcon: "usdc",
+    depositCurrencyIconUrl: "/icons/usdc.png",
+    yourDeposit: "500",
+    yieldApyPercent: "5",
+    stakeTime: "19:00",
+    stakeDate: "21 Sept 2026",
+    status: "active",
+  },
+  {
+    queueName: "Steakhouse USDT",
+    poolLifetime: "Ended",
+    depositCurrency: "USDT",
+    depositCurrencyIcon: "usdc",
+    depositCurrencyIconUrl: "/icons/usdc.png",
+    yourDeposit: "1000",
+    yieldApyPercent: "5",
+    stakeTime: "15:54",
+    stakeDate: "15 Sept 2026",
+    status: "ended",
+  },
+];

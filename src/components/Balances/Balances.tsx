@@ -4,42 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { Drawer } from "vaul";
 import { BalanceCard } from "./BalanceCard";
-
-interface Balance {
-  label: string;
-  value: string;
-  iconUrl: string;
-}
+import type { Balance } from "@/shared/types/balances";
+import { DEFAULT_BALANCES, BALANCE_INFO } from "@/shared/constants/balances";
 
 interface BalancesProps {
   balances?: Balance[];
 }
 
-const defaultBalances: Balance[] = [
-  { label: "Wallet",   value: "10.000", iconUrl: "/icons/usdc.png" },
-  { label: "Deposit",  value: "1.000",  iconUrl: "/icons/usdt.png" },
-  { label: "YT Token", value: "100",    iconUrl: "/icons/yt-token.png" },
-];
-
-const balanceInfo = [
-  {
-    label: "Wallet balance",
-    description: "Your full amount of principal on your connected wallet",
-    iconUrl: "/icons/usdc.png",
-  },
-  {
-    label: "Deposited balance",
-    description: "Your deposited in liquidity pools",
-    iconUrl: "/icons/usdt.png",
-  },
-  {
-    label: "Yield Token",
-    description: "Your full yield from staking and predictions",
-    iconUrl: "/icons/yt-token.png",
-  },
-];
-
-export function Balances({ balances = defaultBalances }: BalancesProps) {
+export function Balances({ balances = DEFAULT_BALANCES }: BalancesProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -76,7 +48,7 @@ export function Balances({ balances = defaultBalances }: BalancesProps) {
               </Drawer.Title>
 
               <div className="flex flex-col gap-5">
-                {balanceInfo.map((item) => (
+                {BALANCE_INFO.map((item) => (
                   <div key={item.label} className="flex flex-col gap-1.5">
                     <div className="flex items-center gap-2">
                       <Image src={item.iconUrl} alt={item.label} width={24} height={24} />

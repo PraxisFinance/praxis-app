@@ -1,7 +1,6 @@
 "use client";
 
-import { Balances } from "@/components/MainPage/Balances";
-import { MenuGrid } from "@/components/MenuGrid";
+import { Balances } from "@/components/Balances/Balances";
 import { MainMenu } from "./MainMenu";
 
 export function MainPage() {
