@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
+import { Drawer } from "vaul";
 import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomPoolMocks";
 import {
+  RANDOM_POOLS_HINT,
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";
 import { RandomPoolItem } from "@/components/PredictionsPage/RandomPoolItem";
+import { Button } from "@/components/ui/button";
+import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
 
 export function RandomRewardsPage() {
   const [filter, setFilter] = useState<RandomRewardsFilterId>("all");
+  const [poolsHintOpen, setPoolsHintOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,13 +47,33 @@ export function RandomRewardsPage() {
         </div>
       </section>
       <section className="flex flex-col gap-3">
-        <SectionHeader className="text-main-darkPurple">Random pools</SectionHeader>
+        <div className="flex items-center gap-2">
+          <SectionHeader className="text-main-darkPurple">Random pools</SectionHeader>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setPoolsHintOpen(true)}
+            className="p-1"
+            aria-label="How random pools work"
+          >
+            <Image src="/icons/question.png" alt="" width={14} height={14} />
+          </Button>
+        </div>
         <div className="flex flex-col gap-3">
           {RANDOM_POOL_MOCKS.map((pool) => (
             <RandomPoolItem key={pool.id} pool={pool} />
           ))}
         </div>
       </section>
+
+      <DrawerShell open={poolsHintOpen} onOpenChange={setPoolsHintOpen}>
+        <Drawer.Title className="text-main-darkPurple text-2xl font-bold leading-tight">
+          {RANDOM_POOLS_HINT.title}
+        </Drawer.Title>
+        <p className="text-main-darkPurple text-sm font-normal leading-5">
+          {RANDOM_POOLS_HINT.description}
+        </p>
+      </DrawerShell>
     </div>
   );
 }
