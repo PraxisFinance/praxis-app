@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomPoolMocks";
 import {
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";
+import { RandomPoolItem } from "@/components/PredictionsPage/RandomPoolItem";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +42,11 @@ export function RandomRewardsPage() {
       </section>
       <section className="flex flex-col gap-3">
         <SectionHeader className="text-main-darkPurple">Random pools</SectionHeader>
+        <div className="flex flex-col gap-3">
+          {RANDOM_POOL_MOCKS.map((pool) => (
+            <RandomPoolItem key={pool.id} pool={pool} />
+          ))}
+        </div>
       </section>
     </div>
   );

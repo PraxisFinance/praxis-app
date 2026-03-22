@@ -23,7 +23,7 @@ export function PredictionsTabBar() {
             key={tab.id}
             href={tab.href}
             className={cn(
-              "px-3 py-1.5 rounded-[30px] text-sm font-medium transition-all",
+              "px-3 py-1.5 rounded-[5px] text-xs font-medium transition-all",
               isActive
                 ? "bg-main-purple text-white"
                 : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple"

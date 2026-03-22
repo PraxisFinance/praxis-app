@@ -7,6 +7,8 @@ export { SectionHeader } from "./SectionHeader";
 export { InfoRow } from "./InfoRow";
 export { InputWithMax } from "./InputWithMax";
 export { PoolHeader } from "./PoolHeader";
+export { ProgressBar, type ProgressBarProps, type ProgressBarVariant } from "./ProgressBar";
+export { StatBadge, type StatBadgeProps } from "./StatBadge";
 export { MenuCard } from "./MenuCard";
 export { ArrowIcon } from "./icons/ArrowIcon";
 export * from "./icons/NavIcons";
