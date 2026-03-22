@@ -1,5 +1,5 @@
-import { PredictionsSubPage } from "@/components/PredictionsPage/PredictionsSubPage";
+import { RandomRewardsPage } from "@/components/PredictionsPage/RandomRewardsPage";
 
 export default function Page() {
-  return <PredictionsSubPage />;
+  return <RandomRewardsPage />;
 }

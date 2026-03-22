@@ -39,11 +39,7 @@ export function EarnMyPositionsCard({ item, onWithdraw, onClaim }: EarnMyPositio
             </div>
           }
         />
-        <InfoRow
-          variant="stacked"
-          label="Yield APY"
-          value={`${item.yieldApyPercent}%`}
-        />
+        <InfoRow variant="stacked" label="Yield APY" value={`${item.yieldApyPercent}%`} />
         <InfoRow
           variant="stacked"
           label="Stake date"

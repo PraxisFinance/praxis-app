@@ -9,9 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Header username="Mizori_k" points={1000} />
         </header>
 
-        <main className="flex-1 px-5 pt-6 pb-24 overflow-y-auto">
-          {children}
-        </main>
+        <main className="flex-1 px-5 pt-6 pb-24 overflow-y-auto">{children}</main>
       </div>
 
       <BottomNav />

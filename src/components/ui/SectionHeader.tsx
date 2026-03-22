@@ -6,10 +6,7 @@ interface SectionHeaderProps extends React.HTMLAttributes<HTMLHeadingElement> {
 
 export function SectionHeader({ children, className, ...props }: SectionHeaderProps) {
   return (
-    <h2
-      className={cn("text-indigo-950 text-xl font-medium leading-6", className)}
-      {...props}
-    >
+    <h2 className={cn("text-indigo-950 text-xl font-medium leading-6", className)} {...props}>
       {children}
     </h2>
   );

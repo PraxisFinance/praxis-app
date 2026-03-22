@@ -5,7 +5,7 @@ export {
   type TokenBalance,
   type Deposit,
   type YTToken,
-} from './accountStore';
+} from "./accountStore";
 
 export {
   useEventsStore,
@@ -19,14 +19,9 @@ export {
   type SportEvent,
   type EconomicEvent,
   type RandomEvent,
-} from './eventsStore';
+} from "./eventsStore";
 
-export {
-  useClaimsStore,
-  loadMockClaims,
-  formatIncome,
-  type Claim,
-} from './claimsStore';
+export { useClaimsStore, loadMockClaims, formatIncome, type Claim } from "./claimsStore";
 
 export {
   useDepositsStore,
@@ -36,7 +31,7 @@ export {
   getStakeDuration,
   type Vault,
   type UserPosition,
-} from './depositsStore';
+} from "./depositsStore";
 
 export {
   useHistoryStore,
@@ -44,21 +39,16 @@ export {
   formatHistoryTime,
   formatHistoryAmount,
   type HistoryItem,
-} from './historyStore';
+} from "./historyStore";
 
-export {
-  useReferralsStore,
-  loadMockReferrals,
-  formatScore,
-  type Referral,
-} from './referralsStore';
+export { useReferralsStore, loadMockReferrals, formatScore, type Referral } from "./referralsStore";
 
 export {
   useLeaderboardStore,
   loadMockLeaderboard,
   formatRank,
   type LeaderboardEntry,
-} from './leaderboardStore';
+} from "./leaderboardStore";
 
 export {
   useStatisticsStore,
@@ -68,4 +58,4 @@ export {
   type BalanceChartPoint,
   type PredictionChartPoint,
   type PredictionHistoryItem,
-} from './statisticsStore';
+} from "./statisticsStore";

@@ -22,10 +22,7 @@ export function PoolHeader({ iconUrl, name, subtitle, emphasized }: PoolHeaderPr
           className="w-9 h-9 rounded-full shrink-0"
         />
         <span
-          className={cn(
-            "text-main-darkPurple text-base leading-5",
-            emphasized && "font-semibold"
-          )}
+          className={cn("text-main-darkPurple text-base leading-5", emphasized && "font-semibold")}
         >
           {name}
         </span>

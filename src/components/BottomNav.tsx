@@ -12,11 +12,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: "main",        label: "Main",        href: "/main",        icon: HomeIcon },
-  { id: "earn",        label: "Earn",        href: "/earn",        icon: EarnIcon },
+  { id: "main", label: "Main", href: "/main", icon: HomeIcon },
+  { id: "earn", label: "Earn", href: "/earn", icon: EarnIcon },
   { id: "predictions", label: "Predictions", href: "/predictions", icon: PredictionsIcon },
-  { id: "history",     label: "History",     href: "/history",     icon: HistoryIcon },
-  { id: "profile",     label: "Profile",     href: "/profile",     icon: ProfileIcon },
+  { id: "history", label: "History", href: "/history", icon: HistoryIcon },
+  { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 export function BottomNav() {
@@ -36,9 +36,11 @@ export function BottomNav() {
                 className="flex flex-col items-center gap-1 min-w-[48px] transition-colors"
               >
                 <Icon className="w-6 h-6" active={isActive} />
-                <span className={`text-xs leading-4 ${
-                  isActive ? "text-violet-400 font-medium" : "text-indigo-950 font-normal"
-                }`}>
+                <span
+                  className={`text-xs leading-4 ${
+                    isActive ? "text-violet-400 font-medium" : "text-indigo-950 font-normal"
+                  }`}
+                >
                   {item.label}
                 </span>
               </Link>

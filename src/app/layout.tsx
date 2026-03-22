@@ -57,9 +57,7 @@ export default function RootLayout({
       <head>
         <meta name="base:app_id" content="69b120b69121c4bd67e5e99c" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {children}
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

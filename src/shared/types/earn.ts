@@ -23,7 +23,7 @@ export interface EarnAvailableItem {
 
   depositsAmount: string;
   liquidityAmount: string;
-  
+
   yieldApyPercent: string;
   ytPayoutTime: string;
 }

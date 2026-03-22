@@ -12,7 +12,9 @@ import { EARN_AVAILABLE_ITEMS, EARN_MY_POSITIONS } from "@/shared/constants/earn
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function EarnPage() {
-  const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(null);
+  const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
+    null
+  );
   const [depositDrawerOpen, setDepositDrawerOpen] = useState(false);
 
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);

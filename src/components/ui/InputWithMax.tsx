@@ -9,7 +9,12 @@ interface InputWithMaxProps {
   placeholder?: string;
 }
 
-export function InputWithMax({ value, onChange, maxValue, placeholder = "0.00" }: InputWithMaxProps) {
+export function InputWithMax({
+  value,
+  onChange,
+  maxValue,
+  placeholder = "0.00",
+}: InputWithMaxProps) {
   return (
     <div className="bg-main-grayPurple rounded-[10px] flex items-center px-4 py-3 gap-2">
       <input

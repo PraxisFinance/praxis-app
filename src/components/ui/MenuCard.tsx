@@ -52,17 +52,9 @@ export function MenuCard({
   size = "sm",
 }: MenuCardProps) {
   return (
-    <Link
-      href={redirectUrl ?? ""}
-      className={cn(menuCardVariants({ size }))}
-    >
+    <Link href={redirectUrl ?? ""} className={cn(menuCardVariants({ size }))}>
       {backgroundImage && (
-        <Image
-          src={backgroundImage}
-          alt={title ?? ""}
-          fill
-          className="object-cover"
-        />
+        <Image src={backgroundImage} alt={title ?? ""} fill className="object-cover" />
       )}
 
       <div className={cn(contentVariants({ size }))}>

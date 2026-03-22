@@ -39,21 +39,11 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
         <span className="text-main-darkPurple text-lg font-bold leading-6">Pool Information</span>
 
         <div className="flex flex-col gap-2.5">
-          <PoolHeader
-            iconUrl={item.depositCurrencyIconUrl}
-            name={item.queueName}
-            emphasized
-          />
+          <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
 
           <div className="flex flex-col gap-1.5">
-            <InfoRow
-              label="Deposits:"
-              value={`${item.depositsAmount} ${item.depositCurrency}`}
-            />
-            <InfoRow
-              label="Liquidity:"
-              value={`${item.liquidityAmount} ${item.depositCurrency}`}
-            />
+            <InfoRow label="Deposits:" value={`${item.depositsAmount} ${item.depositCurrency}`} />
+            <InfoRow label="Liquidity:" value={`${item.liquidityAmount} ${item.depositCurrency}`} />
             <InfoRow label="Yield Apy:" value={`${item.yieldApyPercent}%`} />
             <InfoRow label="Pool lifetime:" value={item.poolLifetime} />
           </div>
@@ -63,11 +53,7 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
       <div className="flex flex-col gap-2">
         <span className="text-main-darkPurple text-lg font-bold leading-6">Amount</span>
 
-        <InputWithMax
-          value={amount}
-          onChange={setAmount}
-          maxValue={walletBalance}
-        />
+        <InputWithMax value={amount} onChange={setAmount} maxValue={walletBalance} />
 
         <div className="flex items-center justify-between px-1">
           <span className="text-main-darkPurple text-xs font-normal leading-4">

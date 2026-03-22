@@ -37,25 +37,16 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
         <span className="text-main-darkPurple text-lg leading-6">Pool Information</span>
 
         <div className="flex flex-col gap-2.5">
-          <PoolHeader
-            iconUrl={item.depositCurrencyIconUrl}
-            name={item.queueName}
-          />
+          <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} />
 
           <div className="flex flex-col gap-1.5">
-            <InfoRow
-              label="Your deposit:"
-              value={`${item.yourDeposit} ${item.depositCurrency}`}
-            />
+            <InfoRow label="Your deposit:" value={`${item.yourDeposit} ${item.depositCurrency}`} />
             <InfoRow label="Yield APY:" value={`${item.yieldApyPercent}%`} />
             <InfoRow
               label="Yield generated:"
               value={`${item.yieldGenerated} ${item.depositCurrency}`}
             />
-            <InfoRow
-              label="Stake date:"
-              value={`${item.stakeTime} ${item.stakeDate}`}
-            />
+            <InfoRow label="Stake date:" value={`${item.stakeTime} ${item.stakeDate}`} />
             <InfoRow label="Pool lifetime:" value={item.poolLifetime} />
           </div>
         </div>
@@ -64,11 +55,7 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
       <div className="flex flex-col gap-2">
         <span className="text-main-darkPurple text-lg leading-6">Amount</span>
 
-        <InputWithMax
-          value={amount}
-          onChange={setAmount}
-          maxValue={availableAmount}
-        />
+        <InputWithMax value={amount} onChange={setAmount} maxValue={availableAmount} />
 
         <div className="flex items-center justify-between px-1">
           <span className="text-main-darkPurple text-xs font-normal leading-4">

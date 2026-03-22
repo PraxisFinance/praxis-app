@@ -24,9 +24,7 @@ export function OnDevelopmentPage({ onBack, onMainMenu }: OnDevelopmentPageProps
       </div>
 
       <div className="flex flex-col items-center gap-6 pt-4">
-        <h1 className="text-main-darkPurple text-3xl font-bold leading-tight">
-          Sorry!
-        </h1>
+        <h1 className="text-main-darkPurple text-3xl font-bold leading-tight">Sorry!</h1>
 
         <div className="relative w-48 h-48">
           <Image
