@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Balances } from "../Balances/Balances";
 import { EarnAvailableCard } from "./EarnAvailableCard";
 import { EarnMyPositionsCard } from "./EarnMyPositionsCard";
@@ -38,7 +39,7 @@ export function EarnPage() {
       <Balances />
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-indigo-950 text-xl font-medium leading-6">My positions</h2>
+        <SectionHeader>My positions</SectionHeader>
         <div className="flex flex-col gap-3">
           {EARN_MY_POSITIONS.map((item) => (
             <EarnMyPositionsCard
@@ -52,7 +53,7 @@ export function EarnPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-indigo-950 text-xl font-medium leading-6">Available pools</h2>
+        <SectionHeader>Available pools</SectionHeader>
         <div className="flex flex-col gap-3">
           {EARN_AVAILABLE_ITEMS.map((item) => (
             <EarnAvailableCard key={item.queueName} item={item} onDeposit={handleDeposit} />

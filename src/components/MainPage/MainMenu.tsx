@@ -1,5 +1,5 @@
-import { LargeMenuCard } from "./LargeMenuCard";
-import { MenuCard } from "./MenuCard";
+import { MenuCard } from "@/components/ui/MenuCard";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MENU_ITEMS } from "@/shared/constants/main";
 
 export function MainMenu() {
@@ -8,14 +8,13 @@ export function MainMenu() {
 
   return (
     <section>
-      <h2 className="text-indigo-950 text-xl font-medium leading-6 mb-3">
-        Application menu
-      </h2>
+      <SectionHeader className="mb-3">Application menu</SectionHeader>
 
       <div className="flex flex-col gap-3">
         {largeItems.map((item) => (
-          <LargeMenuCard
+          <MenuCard
             key={item.key}
+            size="lg"
             title={item.title}
             description={item.description}
             backgroundImage={item.backgroundImage}
@@ -27,7 +26,7 @@ export function MainMenu() {
         <div className="grid grid-cols-2 gap-3">
           {middleItems.map((item) => (
             <MenuCard
-              key={item.title}
+              key={item.key}
               title={item.title}
               description={item.description}
               backgroundImage={item.backgroundImage}
