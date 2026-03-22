@@ -23,7 +23,7 @@ export function ProgressBar({ value, variant = "live", className }: ProgressBarP
       <div
         className={cn(
           "h-full rounded-full transition-[width]",
-          variant === "live" ? "bg-main-success/90" : "bg-main-purple/90"
+          variant === "live" ? "bg-main-success" : "bg-main-purple/90"
         )}
         style={{ width: `${clamped}%` }}
       />
