@@ -109,7 +109,7 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
           type="button"
           variant="success"
           size="action"
-          className="bg-main-success/90 hover:bg-main-success"
+          className={'text-black'}
           onClick={(e) => {
             e.stopPropagation();
             onJoin?.();
