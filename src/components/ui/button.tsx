@@ -51,7 +51,7 @@ const buttonVariants = cva(
           "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
         "icon-lg": "size-9",
         // Brand sizes
-        action: "w-full py-3 gap-0",
+        action: "w-full py-2 gap-0",
         pill: "px-4 py-2 gap-1.5",
       },
     },
