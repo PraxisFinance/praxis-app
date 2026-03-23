@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -18,10 +19,23 @@ export interface RandomPoolItemProps {
 }
 
 export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
+  const router = useRouter();
   const isLive = pool.status === "live";
+  const detailHref = `/predictions/random-rewards/${pool.id}`;
 
   return (
-    <Card className="gap-2 p-3">
+    <Card
+      role="link"
+      tabIndex={0}
+      className="cursor-pointer gap-2 p-3 transition-opacity hover:opacity-95"
+      onClick={() => router.push(detailHref)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          router.push(detailHref);
+        }
+      }}
+    >
       {/* Header */}
       <div className="flex items-start justify-between gap-1.5">
         <div className="flex min-w-0 items-center gap-1.5">
@@ -99,12 +113,23 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
           variant="success"
           size="action"
           className="bg-main-success/90 hover:bg-main-success"
-          onClick={onJoin}
+          onClick={(e) => {
+            e.stopPropagation();
+            onJoin?.();
+          }}
         >
           Join now
         </Button>
       ) : pool.userWon ? (
-        <Button type="button" variant="primary" size="action" onClick={onClaim}>
+        <Button
+          type="button"
+          variant="primary"
+          size="action"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClaim?.();
+          }}
+        >
           Claim rewards
         </Button>
       ) : (
