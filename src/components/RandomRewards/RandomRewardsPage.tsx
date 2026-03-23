@@ -10,8 +10,8 @@ import {
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";
-import { RandomPoolItem } from "@/components/PredictionsPage/RandomPoolItem";
-import { RandomPoolJoinDrawer } from "@/components/PredictionsPage/RandomPoolJoinDrawer";
+import { RandomPoolItem } from "./RandomPoolItem";
+import { RandomPoolJoinDrawer } from "./RandomPoolJoinDrawer";
 import { Button } from "@/components/ui/button";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";

@@ -1,4 +1,4 @@
-import { RandomRewardsPage } from "@/components/PredictionsPage/RandomRewardsPage";
+import { RandomRewardsPage } from "@/components/RandomRewards";
 
 export default function Page() {
   return <RandomRewardsPage />;
