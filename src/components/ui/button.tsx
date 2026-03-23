@@ -23,17 +23,17 @@ const buttonVariants = cva(
         link: "rounded-lg text-primary underline-offset-4 hover:underline",
         // Brand variants
         primary:
-          "rounded-[10px] bg-main-purple text-white hover:bg-main-purple/90 transition-transform active:scale-[0.98]",
+          "rounded-[6px] bg-main-purple text-white hover:bg-main-purple/90 transition-transform active:scale-[0.98]",
         success:
-          "rounded-[10px] bg-main-success text-white hover:bg-main-success/90 transition-transform active:scale-[0.98]",
+          "rounded-[6px] bg-main-success/60 text-white hover:bg-main-success/90 transition-transform active:scale-[0.98]",
         destructiveBrand:
           "rounded-[10px] bg-main-destructive text-white hover:bg-main-destructive/90 transition-transform active:scale-[0.98]",
         destructiveMuted:
-          "rounded-[10px] bg-main-red/60 text-white hover:bg-main-red/70 transition-transform active:scale-[0.98]",
+          "rounded-[6px] bg-main-red/60 text-white hover:bg-main-red/70 transition-transform active:scale-[0.98]",
         secondaryBrand:
           "rounded-[6px] bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple transition-transform active:scale-[0.97]",
         pillPrimary:
-          "rounded-[30px] bg-main-purple text-white hover:bg-main-purple/90 transition-transform active:scale-[0.98]",
+          "rounded-[6px] bg-main-purple text-white hover:bg-main-purple/90 transition-transform active:scale-[0.98]",
         pillSecondary:
           "rounded-[30px] bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple transition-transform active:scale-[0.98]",
         iconPill: "rounded-[30px] bg-slate-200 hover:bg-slate-300 transition-colors p-[5px]",

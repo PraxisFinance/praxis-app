@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Drawer } from "vaul";
-import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomPoolMocks";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
 import {
   RANDOM_POOLS_HINT,
+  RANDOM_POOL_MOCKS,
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";

@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatBadge } from "@/components/ui/StatBadge";
-import type { RandomPool, RandomPoolRemainingTime } from "@/shared/types/randomPool";
-
-function formatRemainingTime(t: RandomPoolRemainingTime): string {
-  return `Remain time: ${t.days}d ${t.hours}h ${t.minutes}m ${t.seconds}s`;
-}
+import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
+import type { RandomPool } from "@/shared/types/randomPool";
 
 export interface RandomPoolItemProps {
   pool: RandomPool;
@@ -101,7 +98,7 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
             <span className="font-medium">Live now</span>
           </div>
           <span className="text-main-darkPurple/80 text-right">
-            {formatRemainingTime(pool.remainingTime)}
+            {formatRandomPoolRemainingTime(pool.remainingTime)}
           </span>
         </div>
       )}

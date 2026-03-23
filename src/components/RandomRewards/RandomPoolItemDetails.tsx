@@ -1,17 +1,47 @@
 "use client";
 
+import { useMemo, useState } from "react";
+import { DEFAULT_BALANCES } from "@/shared/constants/balances";
+import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomRewards";
+import { RandomPoolLiveDetails } from "./RandomPoolLiveDetails";
+
 interface RandomPoolItemDetailsProps {
   poolId: string;
 }
 
 export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-main-darkPurple text-xl font-bold leading-tight">Random pool</h1>
-      <p className="text-main-darkPurple/70 text-sm">Pool ID: {poolId}</p>
-      <div className="bg-main-lightGray text-main-darkPurple/60 flex min-h-[200px] items-center justify-center rounded-2xl px-4 py-8 text-center text-sm">
-        Content placeholder
+  const [amount, setAmount] = useState("");
+  const walletBalance = DEFAULT_BALANCES[0]?.value ?? "0.000";
+
+  const pool = useMemo(
+    () => RANDOM_POOL_MOCKS.find((p) => p.id === poolId) ?? null,
+    [poolId]
+  );
+
+  if (!pool) {
+    return (
+      <div className="text-main-darkPurple/70 flex flex-col gap-2 py-8 text-center text-sm">
+        <p>Pool not found.</p>
+        <p className="text-main-darkPurple/50 text-xs">ID: {poolId}</p>
       </div>
-    </div>
+    );
+  }
+
+  if (pool.status !== "live") {
+    return (
+      <div className="text-main-darkPurple/80 flex flex-col gap-3 py-6 text-sm">
+        <p className="text-main-darkPurple text-base font-semibold">{pool.title}</p>
+        <p>This pool has ended. Active pool details layout is not shown here.</p>
+      </div>
+    );
+  }
+
+  return (
+    <RandomPoolLiveDetails
+      pool={pool}
+      amount={amount}
+      onAmountChange={setAmount}
+      walletBalance={walletBalance}
+    />
   );
 }

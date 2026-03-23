@@ -6,11 +6,8 @@ import { Button } from "@/components/ui/button";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { DEFAULT_BALANCES } from "@/shared/constants/balances";
-import type { RandomPoolLive, RandomPoolRemainingTime } from "@/shared/types/randomPool";
-
-function formatRemainingTime(t: RandomPoolRemainingTime): string {
-  return `Remain time: ${t.days}d ${t.hours}h ${t.minutes}m ${t.seconds}s`;
-}
+import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
+import type { RandomPoolLive } from "@/shared/types/randomPool";
 
 interface RandomPoolJoinDrawerProps {
   pool: RandomPoolLive | null;
@@ -44,7 +41,7 @@ export function RandomPoolJoinDrawer({ pool, open, onOpenChange }: RandomPoolJoi
             <span>Users in: {pool.usersIn}</span>
           </div>
           <p className="text-main-darkPurple/85 text-xs leading-tight">
-            {formatRemainingTime(pool.remainingTime)}
+            {formatRandomPoolRemainingTime(pool.remainingTime)}
           </p>
         </div>
 
