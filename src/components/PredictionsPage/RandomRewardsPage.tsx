@@ -4,12 +4,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { Drawer } from "vaul";
 import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomPoolMocks";
+import type { RandomPoolLive } from "@/shared/types/randomPool";
 import {
   RANDOM_POOLS_HINT,
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";
 import { RandomPoolItem } from "@/components/PredictionsPage/RandomPoolItem";
+import { RandomPoolJoinDrawer } from "@/components/PredictionsPage/RandomPoolJoinDrawer";
 import { Button } from "@/components/ui/button";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
@@ -18,6 +20,8 @@ import { cn } from "@/lib/utils";
 export function RandomRewardsPage() {
   const [filter, setFilter] = useState<RandomRewardsFilterId>("all");
   const [poolsHintOpen, setPoolsHintOpen] = useState(false);
+  const [joinPool, setJoinPool] = useState<RandomPoolLive | null>(null);
+  const [joinDrawerOpen, setJoinDrawerOpen] = useState(false);
 
   return (
     <div className="flex flex-col gap-4">
@@ -61,7 +65,18 @@ export function RandomRewardsPage() {
         </div>
         <div className="flex flex-col gap-3">
           {RANDOM_POOL_MOCKS.map((pool) => (
-            <RandomPoolItem key={pool.id} pool={pool} />
+            <RandomPoolItem
+              key={pool.id}
+              pool={pool}
+              onJoin={
+                pool.status === "live"
+                  ? () => {
+                      setJoinPool(pool);
+                      setJoinDrawerOpen(true);
+                    }
+                  : undefined
+              }
+            />
           ))}
         </div>
       </section>
@@ -74,6 +89,15 @@ export function RandomRewardsPage() {
           {RANDOM_POOLS_HINT.description}
         </p>
       </DrawerShell>
+
+      <RandomPoolJoinDrawer
+        pool={joinPool}
+        open={joinDrawerOpen}
+        onOpenChange={(next) => {
+          setJoinDrawerOpen(next);
+          if (!next) setJoinPool(null);
+        }}
+      />
     </div>
   );
 }
