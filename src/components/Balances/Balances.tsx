@@ -19,7 +19,7 @@ export function Balances({ balances = DEFAULT_BALANCES }: BalancesProps) {
 
   return (
     <section>
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center mb-2">
         <SectionHeader>Balances</SectionHeader>
         <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1">
           <Image src="/icons/question.png" alt="About balances" width={14} height={14} />

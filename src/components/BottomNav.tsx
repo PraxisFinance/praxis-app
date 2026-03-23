@@ -27,7 +27,10 @@ export function BottomNav() {
       <div className="max-w-md mx-auto bg-white rounded-t-[10px] shadow-[0px_-10px_20px_0px_rgba(218,216,230,0.50)]">
         <div className="flex justify-around items-center h-16 px-4">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              item.id === "predictions"
+                ? pathname === "/predictions" || pathname.startsWith("/predictions/")
+                : pathname === item.href;
             const Icon = item.icon;
             return (
               <Link
