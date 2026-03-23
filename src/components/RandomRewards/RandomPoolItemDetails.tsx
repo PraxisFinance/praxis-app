@@ -5,6 +5,7 @@ import { DEFAULT_BALANCES } from "@/shared/constants/balances";
 import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomRewards";
 import { RandomPoolEndedDetails } from "./RandomPoolEndedDetails";
 import { RandomPoolLiveDetails } from "./RandomPoolLiveDetails";
+import { RandomPoolMainData } from "./RandomPoolMainData";
 
 interface RandomPoolItemDetailsProps {
   poolId: string;
@@ -28,16 +29,18 @@ export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
     );
   }
 
-  if (pool.status === "ended") {
-    return <RandomPoolEndedDetails pool={pool} />;
-  }
-
   return (
-    <RandomPoolLiveDetails
-      pool={pool}
-      amount={amount}
-      onAmountChange={setAmount}
-      walletBalance={walletBalance}
-    />
+    <div className="flex flex-col gap-3">
+      <RandomPoolMainData pool={pool} />
+      {pool.status === "ended" ? (
+        <RandomPoolEndedDetails pool={pool} />
+      ) : (
+        <RandomPoolLiveDetails
+          amount={amount}
+          onAmountChange={setAmount}
+          walletBalance={walletBalance}
+        />
+      )}
+    </div>
   );
 }

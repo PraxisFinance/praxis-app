@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { MOCK_POOL_WINNERS } from "@/shared/constants/randomRewards";
 import type { RandomPoolEnded } from "@/shared/types/randomPool";
-import { RandomPoolMainData } from "./RandomPoolMainData";
 import { RandomPoolParticipantList } from "./RandomPoolParticipantList";
 
 export interface RandomPoolEndedDetailsProps {
@@ -15,8 +14,6 @@ export interface RandomPoolEndedDetailsProps {
 export function RandomPoolEndedDetails({ pool }: RandomPoolEndedDetailsProps) {
   return (
     <div className="flex flex-col gap-3">
-      <RandomPoolMainData pool={pool} />
-
       <section className="flex flex-col gap-3">
         <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">Your rewards</SectionHeader>
         {pool.userWon ? (
@@ -24,11 +21,7 @@ export function RandomPoolEndedDetails({ pool }: RandomPoolEndedDetailsProps) {
             <p className="text-main-darkPurple text-sm leading-snug">
               Congratulations! You are among the winners — you can claim your rewards now.
             </p>
-            <Button
-              type="button"
-              variant="primary"
-              size="action"
-            >
+            <Button type="button" variant="primary" size="action">
               Claim rewards
             </Button>
           </>
