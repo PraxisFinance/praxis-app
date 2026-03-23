@@ -30,6 +30,8 @@ export type RandomPoolEnded = {
   tvl: string;
   earnings: string;
   usersWon: number;
+  /** Total participants — shown as “Users in pool” on ended details */
+  usersInPool?: number;
   /** Typically 100 when pool ended */
   progressPercent: number;
   /** If true, show “You won” and “Claim rewards” */

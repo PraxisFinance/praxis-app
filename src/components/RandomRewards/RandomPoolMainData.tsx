@@ -2,14 +2,29 @@
 
 import Image from "next/image";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
-import type { RandomPoolLive } from "@/shared/types/randomPool";
+import type { RandomPool } from "@/shared/types/randomPool";
 import { RandomPoolStatCard } from "./RandomPoolStatCard";
 
 export interface RandomPoolMainDataProps {
-  pool: RandomPoolLive;
+  pool: RandomPool;
 }
 
 export function RandomPoolMainData({ pool }: RandomPoolMainDataProps) {
+  const subtitle =
+    pool.status === "live"
+      ? formatRandomPoolRemainingTime(pool.remainingTime)
+      : "Pool lifetime ended";
+
+  const secondStat =
+    pool.status === "live"
+      ? { label: "Expected yield", value: pool.expectedYield }
+      : { label: "Yield", value: pool.earnings };
+
+  const thirdStat =
+    pool.status === "live"
+      ? { label: "Users in pool", value: String(pool.usersIn) }
+      : { label: "Users in pool", value: String(pool.usersInPool ?? pool.usersWon) };
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-3">
@@ -28,16 +43,14 @@ export function RandomPoolMainData({ pool }: RandomPoolMainDataProps) {
         </div>
         <div className="min-w-0 flex-1">
           <h1 className="text-main-darkPurple text-lg leading-tight">{pool.title}</h1>
-          <p className="text-main-darkPurple/60 mt-1 text-sm leading-snug">
-            {formatRandomPoolRemainingTime(pool.remainingTime)}
-          </p>
+          <p className="text-main-darkPurple/60 mt-1 text-sm leading-snug">{subtitle}</p>
         </div>
       </div>
 
       <div className="flex flex-wrap items-start justify-start gap-2">
         <RandomPoolStatCard label="Pool TVL" value={pool.tvl} />
-        <RandomPoolStatCard label="Expected yield" value={pool.expectedYield} />
-        <RandomPoolStatCard label="Users in pool" value={String(pool.usersIn)} />
+        <RandomPoolStatCard label={secondStat.label} value={secondStat.value} />
+        <RandomPoolStatCard label={thirdStat.label} value={thirdStat.value} />
       </div>
     </div>
   );

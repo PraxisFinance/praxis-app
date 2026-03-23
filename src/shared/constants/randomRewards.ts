@@ -31,6 +31,13 @@ export const MOCK_USERS_IN_POOL: RandomPoolUserInPool[] = [
   { username: "Yoshiko", amount: "$500" },
 ];
 
+/** Mock winners list for ended pool details (until API exists). */
+export const MOCK_POOL_WINNERS: RandomPoolUserInPool[] = [
+  { username: "Mizori", amount: "$333,33", avatarUrl: "/icons/usdc.png" },
+  { username: "Kisara", amount: "$333,33" },
+  { username: "Tazumi", amount: "$333,34" },
+];
+
 /** Mock pools covering all UI states from design */
 export const RANDOM_POOL_MOCKS: RandomPool[] = [
   {
@@ -61,6 +68,7 @@ export const RANDOM_POOL_MOCKS: RandomPool[] = [
     tvl: "100.000$",
     earnings: "$1000",
     usersWon: 3,
+    usersInPool: 101,
     progressPercent: 100,
     userWon: false,
   },
@@ -71,6 +79,7 @@ export const RANDOM_POOL_MOCKS: RandomPool[] = [
     tvl: "100.000$",
     earnings: "$1000",
     usersWon: 3,
+    usersInPool: 54,
     progressPercent: 100,
     userWon: true,
   },

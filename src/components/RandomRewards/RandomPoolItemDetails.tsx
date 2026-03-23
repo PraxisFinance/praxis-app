@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { DEFAULT_BALANCES } from "@/shared/constants/balances";
 import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomRewards";
+import { RandomPoolEndedDetails } from "./RandomPoolEndedDetails";
 import { RandomPoolLiveDetails } from "./RandomPoolLiveDetails";
 
 interface RandomPoolItemDetailsProps {
@@ -27,13 +28,8 @@ export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
     );
   }
 
-  if (pool.status !== "live") {
-    return (
-      <div className="text-main-darkPurple/80 flex flex-col gap-3 py-6 text-sm">
-        <p className="text-main-darkPurple text-base font-semibold">{pool.title}</p>
-        <p>This pool has ended. Active pool details layout is not shown here.</p>
-      </div>
-    );
+  if (pool.status === "ended") {
+    return <RandomPoolEndedDetails pool={pool} />;
   }
 
   return (
