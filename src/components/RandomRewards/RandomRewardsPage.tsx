@@ -51,7 +51,7 @@ export function RandomRewardsPage() {
         </div>
       </section>
       <section className="flex flex-col gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <SectionHeader className="text-main-darkPurple">Random pools</SectionHeader>
           <Button
             variant="ghost"
