@@ -1,4 +1,4 @@
-import type { RandomPool } from "@/shared/types/randomPool";
+import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
 
 export const RANDOM_REWARDS_FILTERS = [
   { id: "all", label: "All" },
@@ -19,12 +19,15 @@ export const RANDOM_POOLS_HINT = {
     "Users stake their YT into one pool, and at the end of the game period, 3 random users divide the PnL amount between themselves.",
 } as const;
 
+/** Default currency icon for pool user amounts when `currencyIconUrl` is not set */
+export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = "/icons/w-usdc.png";
+
 /** Mock users shown on pool details (until API exists). */
-export const MOCK_USERS_IN_POOL: { username: string; amount: string }[] = [
-  { username: "Mizori", amount: "$1000" },
+export const MOCK_USERS_IN_POOL: RandomPoolUserInPool[] = [
+  { username: "Mizori", amount: "$1000", avatarUrl: "/icons/usdc.png" },
   { username: "Kisara", amount: "$1500" },
-  { username: "Tazumi", amount: "$800" },
-  { username: "Rinara", amount: "$2200" },
+  { username: "Tazumi", amount: "$800", avatarUrl: "/icons/question.png" },
+  { username: "Rinara", amount: "$2200", currencyIconUrl: "/icons/yt-token.png" },
   { username: "Yoshiko", amount: "$500" },
 ];
 

@@ -37,3 +37,12 @@ export type RandomPoolEnded = {
 };
 
 export type RandomPool = RandomPoolLive | RandomPoolEnded;
+
+/** User row in “Users in pool” (details / API). */
+export type RandomPoolUserInPool = {
+  username: string;
+  amount: string;
+  avatarUrl?: string;
+  /** Falls back to wrapped USDC icon when omitted */
+  currencyIconUrl?: string;
+};
