@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { DEFAULT_POOL_USER_CURRENCY_ICON_URL, MOCK_USERS_IN_POOL } from "@/shared/constants/randomRewards";
-import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
-import { RandomPoolStatCard } from "./RandomPoolStatCard";
+import { RandomPoolMainData } from "./RandomPoolMainData";
 
 export interface RandomPoolLiveDetailsProps {
   pool: RandomPoolLive;
@@ -24,33 +23,7 @@ export function RandomPoolLiveDetails({
 }: RandomPoolLiveDetailsProps) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex gap-3">
-        <div className="bg-main-lightGray ring-main-grayPurple/40 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm ring-1 ring-inset">
-          {pool.iconUrl ? (
-            <Image
-              src={pool.iconUrl}
-              alt=""
-              width={36}
-              height={36}
-              className="h-9 w-9 object-contain"
-            />
-          ) : (
-            <div className="flex h-9 w-9 items-center justify-center text-xl leading-none">🪙</div>
-          )}
-        </div>
-        <div className="min-w-0 flex-1">
-          <h1 className="text-main-darkPurple text-lg leading-tight">{pool.title}</h1>
-          <p className="text-main-darkPurple/60 mt-1 text-sm leading-snug">
-            {formatRandomPoolRemainingTime(pool.remainingTime)}
-          </p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-start justify-start gap-2">
-        <RandomPoolStatCard label="Pool TVL" value={pool.tvl} />
-        <RandomPoolStatCard label="Expected yield" value={pool.expectedYield} />
-        <RandomPoolStatCard label="Users in pool" value={String(pool.usersIn)} />
-      </div>
+      <RandomPoolMainData pool={pool} />
 
       <section className="flex flex-col gap-3">
         <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">Join Pool</SectionHeader>
