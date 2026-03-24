@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Drawer } from "vaul";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
 import {
   RANDOM_POOLS_HINT,
@@ -13,6 +12,7 @@ import {
 import { RandomPoolItem } from "./RandomPoolItem";
 import { RandomPoolJoinDrawer } from "./RandomPoolJoinDrawer";
 import { Button } from "@/components/ui/button";
+import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
@@ -82,12 +82,7 @@ export function RandomRewardsPage() {
       </section>
 
       <DrawerShell open={poolsHintOpen} onOpenChange={setPoolsHintOpen}>
-        <Drawer.Title className="text-main-darkPurple text-2xl font-bold leading-tight">
-          {RANDOM_POOLS_HINT.title}
-        </Drawer.Title>
-        <p className="text-main-darkPurple text-sm font-normal leading-5">
-          {RANDOM_POOLS_HINT.description}
-        </p>
+        <AppDrawerHeading title={RANDOM_POOLS_HINT.title} description={RANDOM_POOLS_HINT.description} />
       </DrawerShell>
 
       <RandomPoolJoinDrawer

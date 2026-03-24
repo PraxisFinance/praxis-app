@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
+import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { InputWithMax } from "@/components/ui/InputWithMax";
@@ -24,14 +24,11 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
-      <div className="flex flex-col gap-1.5">
-        <Drawer.Title className="text-main-darkPurple text-2xl leading-tight">
-          Withdraw your deposit
-        </Drawer.Title>
-        <p className="text-main-darkPurple text-sm font-normal leading-5">
-          Withdraw your cryptocurrency from pool vault.
-        </p>
-      </div>
+      <AppDrawerHeading
+        variant="plain"
+        title="Withdraw your deposit"
+        description="Withdraw your cryptocurrency from pool vault."
+      />
 
       <div className="flex flex-col gap-3">
         <span className="text-main-darkPurple text-lg leading-6">Pool Information</span>

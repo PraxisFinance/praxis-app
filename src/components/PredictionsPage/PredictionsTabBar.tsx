@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { isPredictionsSubTabActive, type PredictionsTabId } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const TABS = [
@@ -44,10 +45,7 @@ export function PredictionsTabBar({ showBackButton = false, onBack }: Prediction
         </Button>
       )}
       {TABS.map((tab) => {
-        const isActive =
-          pathname === tab.href ||
-          (tab.id === "all" && pathname === "/predictions") ||
-          (tab.id === "random-rewards" && pathname.startsWith("/predictions/random-rewards"));
+        const isActive = isPredictionsSubTabActive(tab.id as PredictionsTabId, pathname);
         return (
           <Link
             key={tab.id}

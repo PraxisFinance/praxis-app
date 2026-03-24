@@ -23,3 +23,16 @@ export const BALANCE_INFO: BalanceInfo[] = [
     iconUrl: "/icons/yt-token.png",
   },
 ];
+
+/** Resolves a numeric balance string for a currency icon, with fallback when unknown. */
+export function getBalanceValueByIconUrl(
+  balances: Balance[],
+  iconUrl: string | undefined,
+  fallbackIndex = 0
+): string {
+  if (iconUrl) {
+    const found = balances.find((b) => b.iconUrl === iconUrl);
+    if (found) return found.value;
+  }
+  return balances[fallbackIndex]?.value ?? "0.000";
+}

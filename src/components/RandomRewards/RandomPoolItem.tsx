@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,6 +7,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatBadge } from "@/components/ui/StatBadge";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
 import type { RandomPool } from "@/shared/types/randomPool";
+import { RandomPoolIcon } from "./RandomPoolIcon";
 
 export interface RandomPoolItemProps {
   pool: RandomPool;
@@ -36,19 +36,7 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
       {/* Header */}
       <div className="flex items-start justify-between gap-1.5">
         <div className="flex min-w-0 items-center gap-1.5">
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-amber-100/80">
-            {pool.iconUrl ? (
-              <Image
-                src={pool.iconUrl}
-                alt={pool.title}
-                width={36}
-                height={36}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-lg">🪙</div>
-            )}
-          </div>
+          <RandomPoolIcon variant="list" iconUrl={pool.iconUrl} alt={pool.title} />
           <h3 className="text-main-darkPurple truncate text-base leading-5">
             {pool.title}
           </h3>
@@ -109,7 +97,6 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
           type="button"
           variant="success"
           size="action"
-          className={'text-black'}
           onClick={(e) => {
             e.stopPropagation();
             onJoin?.();

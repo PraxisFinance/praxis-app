@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
+import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnAvailableItem } from "@/shared/types/earn";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
+import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
 
 interface DepositDrawerProps {
   item: EarnAvailableItem | null;
@@ -21,19 +21,14 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
 
   if (!item) return null;
 
-  const walletBalance =
-    DEFAULT_BALANCES.find((b) => b.iconUrl === item.depositCurrencyIconUrl)?.value ?? "0.000";
+  const walletBalance = getBalanceValueByIconUrl(DEFAULT_BALANCES, item.depositCurrencyIconUrl);
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
-      <div className="flex flex-col gap-1.5">
-        <Drawer.Title className="text-main-darkPurple text-2xl font-bold leading-tight">
-          Deposit your cryptocurrency
-        </Drawer.Title>
-        <p className="text-main-darkPurple text-sm font-normal leading-5">
-          Deposit cryptocurrency from your wallet into the vault to start earn.
-        </p>
-      </div>
+      <AppDrawerHeading
+        title="Deposit your cryptocurrency"
+        description="Deposit cryptocurrency from your wallet into the vault to start earn."
+      />
 
       <div className="flex flex-col gap-3">
         <span className="text-main-darkPurple text-lg font-bold leading-6">Pool Information</span>

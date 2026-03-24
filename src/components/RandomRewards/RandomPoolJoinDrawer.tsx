@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
+import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
+import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
 
@@ -24,14 +24,15 @@ export function RandomPoolJoinDrawer({ pool, open, onOpenChange }: RandomPoolJoi
 
   if (!pool) return null;
 
-  const walletBalance = DEFAULT_BALANCES[0]?.value ?? "0.000";
+  const walletBalance = getBalanceValueByIconUrl(DEFAULT_BALANCES, pool.iconUrl);
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
       <div className="flex flex-col gap-6">
-        <Drawer.Title className="text-main-darkPurple text-2xl leading-tight decoration-main-darkPurple underline-offset-4">
-          Make a prediction
-        </Drawer.Title>
+        <AppDrawerHeading
+          title="Make a prediction"
+          titleClassName="underline decoration-main-darkPurple underline-offset-4"
+        />
 
         <div className="rounded-2xl bg-main-grayPurple/80 px-4 py-3">
           <p className="text-main-darkPurple mb-2 text-base font-bold leading-5">{pool.title}</p>

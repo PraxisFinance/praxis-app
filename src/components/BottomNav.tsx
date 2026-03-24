@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isPredictionsSectionPath } from "@/lib/routes";
 import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "./ui/icons/NavIcons";
 
 interface NavItem {
@@ -28,9 +29,7 @@ export function BottomNav() {
         <div className="flex justify-around items-center h-16 px-4">
           {navItems.map((item) => {
             const isActive =
-              item.id === "predictions"
-                ? pathname === "/predictions" || pathname.startsWith("/predictions/")
-                : pathname === item.href;
+              item.id === "predictions" ? isPredictionsSectionPath(pathname) : pathname === item.href;
             const Icon = item.icon;
             return (
               <Link

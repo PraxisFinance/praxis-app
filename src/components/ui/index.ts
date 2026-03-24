@@ -1,4 +1,5 @@
 export { BalanceCard } from "../Balances/BalanceCard";
+export { AppDrawerHeading } from "./AppDrawerHeading";
 export { Badge, badgeVariants } from "./badge";
 export { Button, buttonVariants } from "./button";
 export { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./card";

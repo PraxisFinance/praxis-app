@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Drawer } from "vaul";
 import { Button } from "@/components/ui/button";
+import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
@@ -38,9 +38,7 @@ export function Balances({ balances = DEFAULT_BALANCES }: BalancesProps) {
       </div>
 
       <DrawerShell open={open} onOpenChange={setOpen}>
-        <Drawer.Title className="text-main-darkPurple text-2xl font-bold leading-tight">
-          About balance
-        </Drawer.Title>
+        <AppDrawerHeading title="About balance" />
 
         <div className="flex flex-col gap-5">
           {BALANCE_INFO.map((item) => (
