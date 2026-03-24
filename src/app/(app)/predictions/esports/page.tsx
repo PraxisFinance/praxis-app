@@ -1,5 +1,5 @@
-import { PredictionsSubPage } from "@/components/PredictionsPage/PredictionsSubPage";
+import { EsportPage } from "@/components/Esport";
 
 export default function Page() {
-  return <PredictionsSubPage />;
+  return <EsportPage />;
 }
