@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import type { EsportsGameFilterId, EsportsTimeFilterId } from "@/shared/constants/esports";
+import { ESPORTS_MATCH_MOCKS } from "@/shared/constants/esportsMatches";
 import { EsportFilters } from "./EsportFilters";
+import { EsportMatchCard } from "./EsportMatchCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 
 export function EsportPage() {
-  const [gameFilter, setGameFilter] = useState<EsportsGameFilterId | null>("valorant");
+  const [gameFilter, setGameFilter] = useState<EsportsGameFilterId | null>(null);
   const [timeFilter, setTimeFilter] = useState<EsportsTimeFilterId | null>("all");
 
   return (
@@ -18,10 +20,12 @@ export function EsportPage() {
         onTimeChange={setTimeFilter}
       />
       <section className="flex flex-col gap-3">
-        <SectionHeader className="text-main-darkPurple">Markets</SectionHeader>
-        <p className="text-main-darkPurple text-sm font-normal leading-5">
-          Esports predictions and markets will appear here soon.
-        </p>
+        <SectionHeader className="text-main-darkPurple">Matches</SectionHeader>
+        <div className="flex flex-col gap-3">
+          {ESPORTS_MATCH_MOCKS.map((match) => (
+            <EsportMatchCard key={match.id} match={match} />
+          ))}
+        </div>
       </section>
     </div>
   );
