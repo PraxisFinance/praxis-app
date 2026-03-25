@@ -8,8 +8,7 @@ export interface CryptoPredictionCardStatusFooterProps {
 }
 
 export function CryptoPredictionCardStatusFooter({ prediction }: CryptoPredictionCardStatusFooterProps) {
-  const line = getCryptoPredictionStatusFooter(prediction.status);
-  if (!line) return null;
+  const line = getCryptoPredictionStatusFooter(prediction);
 
   return (
     <div className="flex items-center justify-center gap-1.5">

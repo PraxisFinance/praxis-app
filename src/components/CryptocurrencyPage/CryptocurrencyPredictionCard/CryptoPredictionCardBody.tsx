@@ -1,6 +1,7 @@
 "use client";
 
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import { getCryptoPredictionStatusFooter } from "@/shared/utils/cryptoPredictionFormat";
 import { CryptoPredictionBinaryOutcomesBlock } from "./CryptoPredictionBinaryOutcomesBlock";
 import { CryptoPredictionStrikeRow } from "./CryptoPredictionStrikeRow";
 
@@ -15,7 +16,13 @@ export function CryptoPredictionCardBody({ prediction }: CryptoPredictionCardBod
     case "up_down":
     case "price_range":
     case "hit":
-      return <CryptoPredictionBinaryOutcomesBlock outcomes={prediction.outcomes} disabled={disabled} />;
+      return (
+        <CryptoPredictionBinaryOutcomesBlock
+          outcomes={prediction.outcomes}
+          disabled={disabled}
+          statusLine={getCryptoPredictionStatusFooter(prediction)}
+        />
+      );
     case "above_below":
       return (
         <div className="flex flex-col gap-2.5">

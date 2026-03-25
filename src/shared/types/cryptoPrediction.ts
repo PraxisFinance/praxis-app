@@ -12,12 +12,16 @@ export type CryptoPredictionStatus =
   | {
       kind: "upcoming";
       label?: string;
+      /** ISO 8601 — старт окна / приёма ставок для строки «Starts at: …» */
+      startsAt?: string;
     }
   | {
       kind: "ended";
       label?: string;
       /** Кратко, что произошло (опционально): «Resolved Up», «Void», … */
       resolutionSummary?: string;
+      /** ISO 8601 — момент завершения (суффикс к статусу «Ended») */
+      endedAt?: string;
     };
 
 /**

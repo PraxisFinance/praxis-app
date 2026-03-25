@@ -7,6 +7,10 @@ import { CryptoPredictionCardHeader } from "./CryptoPredictionCardHeader";
 import { CryptoPredictionCardMeta } from "./CryptoPredictionCardMeta";
 import { CryptoPredictionCardStatusFooter } from "./CryptoPredictionCardStatusFooter";
 
+function showStandaloneStatusFooter(prediction: CryptoPrediction): boolean {
+  return prediction.predictionType === "above_below";
+}
+
 export interface CryptocurrencyPredictionCardProps {
   prediction: CryptoPrediction;
 }
@@ -23,7 +27,9 @@ export function CryptocurrencyPredictionCard({ prediction }: CryptocurrencyPredi
       />
       <CryptoPredictionCardMeta prediction={prediction} />
       <CryptoPredictionCardBody prediction={prediction} />
-      <CryptoPredictionCardStatusFooter prediction={prediction} />
+      {showStandaloneStatusFooter(prediction) && (
+        <CryptoPredictionCardStatusFooter prediction={prediction} />
+      )}
     </article>
   );
 }
