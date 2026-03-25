@@ -7,15 +7,12 @@ import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
-import type { Balance } from "@/shared/types/balances";
-import { DEFAULT_BALANCES, BALANCE_INFO } from "@/shared/constants/balances";
+import { BALANCE_INFO } from "@/shared/constants/balances";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
 
-interface BalancesProps {
-  balances?: Balance[];
-}
-
-export function Balances({ balances = DEFAULT_BALANCES }: BalancesProps) {
+export function Balances() {
   const [open, setOpen] = useState(false);
+  const { balances } = useWalletBalances();
 
   return (
     <section>

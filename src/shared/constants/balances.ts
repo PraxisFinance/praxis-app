@@ -1,9 +1,9 @@
 import type { Balance, BalanceInfo } from "@/shared/types/balances";
 
 export const DEFAULT_BALANCES: Balance[] = [
-  { label: "Wallet", value: "10.000", iconUrl: "/icons/usdc.png" },
-  { label: "Deposit", value: "1.000", iconUrl: "/icons/w-usdc.png" },
-  { label: "YT Token", value: "100", iconUrl: "/icons/yt-token.png" },
+  { label: "Wallet", value: "0", iconUrl: "/icons/usdc.png" },
+  { label: "Deposit", value: "0", iconUrl: "/icons/w-usdc.png" },
+  { label: "YT Token", value: "0", iconUrl: "/icons/yt-token.png" },
 ];
 
 export const BALANCE_INFO: BalanceInfo[] = [
@@ -24,7 +24,6 @@ export const BALANCE_INFO: BalanceInfo[] = [
   },
 ];
 
-/** Resolves a numeric balance string for a currency icon, with fallback when unknown. */
 export function getBalanceValueByIconUrl(
   balances: Balance[],
   iconUrl: string | undefined,
@@ -34,5 +33,5 @@ export function getBalanceValueByIconUrl(
     const found = balances.find((b) => b.iconUrl === iconUrl);
     if (found) return found.value;
   }
-  return balances[fallbackIndex]?.value ?? "0.000";
+  return balances[fallbackIndex]?.value ?? "0";
 }

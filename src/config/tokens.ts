@@ -1,0 +1,11 @@
+export const TOKEN_ADDRESSES = {
+  USDC: "0x0000000000000000000000000000000000000001" as `0x${string}`,
+  PT: "0x0000000000000000000000000000000000000002" as `0x${string}`,
+  YT: "0x0000000000000000000000000000000000000003" as `0x${string}`,
+} as const;
+
+export const TOKEN_DECIMALS = {
+  USDC: 6,
+  PT: 6,
+  YT: 6,
+} as const;
