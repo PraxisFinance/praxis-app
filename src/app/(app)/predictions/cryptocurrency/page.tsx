@@ -1,5 +1,5 @@
-import { PredictionsSubPage } from "@/components/PredictionsPage/PredictionsSubPage";
+import { CryptocurrencyPage } from "@/components/CryptocurrencyPage";
 
 export default function Page() {
-  return <PredictionsSubPage />;
+  return <CryptocurrencyPage />;
 }
