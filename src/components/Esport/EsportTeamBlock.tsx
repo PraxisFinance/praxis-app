@@ -1,20 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { getEsportsTeamInitials } from "@/shared/utils/esportsTeamDisplay";
 import { cn } from "@/lib/utils";
-
-function getTeamInitials(name: string): string {
-  const trimmed = name.trim();
-  if (!trimmed) return "?";
-  const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
-  const letters = words
-    .map((w) => {
-      const c = w.charAt(0);
-      return c ? c.toLocaleUpperCase() : "";
-    })
-    .join("");
-  return letters || "?";
-}
 
 interface EsportTeamBlockProps {
   name: string;
@@ -26,7 +14,7 @@ interface EsportTeamBlockProps {
 export function EsportTeamBlock({ name, logoUrl, align = "center" }: EsportTeamBlockProps) {
   const trimmedUrl = logoUrl.trim();
   const showLogo = Boolean(trimmedUrl);
-  const initials = getTeamInitials(name);
+  const initials = getEsportsTeamInitials(name);
 
   return (
     <div
