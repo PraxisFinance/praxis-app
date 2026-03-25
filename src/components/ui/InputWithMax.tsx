@@ -32,7 +32,7 @@ export function InputWithMax({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="flex-1 bg-transparent text-main-darkPurple text-base font-normal placeholder:text-main-darkPurple/40 outline-none disabled:opacity-50"
+        className="flex-1 bg-transparent text-main-darkPurple text-base font-normal placeholder:text-main-darkPurple/40 outline-none disabled:cursor-not-allowed"
       />
       <Button
         variant="secondaryBrand"
