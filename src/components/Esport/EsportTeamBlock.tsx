@@ -8,10 +8,11 @@ const TEAM_LOGO_FALLBACK = "/icons/question.png";
 interface EsportTeamBlockProps {
   name: string;
   logoUrl: string;
-  align: "start" | "end";
+  /** Default: centered (logo + name). `end` for right-aligned block. */
+  align?: "center" | "end";
 }
 
-export function EsportTeamBlock({ name, logoUrl, align }: EsportTeamBlockProps) {
+export function EsportTeamBlock({ name, logoUrl, align = "center" }: EsportTeamBlockProps) {
   const src = logoUrl || TEAM_LOGO_FALLBACK;
   return (
     <div

@@ -23,7 +23,7 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
   return (
     <article className="flex w-full flex-col gap-4 rounded-[10px] bg-main-lightGray p-3">
       <div className="flex w-full items-stretch gap-2">
-        <div className="flex min-w-0 flex-1 flex-col items-start gap-3">
+        <div className="flex shrink-0 flex-col items-center justify-start">
           <div className="relative h-7 w-7 shrink-0">
             {gameIconUrl ? (
               <Image src={gameIconUrl} alt="" width={28} height={28} className="object-contain" />
@@ -31,10 +31,13 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
               <span className="block h-7 w-7 rounded-md bg-main-grayPurple" aria-hidden />
             )}
           </div>
-          <EsportTeamBlock name={team1.name} logoUrl={team1.logoUrl} align="start" />
         </div>
 
-        <div className="flex min-w-0 shrink flex-col items-center justify-center gap-2 self-center px-1">
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+          <EsportTeamBlock name={team1.name} logoUrl={team1.logoUrl} />
+        </div>
+
+        <div className="flex min-w-0 shrink flex-col items-center justify-end gap-2 self-stretch px-1 pb-5">
           <div className="flex items-center justify-center gap-1.5">
             {statusLine.showLiveDot && (
               <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-main-red" aria-hidden />
@@ -49,9 +52,12 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col items-end gap-3">
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
+          <EsportTeamBlock name={team2.name} logoUrl={team2.logoUrl} />
+        </div>
+
+        <div className="flex shrink-0 flex-col items-center justify-start">
           <EsportStreamButton streamUrl={match.streamUrl} />
-          <EsportTeamBlock name={team2.name} logoUrl={team2.logoUrl} align="end" />
         </div>
       </div>
 
