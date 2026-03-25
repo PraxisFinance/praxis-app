@@ -3,7 +3,11 @@
 import Image from "next/image";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { ESPORTS_GAMES } from "@/shared/constants/esports";
-import { getEsportsMatchStatusLine } from "@/shared/utils/esportsMatchFormat";
+import {
+  getEsportsMatchStatusLine,
+  getEsportsUpcomingDateLabel,
+  getEsportsUpcomingTimeLabel,
+} from "@/shared/utils/esportsMatchFormat";
 import { EsportOddsChip } from "./EsportOddsChip";
 import { EsportScoreBox } from "./EsportScoreBox";
 import { EsportStreamButton } from "./EsportStreamButton";
@@ -38,18 +42,31 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
         </div>
 
         <div className="flex min-w-0 shrink flex-col items-center justify-end gap-2 self-stretch px-1 pb-5">
-          <div className="flex items-center justify-center gap-1.5">
-            {statusLine.showLiveDot && (
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-main-red" aria-hidden />
-            )}
-            <span className="text-main-darkPurple text-center text-2xs font-medium leading-tight">
-              {statusLine.text}
-            </span>
-          </div>
-          <div className="flex items-center justify-center gap-1">
-            <EsportScoreBox value={hasScores ? team1.score : undefined} />
-            <EsportScoreBox value={hasScores ? team2.score : undefined} />
-          </div>
+          {match.status.kind === "upcoming" ? (
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-main-darkPurple text-center text-2xs font-medium leading-tight">
+                {getEsportsUpcomingDateLabel(match.status.startsAt, match.status.label)}
+              </span>
+              <span className="text-main-darkPurple text-center text-md font-normal leading-tight tabular-nums">
+                {getEsportsUpcomingTimeLabel(match.status.startsAt)}
+              </span>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-1.5">
+                {statusLine?.showLiveDot && (
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-main-red" aria-hidden />
+                )}
+                <span className="text-main-darkPurple text-center text-2xs font-medium leading-tight">
+                  {statusLine?.text ?? ""}
+                </span>
+              </div>
+              <div className="flex items-center justify-center gap-1">
+                <EsportScoreBox value={hasScores ? team1.score : undefined} />
+                <EsportScoreBox value={hasScores ? team2.score : undefined} />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
