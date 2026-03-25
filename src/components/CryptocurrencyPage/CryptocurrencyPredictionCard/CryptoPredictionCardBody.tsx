@@ -7,9 +7,10 @@ import { CryptoPredictionStrikeRow } from "./CryptoPredictionStrikeRow";
 
 export interface CryptoPredictionCardBodyProps {
   prediction: CryptoPrediction;
+  onPickBinaryOutcome?: (outcomeId: string) => void;
 }
 
-export function CryptoPredictionCardBody({ prediction }: CryptoPredictionCardBodyProps) {
+export function CryptoPredictionCardBody({ prediction, onPickBinaryOutcome }: CryptoPredictionCardBodyProps) {
   const disabled = !prediction.isTradingOpen;
 
   switch (prediction.predictionType) {
@@ -21,6 +22,7 @@ export function CryptoPredictionCardBody({ prediction }: CryptoPredictionCardBod
           outcomes={prediction.outcomes}
           disabled={disabled}
           statusLine={getCryptoPredictionStatusFooter(prediction)}
+          onOutcomePick={onPickBinaryOutcome}
         />
       );
     case "above_below":

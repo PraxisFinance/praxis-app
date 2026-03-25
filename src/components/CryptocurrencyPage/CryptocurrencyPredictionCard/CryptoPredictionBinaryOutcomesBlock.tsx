@@ -58,24 +58,40 @@ export interface CryptoPredictionBinaryOutcomesBlockProps {
   outcomes: [CryptoBinaryOutcome, CryptoBinaryOutcome];
   disabled: boolean;
   statusLine: { showLiveDot: boolean; text: string };
+  onOutcomePick?: (outcomeId: string) => void;
 }
 
 export function CryptoPredictionBinaryOutcomesBlock({
   outcomes,
   disabled,
   statusLine,
+  onOutcomePick,
 }: CryptoPredictionBinaryOutcomesBlockProps) {
   const [first, second] = outcomes;
   return (
     <div className="flex flex-col gap-3">
       <div className="flex gap-3">
         <div className="h-12 min-w-0 flex-1">
-          <Button type="button" variant="success" size="action" disabled={disabled} className="h-full text-main">
+          <Button
+            type="button"
+            variant="success"
+            size="action"
+            disabled={disabled}
+            className="h-full text-main"
+            onClick={() => onOutcomePick?.(first.id)}
+          >
             {first.label}
           </Button>
         </div>
         <div className="h-12 min-w-0 flex-1">
-          <Button type="button" variant="destructiveMuted" size="action" disabled={disabled} className="h-full text-main">
+          <Button
+            type="button"
+            variant="destructiveMuted"
+            size="action"
+            disabled={disabled}
+            className="h-full text-main"
+            onClick={() => onOutcomePick?.(second.id)}
+          >
             {second.label}
           </Button>
         </div>
