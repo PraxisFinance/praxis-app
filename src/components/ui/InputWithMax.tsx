@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface InputWithMaxProps {
   value: string;
@@ -18,7 +19,12 @@ export function InputWithMax({
   disabled = false,
 }: InputWithMaxProps) {
   return (
-    <div className="bg-main-grayPurple rounded-[10px] flex items-center px-4 py-3 gap-2">
+    <div
+      className={cn(
+        "flex items-center gap-2 rounded-[10px] bg-main-grayPurple px-4 py-3",
+        disabled && "opacity-55"
+      )}
+    >
       <input
         type="number"
         min="0"
@@ -30,9 +36,9 @@ export function InputWithMax({
       />
       <Button
         variant="secondaryBrand"
-        onClick={() => onChange(maxValue.replace(/,/g, ""))}
-        className="px-4 py-1.5 h-auto"
         disabled={disabled}
+        onClick={() => onChange(maxValue.replace(/,/g, ""))}
+        className="h-auto px-4 py-1.5"
       >
         Max
       </Button>

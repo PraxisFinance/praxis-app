@@ -15,9 +15,10 @@ import { EsportTeamBlock } from "./EsportTeamBlock";
 
 interface EsportMatchCardProps {
   match: EsportsMatch;
+  onPickTeam?: (side: "team1" | "team2") => void;
 }
 
-export function EsportMatchCard({ match }: EsportMatchCardProps) {
+export function EsportMatchCard({ match, onPickTeam }: EsportMatchCardProps) {
   const game = ESPORTS_GAMES.find((g) => g.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
   const { team1, team2 } = match;
@@ -79,8 +80,18 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
       </div>
 
       <div className="flex gap-2">
-        <EsportOddsChip side="T1" teamName={team1.name} odds={team1.odds} />
-        <EsportOddsChip side="T2" teamName={team2.name} odds={team2.odds} />
+        <EsportOddsChip
+          side="T1"
+          teamName={team1.name}
+          odds={team1.odds}
+          onPress={onPickTeam ? () => onPickTeam("team1") : undefined}
+        />
+        <EsportOddsChip
+          side="T2"
+          teamName={team2.name}
+          odds={team2.odds}
+          onPress={onPickTeam ? () => onPickTeam("team2") : undefined}
+        />
       </div>
     </article>
   );

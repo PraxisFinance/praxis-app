@@ -43,6 +43,8 @@ export type EsportsMatch = {
   gameId: EsportsGameFilterId;
   /** Link to the live stream (YouTube, Twitch, etc.); omit if no broadcast */
   streamUrl?: string;
+  /** When false, prediction / stake flow is disabled for this match. */
+  isBettingAvailable: boolean;
   team1: EsportsMatchTeam;
   team2: EsportsMatchTeam;
   status: EsportsMatchStatus;
