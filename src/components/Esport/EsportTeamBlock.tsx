@@ -3,7 +3,18 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const TEAM_LOGO_FALLBACK = "/icons/question.png";
+function getTeamInitials(name: string): string {
+  const trimmed = name.trim();
+  if (!trimmed) return "?";
+  const words = trimmed.split(/\s+/).filter((w) => w.length > 0);
+  const letters = words
+    .map((w) => {
+      const c = w.charAt(0);
+      return c ? c.toLocaleUpperCase() : "";
+    })
+    .join("");
+  return letters || "?";
+}
 
 interface EsportTeamBlockProps {
   name: string;
@@ -13,7 +24,10 @@ interface EsportTeamBlockProps {
 }
 
 export function EsportTeamBlock({ name, logoUrl, align = "center" }: EsportTeamBlockProps) {
-  const src = logoUrl || TEAM_LOGO_FALLBACK;
+  const trimmedUrl = logoUrl.trim();
+  const showLogo = Boolean(trimmedUrl);
+  const initials = getTeamInitials(name);
+
   return (
     <div
       className={cn(
@@ -21,8 +35,19 @@ export function EsportTeamBlock({ name, logoUrl, align = "center" }: EsportTeamB
         align === "end" ? "items-end" : "items-center"
       )}
     >
-      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-main-grayPurple">
-        <Image src={src} alt="" fill className="object-cover" sizes="56px" />
+      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-main-grayPurple">
+        {showLogo ? (
+          <Image src={trimmedUrl} alt="" fill className="object-cover" sizes="56px" />
+        ) : (
+          <span
+            className={cn(
+              "text-main-darkPurple px-1 text-center font-semibold leading-none tracking-tight",
+              initials.length <= 2 ? "text-xl" : "text-xs"
+            )}
+          >
+            {initials}
+          </span>
+        )}
       </div>
       <p
         className={cn(
