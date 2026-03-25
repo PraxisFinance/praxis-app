@@ -1,17 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { EsportsGameFilterId, EsportsTimeFilterId } from "@/shared/constants/esports";
 import { ESPORTS_MATCH_MOCKS } from "@/shared/constants/esportsMatches";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import { esportsMatchPassesFilters } from "@/shared/utils/esportsMatchFilter";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EsportFilters } from "./EsportFilters";
 import { EsportMatchCard } from "./EsportMatchCard";
 import { EsportPredictionDrawer } from "./EsportPredictionDrawer";
 
 export function EsportPage() {
-  const [gameFilter, setGameFilter] = useState<EsportsGameFilterId | null>(null);
-  const [timeFilter, setTimeFilter] = useState<EsportsTimeFilterId | null>("all");
+  const [gameFilter, setGameFilter] = useState<EsportsGameFilterId[]>([]);
+  const [timeFilter, setTimeFilter] = useState<EsportsTimeFilterId | null>(null);
 
   const [predictionOpen, setPredictionOpen] = useState(false);
   const [predictionMatch, setPredictionMatch] = useState<EsportsMatch | null>(null);
@@ -31,18 +32,23 @@ export function EsportPage() {
     setPredictionOpen(true);
   };
 
+  const visibleMatches = useMemo(
+    () => ESPORTS_MATCH_MOCKS.filter((m) => esportsMatchPassesFilters(m, gameFilter, timeFilter)),
+    [gameFilter, timeFilter]
+  );
+
   return (
     <div className="flex flex-col gap-4">
       <EsportFilters
-        gameId={gameFilter}
-        onGameChange={setGameFilter}
+        selectedGameIds={gameFilter}
+        onGameSelectionChange={setGameFilter}
         timeId={timeFilter}
         onTimeChange={setTimeFilter}
       />
       <section className="flex flex-col gap-3">
         <SectionHeader className="text-main-darkPurple">Matches</SectionHeader>
         <div className="flex flex-col gap-3">
-          {ESPORTS_MATCH_MOCKS.map((match) => (
+          {visibleMatches.map((match) => (
             <EsportMatchCard
               key={match.id}
               match={match}
