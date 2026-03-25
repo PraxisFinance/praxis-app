@@ -4,9 +4,6 @@ export const TOKEN_ADDRESSES = {
   YT: "0x0000000000000000000000000000000000000003" as `0x${string}`,
 } as const;
 
-export const VAULT_ADDRESS =
-  "0x0000000000000000000000000000000000000004" as `0x${string}`;
-
 export const TOKEN_DECIMALS = {
   USDC: 6,
   PT: 6,
