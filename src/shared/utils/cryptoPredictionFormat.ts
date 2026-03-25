@@ -1,6 +1,39 @@
 import { format, isThisYear, isToday, isTomorrow } from "date-fns";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function stripLeadingAssetSymbol(title: string, symbol: string): string {
+  const sym = symbol.trim();
+  if (!sym) return title.trim();
+  return title.replace(new RegExp(`^${escapeRegExp(sym)}\\s+`, "i"), "").trim();
+}
+
+/** Дата в дровере прогноза, напр. «27 February». */
+export function formatCryptoDrawerEndDate(endsAt: string): string {
+  const raw = endsAt.trim();
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return "—";
+  return format(d, "d MMMM");
+}
+
+/** Две строки блока-описания в дровере (как в макете). */
+export function getCryptoDrawerInfoLines(
+  prediction: CryptoPrediction,
+  selectedOutcomeLabel: string
+): { primaryQuestion: string; secondaryMuted: string } {
+  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt);
+  const tail = stripLeadingAssetSymbol(prediction.title, prediction.assetSymbol);
+  const topic = tail.length > 0 ? tail : prediction.title.trim();
+  const sym = `$${prediction.assetSymbol}`;
+  return {
+    primaryQuestion: `${sym} ${topic} at ${dateStr}?`,
+    secondaryMuted: `${sym} ${selectedOutcomeLabel} at ${dateStr}`,
+  };
+}
+
 function formatCryptoWhenForCard(iso: string): { datePart: string; timePart: string } | null {
   const raw = iso.trim();
   const d = new Date(raw);

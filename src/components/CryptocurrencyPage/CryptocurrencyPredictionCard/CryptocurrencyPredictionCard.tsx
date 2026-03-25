@@ -13,9 +13,13 @@ function showStandaloneStatusFooter(prediction: CryptoPrediction): boolean {
 
 export interface CryptocurrencyPredictionCardProps {
   prediction: CryptoPrediction;
+  onPickBinaryOutcome?: (outcomeId: string) => void;
 }
 
-export function CryptocurrencyPredictionCard({ prediction }: CryptocurrencyPredictionCardProps) {
+export function CryptocurrencyPredictionCard({
+  prediction,
+  onPickBinaryOutcome,
+}: CryptocurrencyPredictionCardProps) {
   const endLine = getCryptoPredictionEndLine(prediction.endsAt);
 
   return (
@@ -26,7 +30,7 @@ export function CryptocurrencyPredictionCard({ prediction }: CryptocurrencyPredi
         endLine={endLine}
       />
       <CryptoPredictionCardMeta prediction={prediction} />
-      <CryptoPredictionCardBody prediction={prediction} />
+      <CryptoPredictionCardBody prediction={prediction} onPickBinaryOutcome={onPickBinaryOutcome} />
       {showStandaloneStatusFooter(prediction) && (
         <CryptoPredictionCardStatusFooter prediction={prediction} />
       )}
