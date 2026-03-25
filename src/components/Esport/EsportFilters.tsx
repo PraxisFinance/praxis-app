@@ -11,31 +11,43 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
 
 interface EsportFiltersProps {
-  gameId: EsportsGameFilterId | null;
-  onGameChange: (id: EsportsGameFilterId | null) => void;
+  selectedGameIds: EsportsGameFilterId[];
+  onGameSelectionChange: (ids: EsportsGameFilterId[]) => void;
   timeId: EsportsTimeFilterId | null;
   onTimeChange: (id: EsportsTimeFilterId | null) => void;
 }
 
-export function EsportFilters({ gameId, onGameChange, timeId, onTimeChange }: EsportFiltersProps) {
+export function EsportFilters({
+  selectedGameIds,
+  onGameSelectionChange,
+  timeId,
+  onTimeChange,
+}: EsportFiltersProps) {
+  const toggleGame = (id: EsportsGameFilterId) => {
+    if (selectedGameIds.includes(id)) {
+      onGameSelectionChange(selectedGameIds.filter((g) => g !== id));
+    } else {
+      onGameSelectionChange([...selectedGameIds, id]);
+    }
+  };
+
   return (
     <section className="flex flex-col gap-4">
       <SectionHeader className="text-main-darkPurple">Filters</SectionHeader>
 
       <div
         className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        role="tablist"
+        role="group"
         aria-label="Esports games"
       >
         {ESPORTS_GAMES.map(({ id, label, iconUrl }) => {
-          const isActive = gameId === id;
+          const isActive = selectedGameIds.includes(id);
           return (
             <button
               key={id}
               type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => onGameChange(gameId === id ? null : id)}
+              aria-pressed={isActive}
+              onClick={() => toggleGame(id)}
               className={cn(
                 "flex min-w-[76px] shrink-0 flex-col items-center justify-center gap-2 rounded-sm px-2 py-2 transition-all",
                 isActive
