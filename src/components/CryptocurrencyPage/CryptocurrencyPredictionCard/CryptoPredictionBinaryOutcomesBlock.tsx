@@ -25,24 +25,27 @@ function PoolSplitAndStatsRow({
         />
       </div>
 
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-x-2">
-        <div className="min-w-0 text-left text-2xs tabular-nums">
+      <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)_minmax(0,1fr)] items-start gap-x-2">
+        <div className="min-w-0 shrink text-left text-2xs tabular-nums">
           <span className="text-main-darkPurple/65 font-medium">{left.label}</span>{" "}
           <span className="text-main-darkPurple font-semibold">{left.poolPercent}%</span>
         </div>
 
-        <div className="flex min-w-0 justify-center px-1">
-          <div className="flex max-w-full items-center justify-center gap-1.5">
+        <div className="flex min-w-0 shrink justify-center px-1">
+          <div className="flex min-w-0 max-w-full items-start justify-center gap-1.5">
             {statusLine.showLiveDot && (
-              <span className="bg-main-red h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden />
+              <span
+                className="bg-main-red mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                aria-hidden
+              />
             )}
-            <span className="text-main-darkPurple max-w-[min(100%,11rem)] truncate text-2xs font-medium">
+            <span className="text-main-darkPurple min-w-0 text-center text-2xs leading-snug font-medium break-words">
               {statusLine.text}
             </span>
           </div>
         </div>
 
-        <div className="min-w-0 text-right text-2xs tabular-nums">
+        <div className="min-w-0 shrink text-right text-2xs tabular-nums">
           <span className="text-main-darkPurple/65 font-medium">{right.label}</span>{" "}
           <span className="text-main-darkPurple font-semibold">{right.poolPercent}%</span>
         </div>
