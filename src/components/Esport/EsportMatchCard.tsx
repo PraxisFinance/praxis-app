@@ -79,8 +79,8 @@ export function EsportMatchCard({ match }: EsportMatchCardProps) {
       </div>
 
       <div className="flex gap-2">
-        <EsportOddsChip side="T1" odds={team1.odds} />
-        <EsportOddsChip side="T2" odds={team2.odds} />
+        <EsportOddsChip side="T1" teamName={team1.name} odds={team1.odds} />
+        <EsportOddsChip side="T2" teamName={team2.name} odds={team2.odds} />
       </div>
     </article>
   );
