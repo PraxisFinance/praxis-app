@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
@@ -8,7 +8,9 @@ import { InfoRow } from "@/components/ui/InfoRow";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnAvailableItem } from "@/shared/types/earn";
-import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
+import { getBalanceValueByIconUrl } from "@/shared/constants/balances";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { useVaultDeposit } from "@/hooks/useVaultDeposit";
 
 interface DepositDrawerProps {
   item: EarnAvailableItem | null;
@@ -18,10 +20,45 @@ interface DepositDrawerProps {
 
 export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) {
   const [amount, setAmount] = useState("");
+  const { balances, refetch: refetchBalances } = useWalletBalances();
+  const { deposit, status, errorMessage, reset, buyIn, totalCost, isPending } =
+    useVaultDeposit(amount);
+
+  useEffect(() => {
+    if (!open) {
+      setAmount("");
+      reset();
+    }
+  }, [open, reset]);
+
+  useEffect(() => {
+    if (status === "success") {
+      refetchBalances();
+    }
+  }, [status, refetchBalances]);
 
   if (!item) return null;
 
-  const walletBalance = getBalanceValueByIconUrl(DEFAULT_BALANCES, item.depositCurrencyIconUrl);
+  const walletBalance = getBalanceValueByIconUrl(balances, item.depositCurrencyIconUrl);
+
+  function handleDeposit() {
+    deposit();
+  }
+
+  function handleClose() {
+    setAmount("");
+    reset();
+    onOpenChange(false);
+  }
+
+  const buttonLabel =
+    status === "approving"
+      ? "Approving USDC…"
+      : status === "depositing"
+        ? "Depositing…"
+        : status === "success"
+          ? "Done"
+          : "Deposit";
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
@@ -48,7 +85,12 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
       <div className="flex flex-col gap-2">
         <span className="text-main-darkPurple text-lg font-bold leading-6">Amount</span>
 
-        <InputWithMax value={amount} onChange={setAmount} maxValue={walletBalance} />
+        <InputWithMax
+          value={amount}
+          onChange={setAmount}
+          maxValue={walletBalance}
+          disabled={isPending}
+        />
 
         <div className="flex items-center justify-between px-1">
           <span className="text-main-darkPurple text-xs font-normal leading-4">
@@ -58,11 +100,33 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
             APY: {item.yieldApyPercent}%&nbsp;&nbsp;Payment %: {item.ytPayoutTime}
           </span>
         </div>
+
+        {amount && Number(amount) > 0 && (
+          <div className="flex flex-col gap-1 px-1 pt-1">
+            <InfoRow label="Buy-in cost:" value={`${buyIn} ${item.depositCurrency}`} />
+            <InfoRow label="Total cost:" value={`${totalCost} ${item.depositCurrency}`} />
+          </div>
+        )}
       </div>
 
-      <Button variant="success" size="action">
-        Deposit
-      </Button>
+      {errorMessage && (
+        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
+      )}
+
+      {status === "success" ? (
+        <Button variant="success" size="action" onClick={handleClose}>
+          {buttonLabel}
+        </Button>
+      ) : (
+        <Button
+          variant="success"
+          size="action"
+          onClick={handleDeposit}
+          disabled={isPending || !amount || Number(amount) <= 0}
+        >
+          {buttonLabel}
+        </Button>
+      )}
     </DrawerShell>
   );
 }
