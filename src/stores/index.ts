@@ -16,13 +16,32 @@ export { useClaimsStore, loadMockClaims, formatIncome, type Claim } from "./clai
 
 export {
   useDepositsStore,
-  loadMockDeposits,
   formatUSDC,
-  getTimeUntilMaturity,
-  getStakeDuration,
-  type Vault,
+  formatTimestamp,
+  getTimeSince,
+  type VaultState,
   type UserPosition,
+  type VaultDailySnapshot,
+  type DepositEvent,
+  type WithdrawEvent,
+  type RedeemYieldEvent,
 } from "./depositsStore";
+
+export {
+  useLotteryStore,
+  getLotteryRegistry,
+  formatLotteryAmount,
+  formatWinProbability,
+  formatLotteryStatus,
+  shortenAddress,
+  type LotteryConfig,
+  type LotteryStatus,
+  type LotteryState,
+  type LotteryParticipant,
+  type LotteryWinner,
+  type LotteryDailySnapshot,
+  type LotteryData,
+} from "./lotteryStore";
 
 export {
   useHistoryStore,
