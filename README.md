@@ -6,13 +6,13 @@ Praxis lets users participate in prediction markets — sport, economic, and ran
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Framework | [Next.js 16](https://nextjs.org) (App Router, SSR) |
-| UI | React 19, Tailwind CSS 4, shadcn/ui, Framer Motion |
-| Web3 | wagmi v3, viem v2, `@base-org/account` |
-| State | Zustand, TanStack React Query v5 |
-| Forms | react-hook-form, Zod |
+| Layer      | Technology                                                      |
+| ---------- | --------------------------------------------------------------- |
+| Framework  | [Next.js 16](https://nextjs.org) (App Router, SSR)              |
+| UI         | React 19, Tailwind CSS 4, shadcn/ui, Framer Motion              |
+| Web3       | wagmi v3, viem v2, `@base-org/account`                          |
+| State      | Zustand, TanStack React Query v5                                |
+| Forms      | react-hook-form, Zod                                            |
 | Components | Vaul (drawers), Embla (carousel), Sonner (toasts), Lucide icons |
 
 ## Features
