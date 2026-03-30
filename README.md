@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Praxis Base App
+
+**The principal-protected prediction market on Base.**
+
+Praxis lets users participate in prediction markets — sport, economic, and random events — while keeping their principal safe through yield-bearing vaults and YT (Yield Token) mechanics. Built as a [Farcaster Mini App](https://docs.farcaster.xyz/developers/miniapps) on the [Base](https://base.org) network.
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | [Next.js 16](https://nextjs.org) (App Router, SSR) |
+| UI | React 19, Tailwind CSS 4, shadcn/ui, Framer Motion |
+| Web3 | wagmi v3, viem v2, `@base-org/account` |
+| State | Zustand, TanStack React Query v5 |
+| Forms | react-hook-form, Zod |
+| Components | Vaul (drawers), Embla (carousel), Sonner (toasts), Lucide icons |
+
+## Features
+
+- **Prediction Markets** — Sport (team pools & odds), economic (binary outcomes), and random (lottery-style) events
+- **Principal Protection** — Deposit into vaults with maturity dates and APY; principal stays safe while yield funds predictions
+- **YT Tokens** — Yield Tokens represent your share of vault returns
+- **Claims & History** — Track pending and claimed income from resolved events
+- **Leaderboard & Referrals** — Compete with other users and earn through referrals
+- **Statistics** — Visual charts of activity and performance
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- pnpm (recommended)
+
+### Install & Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build for Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm build
+pnpm start
+```
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                  # Next.js App Router
+│   ├── layout.tsx        # Root layout with Farcaster metadata
+│   ├── providers.tsx     # Wagmi + React Query providers
+│   └── (app)/            # App shell (header, bottom nav)
+│       ├── main/         # Main dashboard
+│       └── history/      # Transaction history
+├── components/
+│   ├── MainPage/         # Balances, menu, vault info
+│   ├── HistoryPage/      # History view
+│   ├── ConnectWallet.tsx  # Wallet connection UI
+│   ├── BottomNav.tsx     # Tab navigation
+│   ├── Header.tsx        # App header
+│   └── ui/               # Shared UI primitives
+├── config/
+│   └── wagmi.ts          # Chain & connector config (Base Sepolia)
+├── stores/               # Zustand state management
+│   ├── accountStore.ts   # Wallet, deposits, YT token balances
+│   ├── eventsStore.ts    # Prediction events & pools
+│   ├── claimsStore.ts    # Pending & claimed income
+│   ├── depositsStore.ts  # Vaults & user positions
+│   ├── historyStore.ts   # Transaction history
+│   ├── referralsStore.ts # Referral tracking
+│   ├── leaderboardStore.ts
+│   └── statisticsStore.ts
+└── lib/
+    └── utils.ts          # Shared utilities
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Network
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Currently configured for **Base Sepolia** testnet. Chain and transport settings live in `src/config/wagmi.ts`.
 
-## Deploy on Vercel
+## Farcaster Integration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The app registers as a Farcaster Mini App via `public/.well-known/farcaster.json`. Metadata (OG tags, miniapp launch button) is generated dynamically in the root layout.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+Private — all rights reserved.
