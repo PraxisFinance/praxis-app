@@ -1,55 +1,75 @@
 "use client";
 
-import { ArrowIcon } from "./icons/ArrowIcon";
+import Image from "next/image";
+import Link from "next/link";
+import { cva, type VariantProps } from "class-variance-authority";
 
-interface MenuCardProps {
-  label: string;
-  imageUrl?: string;
-  description?: string;
+import { Badge } from "@/components/ui/badge";
+import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { cn } from "@/lib/utils";
+
+const menuCardVariants = cva(
+  "relative w-full bg-slate-200 rounded-[5px] overflow-hidden flex flex-col justify-between p-2.5 transition-transform active:scale-[0.98]",
+  {
+    variants: {
+      size: {
+        sm: "h-28",
+        lg: "h-36",
+      },
+    },
+    defaultVariants: {
+      size: "sm",
+    },
+  }
+);
+
+const contentVariants = cva("relative z-10 flex flex-col", {
+  variants: {
+    size: {
+      sm: "gap-1 [&_.menu-title]:text-sm [&_.menu-desc]:text-2xs",
+      lg: "gap-1.5 [&_.menu-title]:text-xs [&_.menu-desc]:text-[10px] [&_.menu-desc]:w-40",
+    },
+  },
+  defaultVariants: {
+    size: "sm",
+  },
+});
+
+interface MenuCardProps extends VariantProps<typeof menuCardVariants> {
   title?: string;
-  fullWidth?: boolean;
-  onClick?: () => void;
+  description?: string;
+  backgroundImage?: string;
+  redirectUrl?: string;
+  redirectLabel?: string;
 }
 
-export function MenuCard({ 
-  label, 
-  imageUrl, 
-  description, 
+export function MenuCard({
   title,
-  fullWidth = false,
-  onClick 
+  description,
+  backgroundImage,
+  redirectUrl,
+  redirectLabel,
+  size = "sm",
 }: MenuCardProps) {
   return (
-    <button
-      onClick={onClick}
-      className={`relative bg-slate-200 rounded-[5px] overflow-hidden ${
-        fullWidth ? "w-full" : "w-full"
-      } h-28 text-left transition-transform active:scale-[0.98]`}
-    >
-      {imageUrl && (
-        <img 
-          className="w-full h-full object-cover absolute inset-0" 
-          src={imageUrl} 
-          alt={label}
-        />
+    <Link href={redirectUrl ?? ""} className={cn(menuCardVariants({ size }))}>
+      {backgroundImage && (
+        <Image src={backgroundImage} alt={title ?? ""} fill className="object-cover" />
       )}
-      
-      {title && (
-        <div className="absolute left-2.5 top-2.5 text-indigo-950 text-sm font-medium leading-4">
-          {title}
-        </div>
-      )}
-      
-      {description && (
-        <div className="absolute left-2.5 top-8 w-36 text-indigo-950 text-[10px] font-normal leading-3">
-          {description}
-        </div>
-      )}
-      
-      <div className="px-2.5 py-[5px] absolute left-2.5 bottom-2.5 bg-violet-400 rounded-[30px] inline-flex justify-center items-center gap-[5px]">
-        <span className="text-white text-xs font-medium leading-4">{label}</span>
-        <ArrowIcon className="w-4 h-4" />
+
+      <div className={cn(contentVariants({ size }))}>
+        {title && <span className="menu-title text-indigo-950 font-medium leading-4">{title}</span>}
+        {description && (
+          <span className="menu-desc text-indigo-950 font-normal leading-3">{description}</span>
+        )}
       </div>
-    </button>
+
+      {redirectLabel && (
+        <Badge variant="accent" className="relative z-10 self-start text-2xs leading-3">
+          {redirectLabel}
+          <ArrowIcon className="w-4 h-4" />
+        </Badge>
+      )}
+    </Link>
   );
 }

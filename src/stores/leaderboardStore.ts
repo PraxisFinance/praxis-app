@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface LeaderboardEntry {
   id: string;
@@ -20,73 +20,73 @@ interface LeaderboardState {
 
 const MOCK_LEADERBOARD: LeaderboardEntry[] = [
   {
-    id: 'lb-1',
+    id: "lb-1",
     rank: 1,
-    name: 'whale.eth',
-    address: '0x1111111111111111111111111111111111111111',
+    name: "whale.eth",
+    address: "0x1111111111111111111111111111111111111111",
     score: 125000,
   },
   {
-    id: 'lb-2',
+    id: "lb-2",
     rank: 2,
-    name: 'degen.base',
-    address: '0x2222222222222222222222222222222222222222',
+    name: "degen.base",
+    address: "0x2222222222222222222222222222222222222222",
     score: 98500,
   },
   {
-    id: 'lb-3',
+    id: "lb-3",
     rank: 3,
-    name: 'trader.eth',
-    address: '0x3333333333333333333333333333333333333333',
+    name: "trader.eth",
+    address: "0x3333333333333333333333333333333333333333",
     score: 87200,
   },
   {
-    id: 'lb-4',
+    id: "lb-4",
     rank: 4,
-    name: '0x4444...4444',
-    address: '0x4444444444444444444444444444444444444444',
+    name: "0x4444...4444",
+    address: "0x4444444444444444444444444444444444444444",
     score: 76800,
   },
   {
-    id: 'lb-5',
+    id: "lb-5",
     rank: 5,
-    name: 'alpha.eth',
-    address: '0x5555555555555555555555555555555555555555',
+    name: "alpha.eth",
+    address: "0x5555555555555555555555555555555555555555",
     score: 65400,
   },
   {
-    id: 'lb-6',
+    id: "lb-6",
     rank: 6,
-    name: 'yield.base',
-    address: '0x6666666666666666666666666666666666666666',
+    name: "yield.base",
+    address: "0x6666666666666666666666666666666666666666",
     score: 54200,
   },
   {
-    id: 'lb-7',
+    id: "lb-7",
     rank: 7,
-    name: '0x7777...7777',
-    address: '0x7777777777777777777777777777777777777777',
+    name: "0x7777...7777",
+    address: "0x7777777777777777777777777777777777777777",
     score: 48900,
   },
   {
-    id: 'lb-8',
+    id: "lb-8",
     rank: 8,
-    name: 'hodler.eth',
-    address: '0x8888888888888888888888888888888888888888',
+    name: "hodler.eth",
+    address: "0x8888888888888888888888888888888888888888",
     score: 42100,
   },
   {
-    id: 'lb-9',
+    id: "lb-9",
     rank: 9,
-    name: 'stacker.base',
-    address: '0x9999999999999999999999999999999999999999',
+    name: "stacker.base",
+    address: "0x9999999999999999999999999999999999999999",
     score: 38700,
   },
   {
-    id: 'lb-10',
+    id: "lb-10",
     rank: 10,
-    name: '0xAAAA...AAAA',
-    address: '0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+    name: "0xAAAA...AAAA",
+    address: "0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
     score: 35200,
   },
 ];
@@ -117,8 +117,8 @@ export const loadMockLeaderboard = () => {
 };
 
 export const formatRank = (rank: number): string => {
-  if (rank === 1) return '🥇';
-  if (rank === 2) return '🥈';
-  if (rank === 3) return '🥉';
+  if (rank === 1) return "🥇";
+  if (rank === 2) return "🥈";
+  if (rank === 3) return "🥉";
   return `#${rank}`;
 };

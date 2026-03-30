@@ -70,9 +70,7 @@ export const useClaimsStore = create<ClaimsState>((set, get) => ({
   markClaimed: (id) =>
     set((state) => ({
       claims: state.claims.map((c) =>
-        c.id === id
-          ? { ...c, status: "claimed" as const, claimedAt: Date.now() }
-          : c,
+        c.id === id ? { ...c, status: "claimed" as const, claimedAt: Date.now() } : c
       ),
     })),
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { Button } from "@/components/ui/button";
 
 export function ConnectWallet() {
   const { address, isConnected, isConnecting, isReconnecting } = useAccount();
@@ -13,13 +14,15 @@ export function ConnectWallet() {
     return (
       <div className="flex flex-col gap-2">
         {connectors.map((connector) => (
-          <button
+          <Button
             key={connector.uid}
+            variant="primary"
+            size="pill"
             onClick={() => connect({ connector })}
             disabled={isConnecting}
           >
             Connect {connector.name}
-          </button>
+          </Button>
         ))}
       </div>
     );
@@ -30,7 +33,9 @@ export function ConnectWallet() {
       <span className="font-mono text-sm">
         {address?.slice(0, 6)}...{address?.slice(-4)}
       </span>
-      <button onClick={() => disconnect()}>Disconnect</button>
+      <Button variant="pillSecondary" size="pill" onClick={() => disconnect()}>
+        Disconnect
+      </Button>
     </div>
   );
 }
