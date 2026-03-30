@@ -24,7 +24,7 @@ Praxis lets users participate in prediction markets — sport, economic, and ran
 - **Leaderboard & Referrals** — Compete with other users and earn through referrals
 - **Statistics** — Visual charts of activity and performance
 
-## Getting Started
+## Getting Started 1
 
 ### Prerequisites
 
