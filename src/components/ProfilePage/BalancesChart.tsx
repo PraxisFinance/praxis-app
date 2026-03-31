@@ -10,40 +10,36 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
-import { SectionHeader } from "../ui";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import {
+  BALANCES_CHART_INTERVALS,
+  BALANCE_CURRENCY_META,
+  BALANCES_CHART_MOCK_DATA,
+} from "@/shared/constants/balances";
+import type { BalancesChartDataPoint, BalancesChartInterval } from "@/shared/types/balances";
 
-export type BalancesChartInterval = "1D" | "3D" | "7D" | "1M" | "1Y";
-
-export interface BalancesChartDataPoint {
-  date: string;
-  balance: number;
-}
+export type { BalancesChartDataPoint, BalancesChartInterval };
 
 export interface BalancesChartProps {
-  data?: BalancesChartDataPoint[];
+  /** Per-interval data. Falls back to built-in mock data when omitted. */
+  data?: Partial<Record<BalancesChartInterval, BalancesChartDataPoint[]>>;
   className?: string;
 }
 
-const INTERVALS: { id: BalancesChartInterval; label: string }[] = [
-  { id: "1D", label: "1 day" },
-  { id: "3D", label: "3 days" },
-  { id: "7D", label: "7 days" },
-  { id: "1M", label: "1 month" },
-  { id: "1Y", label: "1 year" },
-];
+const chartConfig = BALANCE_CURRENCY_META.reduce<ChartConfig>(
+  (acc, { key, label, color }) => ({ ...acc, [key]: { label, color } }),
+  {}
+);
 
-const chartConfig = {
-  balance: {
-    label: "Balance",
-    color: "#9787f4",
-  },
-} satisfies ChartConfig;
-
-export function BalancesChart({ data = [], className }: BalancesChartProps) {
+export function BalancesChart({ data, className }: BalancesChartProps) {
   const [activeInterval, setActiveInterval] = useState<BalancesChartInterval>("3D");
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const activeLabel = INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
+  const activeLabel =
+    BALANCES_CHART_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
+
+  const chartData =
+    data?.[activeInterval] ?? BALANCES_CHART_MOCK_DATA[activeInterval];
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -60,20 +56,18 @@ export function BalancesChart({ data = [], className }: BalancesChartProps) {
           >
             {activeLabel}
             <ChevronDown
-              className={cn("size-3.5 transition-transform duration-200", dropdownOpen && "rotate-180")}
+              className={cn(
+                "size-3.5 transition-transform duration-200",
+                dropdownOpen && "rotate-180"
+              )}
             />
           </button>
 
           {dropdownOpen && (
             <>
-              {/* Backdrop */}
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setDropdownOpen(false)}
-              />
-              {/* Dropdown */}
+              <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
               <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-[8px] bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
-                {INTERVALS.map((interval) => (
+                {BALANCES_CHART_INTERVALS.map((interval) => (
                   <button
                     key={interval.id}
                     type="button"
@@ -100,18 +94,17 @@ export function BalancesChart({ data = [], className }: BalancesChartProps) {
       {/* Chart */}
       <div className="rounded-[12px] bg-main-lightGray/50 p-3">
         <ChartContainer config={chartConfig} className="h-[180px] w-full">
-          <AreaChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
+          <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
             <defs>
-              <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#9787f4" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#9787f4" stopOpacity={0} />
-              </linearGradient>
+              {BALANCE_CURRENCY_META.map(({ key, color }) => (
+                <linearGradient key={key} id={`gradient-${key}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor={color} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0}    />
+                </linearGradient>
+              ))}
             </defs>
-            <CartesianGrid
-              vertical={false}
-              stroke="#dad8e6"
-              strokeDasharray="3 3"
-            />
+
+            <CartesianGrid vertical={false} stroke="#dad8e6" strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -126,20 +119,37 @@ export function BalancesChart({ data = [], className }: BalancesChartProps) {
               tickMargin={4}
             />
             <ChartTooltip
-              cursor={{ stroke: "#9787f4", strokeWidth: 1, strokeDasharray: "3 3" }}
-              content={<ChartTooltipContent hideLabel />}
+              cursor={{ stroke: "#dad8e6", strokeWidth: 1, strokeDasharray: "3 3" }}
+              content={<ChartTooltipContent />}
             />
-            <Area
-              type="monotone"
-              dataKey="balance"
-              stroke="#9787f4"
-              strokeWidth={2}
-              fill="url(#balanceGradient)"
-              dot={false}
-              activeDot={{ r: 4, fill: "#9787f4", strokeWidth: 0 }}
-            />
+
+            {BALANCE_CURRENCY_META.map(({ key, color }) => (
+              <Area
+                key={key}
+                type="monotone"
+                dataKey={key}
+                stroke={color}
+                strokeWidth={2}
+                fill={`url(#gradient-${key})`}
+                dot={false}
+                activeDot={{ r: 4, fill: color, strokeWidth: 0 }}
+              />
+            ))}
           </AreaChart>
         </ChartContainer>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
+        {BALANCE_CURRENCY_META.map(({ key, label, color }) => (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              className="inline-block size-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-2xs font-medium text-main-darkPurple">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
