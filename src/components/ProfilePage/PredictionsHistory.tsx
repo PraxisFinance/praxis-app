@@ -55,7 +55,7 @@ export function PredictionsHistory({ data, className }: PredictionsHistoryProps)
           {dropdownOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-[8px] bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
+              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-sm bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
                 {PREDICTIONS_HISTORY_INTERVALS.map((interval) => (
                   <button
                     key={interval.id}
