@@ -1,6 +1,7 @@
 export { ProfileTabBar } from "./ProfileTabBar";
 export { BalancesChart } from "./BalancesChart";
 export { PredictionsOverallStats } from "./PredictionsOverallStats";
+export { PredictionsStatsChart } from "./PredictionsStatsChart";
 export type { BalancesChartDataPoint, BalancesChartInterval } from "./BalancesChart";
 export { BalancesSubPage } from "./BalancesSubPage";
 export { RewardsSubPage } from "./RewardsSubPage";
