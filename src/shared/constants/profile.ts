@@ -1,4 +1,6 @@
 import type {
+  PredictionHistoryItem,
+  PredictionsHistoryInterval,
   PredictionsOverallStatsData,
   PredictionsStatsDataPoint,
   PredictionsStatsInterval,
@@ -82,4 +84,84 @@ export const PREDICTIONS_OVERALL_STATS_MOCK: PredictionsOverallStatsData = {
     { kind: "won",  label: "Won currency",  amount: 1000, currency: "$wUSDC" },
     { kind: "lost", label: "Lost currency", amount: 500,  currency: "$wUSDC" },
   ],
+};
+
+// ── Predictions history ────────────────────────────────────────────────────
+
+export const PREDICTIONS_HISTORY_INTERVALS: { id: PredictionsHistoryInterval; label: string }[] = [
+  { id: "1D", label: "1 day"   },
+  { id: "3D", label: "3 days"  },
+  { id: "7D", label: "7 days"  },
+  { id: "1M", label: "1 month" },
+  { id: "1Y", label: "1 year"  },
+];
+
+type RawItem = [PredictionHistoryItem["result"], string, string, number];
+
+function makeItems(rows: RawItem[], currency = "$USDC"): PredictionHistoryItem[] {
+  return rows.map(([result, prediction, date, amount], i) => ({
+    id: `${date}-${i}`,
+    result,
+    prediction,
+    date,
+    amount,
+    currency,
+  }));
+}
+
+export const PREDICTIONS_HISTORY_MOCK_DATA: Record<PredictionsHistoryInterval, PredictionHistoryItem[]> = {
+  "1D": makeItems([
+    ["won",  "BTC/USDC",  "30/03/26",  25],
+    ["lost", "ETH/USDC",  "30/03/26", 101],
+    ["won",  "BTC/USDC",  "30/03/26",  50],
+    ["lost", "SOL/USDC",  "30/03/26",  10],
+    ["won",  "ETH/USDC",  "30/03/26",  75],
+  ]),
+  "3D": makeItems([
+    ["won",  "BTC/USDC",  "30/03/26",  25],
+    ["lost", "Match#2",   "29/03/26", 101],
+    ["won",  "ETH/USDC",  "29/03/26",  50],
+    ["lost", "SOL/USDC",  "29/03/26",  10],
+    ["won",  "BTC/USDC",  "28/03/26",  75],
+    ["lost", "Match#6",   "28/03/26",  30],
+    ["won",  "ETH/USDC",  "28/03/26",  20],
+  ]),
+  "7D": makeItems([
+    ["won",  "BTC/USDC",  "30/03/26",  25],
+    ["lost", "Match#2",   "29/03/26", 101],
+    ["won",  "ETH/USDC",  "28/03/26",  50],
+    ["won",  "SOL/USDC",  "27/03/26", 200],
+    ["lost", "BTC/USDC",  "26/03/26",  10],
+    ["won",  "Match#6",   "25/03/26",  75],
+    ["lost", "ETH/USDC",  "25/03/26",  30],
+    ["won",  "BTC/USDC",  "24/03/26",  60],
+    ["lost", "SOL/USDC",  "24/03/26",  15],
+  ]),
+  "1M": makeItems([
+    ["won",  "BTC/USDC",  "30/03/26",  25],
+    ["lost", "Match#2",   "27/03/26", 101],
+    ["won",  "ETH/USDC",  "24/03/26",  50],
+    ["lost", "SOL/USDC",  "21/03/26",  10],
+    ["won",  "BTC/USDC",  "18/03/26", 200],
+    ["won",  "Match#6",   "15/03/26",  75],
+    ["lost", "ETH/USDC",  "12/03/26",  30],
+    ["won",  "SOL/USDC",  "09/03/26",  60],
+    ["lost", "BTC/USDC",  "06/03/26",  15],
+    ["won",  "Match#10",  "03/03/26",  40],
+    ["lost", "ETH/USDC",  "01/03/26",  90],
+  ]),
+  "1Y": makeItems([
+    ["won",  "BTC/USDC",  "Mar 26",  250],
+    ["lost", "Match#2",   "Feb 26",  101],
+    ["won",  "ETH/USDC",  "Jan 26",  500],
+    ["lost", "SOL/USDC",  "Dec 25",   10],
+    ["won",  "BTC/USDC",  "Nov 25",  200],
+    ["won",  "Match#6",   "Oct 25",   75],
+    ["lost", "ETH/USDC",  "Sep 25",   30],
+    ["won",  "SOL/USDC",  "Aug 25",  600],
+    ["lost", "BTC/USDC",  "Jul 25",   15],
+    ["won",  "Match#10",  "Jun 25",  400],
+    ["lost", "ETH/USDC",  "May 25",   90],
+    ["won",  "BTC/USDC",  "Apr 25", 1000],
+  ]),
 };

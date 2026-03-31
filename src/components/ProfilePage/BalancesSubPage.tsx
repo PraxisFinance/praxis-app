@@ -3,6 +3,7 @@
 import { BalancesChart } from "./BalancesChart";
 import { PredictionsOverallStats } from "./PredictionsOverallStats";
 import { PredictionsStatsChart } from "./PredictionsStatsChart";
+import { PredictionsHistory } from "./PredictionsHistory";
 import { Balances } from "../Balances/Balances";
 
 export function BalancesSubPage() {
@@ -12,6 +13,7 @@ export function BalancesSubPage() {
       <BalancesChart />
       <PredictionsOverallStats />
       <PredictionsStatsChart />
+      <PredictionsHistory />
     </div>
   );
 }

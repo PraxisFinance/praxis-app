@@ -39,3 +39,19 @@ export interface PredictionsStatsLineMeta {
   label: string;
   color: string;
 }
+
+// ── Predictions history ────────────────────────────────────────────────────
+
+export type PredictionsHistoryInterval = "1D" | "3D" | "7D" | "1M" | "1Y";
+export type PredictionHistoryResult = "won" | "lost";
+
+export interface PredictionHistoryItem {
+  id: string;
+  result: PredictionHistoryResult;
+  /** Display name of the prediction / match */
+  prediction: string;
+  /** Formatted date string, e.g. "12/03/26" */
+  date: string;
+  amount: number;
+  currency: string;
+}
