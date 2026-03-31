@@ -21,7 +21,10 @@ const PREDICTION_MAX_BALANCE =
   DEFAULT_BALANCES[0]?.value ??
   "0";
 
-export type BinaryCryptoPrediction = CryptoPredictionUpDown | CryptoPredictionPriceRange | CryptoPredictionHit;
+export type BinaryCryptoPrediction =
+  | CryptoPredictionUpDown
+  | CryptoPredictionPriceRange
+  | CryptoPredictionHit;
 
 function isBinaryCryptoPrediction(p: CryptoPrediction | null): p is BinaryCryptoPrediction {
   return p != null && p.predictionType !== "above_below";
@@ -69,7 +72,10 @@ function CryptoPredictionDrawerBody({
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = prediction.isTradingOpen;
-  const { primaryQuestion, secondaryMuted } = getCryptoDrawerInfoLines(prediction, selectedOutcome.label);
+  const { primaryQuestion, secondaryMuted } = getCryptoDrawerInfoLines(
+    prediction,
+    selectedOutcome.label
+  );
   const iconUrl = prediction.iconUrl.trim();
 
   return (
@@ -85,7 +91,9 @@ function CryptoPredictionDrawerBody({
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <p className="min-w-0 text-xs leading-tight font-medium text-main-darkPurple/65">{secondaryMuted}</p>
+          <p className="min-w-0 text-xs leading-tight font-medium text-main-darkPurple/65">
+            {secondaryMuted}
+          </p>
           <div className="relative h-6 w-6 shrink-0">
             {iconUrl ? (
               <Image src={iconUrl} alt="" width={24} height={24} className="object-contain" />

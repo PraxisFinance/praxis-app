@@ -14,10 +14,7 @@ interface RandomPoolItemDetailsProps {
 export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
   const [amount, setAmount] = useState("");
 
-  const pool = useMemo(
-    () => RANDOM_POOL_MOCKS.find((p) => p.id === poolId) ?? null,
-    [poolId]
-  );
+  const pool = useMemo(() => RANDOM_POOL_MOCKS.find((p) => p.id === poolId) ?? null, [poolId]);
 
   if (!pool) {
     return (

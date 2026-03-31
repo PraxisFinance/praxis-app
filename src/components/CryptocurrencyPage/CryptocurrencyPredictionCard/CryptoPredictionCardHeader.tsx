@@ -14,7 +14,11 @@ function EndLineBadge({ endLine }: { endLine: string }) {
   const colonIdx = endLine.indexOf(": ");
   if (colonIdx >= 0) {
     return (
-      <StatBadge label={endLine.slice(0, colonIdx)} value={endLine.slice(colonIdx + 2)} className="max-w-[min(100%,160px)] whitespace-normal" />
+      <StatBadge
+        label={endLine.slice(0, colonIdx)}
+        value={endLine.slice(colonIdx + 2)}
+        className="max-w-[min(100%,160px)] whitespace-normal"
+      />
     );
   }
 
@@ -29,7 +33,11 @@ function EndLineBadge({ endLine }: { endLine: string }) {
   );
 }
 
-export function CryptoPredictionCardHeader({ iconUrl, title, endLine }: CryptoPredictionCardHeaderProps) {
+export function CryptoPredictionCardHeader({
+  iconUrl,
+  title,
+  endLine,
+}: CryptoPredictionCardHeaderProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="relative h-9 w-9 shrink-0">

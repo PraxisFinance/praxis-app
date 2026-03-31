@@ -20,7 +20,9 @@ export function RandomPoolLiveDetails({
   return (
     <div className="flex flex-col gap-3">
       <section className="flex flex-col gap-3">
-        <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">Join Pool</SectionHeader>
+        <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">
+          Join Pool
+        </SectionHeader>
         <InputWithMax
           value={amount}
           onChange={onAmountChange}

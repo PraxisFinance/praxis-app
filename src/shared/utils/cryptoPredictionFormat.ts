@@ -69,9 +69,7 @@ export function getCryptoPredictionStatusFooter(prediction: CryptoPrediction): {
     case "live":
       return { showLiveDot: true, text: status.label ?? "Live now" };
     case "upcoming": {
-      const fromIso = status.startsAt?.trim()
-        ? formatCryptoWhenForCard(status.startsAt)
-        : null;
+      const fromIso = status.startsAt?.trim() ? formatCryptoWhenForCard(status.startsAt) : null;
       if (fromIso) {
         return {
           showLiveDot: false,

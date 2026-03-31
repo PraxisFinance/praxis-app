@@ -42,8 +42,8 @@ export const BALANCES_CHART_INTERVALS: { id: BalancesChartInterval; label: strin
 
 /** Visual metadata for each currency line on the balance chart. */
 export const BALANCE_CURRENCY_META: BalanceCurrencyMeta[] = [
-  { key: "wallet",  label: "Wallet",   color: "#9787f4", iconUrl: "/icons/usdc.png"    },
-  { key: "deposit", label: "Deposit",  color: "#34C53E", iconUrl: "/icons/w-usdc.png"  },
+  { key: "wallet", label: "Wallet", color: "#9787f4", iconUrl: "/icons/usdc.png" },
+  { key: "deposit", label: "Deposit", color: "#34C53E", iconUrl: "/icons/w-usdc.png" },
   { key: "ytToken", label: "YT Token", color: "#ff5858", iconUrl: "/icons/yt-token.png" },
 ];
 
@@ -62,7 +62,13 @@ function makeRng(seed: number) {
  * Builds a random-walk series of `n` values.
  * `volatility` controls max step size per tick; `drift` adds a tiny trend.
  */
-function randomWalk(n: number, start: number, volatility: number, drift: number, seed: number): number[] {
+function randomWalk(
+  n: number,
+  start: number,
+  volatility: number,
+  drift: number,
+  seed: number
+): number[] {
   const rng = makeRng(seed);
   const out: number[] = [start];
   for (let i = 1; i < n; i++) {
@@ -76,19 +82,23 @@ function buildPoints<T extends string>(
   dates: string[],
   series: Record<T, number[]>
 ): ({ date: string } & Record<T, number>)[] {
-  return dates.map((date, i) =>
-    Object.fromEntries([["date", date], ...Object.entries(series).map(([k, v]) => [k, (v as number[])[i]])]) as {
-      date: string;
-    } & Record<T, number>
+  return dates.map(
+    (date, i) =>
+      Object.fromEntries([
+        ["date", date],
+        ...Object.entries(series).map(([k, v]) => [k, (v as number[])[i]]),
+      ]) as {
+        date: string;
+      } & Record<T, number>
   );
 }
 
 // 1D — 24 hourly ticks
 const dates1D = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, "0")}:00`);
 const mock1D = buildPoints(dates1D, {
-  wallet:  randomWalk(24, 10_000,  900, -10, 11),
-  deposit: randomWalk(24,  1_000,  110,  -1, 22),
-  ytToken: randomWalk(24,    100,   18,   0, 33),
+  wallet: randomWalk(24, 10_000, 900, -10, 11),
+  deposit: randomWalk(24, 1_000, 110, -1, 22),
+  ytToken: randomWalk(24, 100, 18, 0, 33),
 });
 
 // 3D — 12 ticks every 6 h
@@ -98,33 +108,46 @@ const dates3D = Array.from({ length: 12 }, (_, i) => {
   return `D${day} ${String(hour).padStart(2, "0")}h`;
 });
 const mock3D = buildPoints(dates3D, {
-  wallet:  randomWalk(12,  9_500, 1_200,  30, 44),
-  deposit: randomWalk(12,    950,   150,   3, 55),
-  ytToken: randomWalk(12,     95,    22, 0.5, 66),
+  wallet: randomWalk(12, 9_500, 1_200, 30, 44),
+  deposit: randomWalk(12, 950, 150, 3, 55),
+  ytToken: randomWalk(12, 95, 22, 0.5, 66),
 });
 
 // 7D — daily ticks
 const dates7D = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const mock7D = buildPoints(dates7D, {
-  wallet:  randomWalk(7,  9_000, 2_000,  150, 77),
-  deposit: randomWalk(7,    900,   250,   15, 88),
-  ytToken: randomWalk(7,     90,    40,  1.5, 99),
+  wallet: randomWalk(7, 9_000, 2_000, 150, 77),
+  deposit: randomWalk(7, 900, 250, 15, 88),
+  ytToken: randomWalk(7, 90, 40, 1.5, 99),
 });
 
 // 1M — 10 ticks every 3 days
 const dates1M = Array.from({ length: 10 }, (_, i) => `Mar ${i * 3 + 1}`);
 const mock1M = buildPoints(dates1M, {
-  wallet:  randomWalk(10,  8_000, 2_800,  200, 111),
-  deposit: randomWalk(10,    800,   350,   20, 222),
-  ytToken: randomWalk(10,     80,    55,    3, 333),
+  wallet: randomWalk(10, 8_000, 2_800, 200, 111),
+  deposit: randomWalk(10, 800, 350, 20, 222),
+  ytToken: randomWalk(10, 80, 55, 3, 333),
 });
 
 // 1Y — 12 monthly ticks
-const dates1Y = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const dates1Y = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 const mock1Y = buildPoints(dates1Y, {
-  wallet:  randomWalk(12,  5_000, 3_500,  500, 444),
-  deposit: randomWalk(12,    500,   450,   50, 555),
-  ytToken: randomWalk(12,     50,    70,    6, 666),
+  wallet: randomWalk(12, 5_000, 3_500, 500, 444),
+  deposit: randomWalk(12, 500, 450, 50, 555),
+  ytToken: randomWalk(12, 50, 70, 6, 666),
 });
 
 export const BALANCES_CHART_MOCK_DATA: Record<BalancesChartInterval, BalancesChartDataPoint[]> = {

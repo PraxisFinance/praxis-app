@@ -35,16 +35,12 @@ const chartConfig = PREDICTIONS_STATS_LINE_META.reduce<ChartConfig>(
   {}
 );
 
-const ALL_KEYS = new Set<PredictionsStatsLineKey>(
-  PREDICTIONS_STATS_LINE_META.map((l) => l.key)
-);
+const ALL_KEYS = new Set<PredictionsStatsLineKey>(PREDICTIONS_STATS_LINE_META.map((l) => l.key));
 
 export function PredictionsStatsChart({ data, className }: PredictionsStatsChartProps) {
   const [activeInterval, setActiveInterval] = useState<PredictionsStatsInterval>("3D");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [activeLines, setActiveLines] = useState<Set<PredictionsStatsLineKey>>(
-    new Set(ALL_KEYS)
-  );
+  const [activeLines, setActiveLines] = useState<Set<PredictionsStatsLineKey>>(new Set(ALL_KEYS));
 
   const activeLabel =
     PREDICTIONS_STATS_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
@@ -124,9 +120,7 @@ export function PredictionsStatsChart({ data, className }: PredictionsStatsChart
                     }}
                     className={cn(
                       "w-full px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-main-lightGray",
-                      activeInterval === interval.id
-                        ? "text-main-purple"
-                        : "text-main-darkPurple"
+                      activeInterval === interval.id ? "text-main-purple" : "text-main-darkPurple"
                     )}
                   >
                     {interval.label}
@@ -145,8 +139,8 @@ export function PredictionsStatsChart({ data, className }: PredictionsStatsChart
             <defs>
               {PREDICTIONS_STATS_LINE_META.map(({ key, color }) => (
                 <linearGradient key={key} id={`ps-gradient-${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={color} stopOpacity={0.25} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0}    />
+                  <stop offset="5%" stopColor={color} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
               ))}
             </defs>

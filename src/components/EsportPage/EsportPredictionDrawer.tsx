@@ -68,13 +68,7 @@ export function EsportPredictionDrawer({
   );
 }
 
-function PredictionDrawerBody({
-  match,
-  side,
-}: {
-  match: EsportsMatch;
-  side: "team1" | "team2";
-}) {
+function PredictionDrawerBody({ match, side }: { match: EsportsMatch; side: "team1" | "team2" }) {
   const [amount, setAmount] = useState("");
   const selectedTeam = side === "team1" ? match.team1 : match.team2;
   const isAvailable = match.isBettingAvailable;

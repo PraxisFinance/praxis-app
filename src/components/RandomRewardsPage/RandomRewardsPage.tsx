@@ -82,7 +82,10 @@ export function RandomRewardsPage() {
       </section>
 
       <DrawerShell open={poolsHintOpen} onOpenChange={setPoolsHintOpen}>
-        <AppDrawerHeading title={RANDOM_POOLS_HINT.title} description={RANDOM_POOLS_HINT.description} />
+        <AppDrawerHeading
+          title={RANDOM_POOLS_HINT.title}
+          description={RANDOM_POOLS_HINT.description}
+        />
       </DrawerShell>
 
       <RandomPoolJoinDrawer

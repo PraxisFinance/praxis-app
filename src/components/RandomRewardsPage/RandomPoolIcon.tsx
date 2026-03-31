@@ -33,13 +33,7 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
   return (
     <div className="bg-main-lightGray ring-main-grayPurple/40 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm ring-1 ring-inset">
       {iconUrl ? (
-        <Image
-          src={iconUrl}
-          alt=""
-          width={36}
-          height={36}
-          className="h-9 w-9 object-contain"
-        />
+        <Image src={iconUrl} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
       ) : (
         <div className="flex h-9 w-9 items-center justify-center text-xl leading-none">🪙</div>
       )}

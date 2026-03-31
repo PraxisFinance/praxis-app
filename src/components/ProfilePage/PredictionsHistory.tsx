@@ -8,10 +8,7 @@ import {
   PREDICTIONS_HISTORY_INTERVALS,
   PREDICTIONS_HISTORY_MOCK_DATA,
 } from "@/shared/constants/profile";
-import type {
-  PredictionHistoryItem,
-  PredictionsHistoryInterval,
-} from "@/shared/types/profile";
+import type { PredictionHistoryItem, PredictionsHistoryInterval } from "@/shared/types/profile";
 import { PredictionsHistoryRow } from "./PredictionsHistoryRow";
 
 export type { PredictionHistoryItem, PredictionsHistoryInterval };
@@ -66,9 +63,7 @@ export function PredictionsHistory({ data, className }: PredictionsHistoryProps)
                     }}
                     className={cn(
                       "w-full px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-main-lightGray",
-                      activeInterval === interval.id
-                        ? "text-main-purple"
-                        : "text-main-darkPurple"
+                      activeInterval === interval.id ? "text-main-purple" : "text-main-darkPurple"
                     )}
                   >
                     {interval.label}
@@ -84,9 +79,13 @@ export function PredictionsHistory({ data, className }: PredictionsHistoryProps)
       {/* Column headers */}
       <div className="flex items-center gap-4 px-2">
         <span className="w-8 shrink-0 text-sm font-normal text-main tracking-wide">Result</span>
-        <span className="flex-1 min-w-0 text-sm font-normal text-main tracking-wide">Prediction</span>
+        <span className="flex-1 min-w-0 text-sm font-normal text-main tracking-wide">
+          Prediction
+        </span>
         <span className="w-20 text-sm font-normal text-main tracking-wide shrink-0">Date</span>
-        <span className="w-24 text-sm font-normal text-main tracking-wide shrink-0 pl-[10px]">Amount</span>
+        <span className="w-24 text-sm font-normal text-main tracking-wide shrink-0 pl-[10px]">
+          Amount
+        </span>
       </div>
 
       {/* Rows */}

@@ -7,7 +7,9 @@ export interface CryptoPredictionCardStatusFooterProps {
   prediction: CryptoPrediction;
 }
 
-export function CryptoPredictionCardStatusFooter({ prediction }: CryptoPredictionCardStatusFooterProps) {
+export function CryptoPredictionCardStatusFooter({
+  prediction,
+}: CryptoPredictionCardStatusFooterProps) {
   const line = getCryptoPredictionStatusFooter(prediction);
 
   return (
