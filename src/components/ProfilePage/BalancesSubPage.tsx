@@ -1,8 +1,9 @@
 "use client";
 
-import { Balances } from "../Balances/Balances";
 import { BalancesChart } from "./BalancesChart";
 import { PredictionsOverallStats } from "./PredictionsOverallStats";
+import { PredictionsStatsChart } from "./PredictionsStatsChart";
+import { Balances } from "../Balances/Balances";
 
 export function BalancesSubPage() {
   return (
@@ -10,6 +11,7 @@ export function BalancesSubPage() {
       <Balances />
       <BalancesChart />
       <PredictionsOverallStats />
+      <PredictionsStatsChart />
     </div>
   );
 }
