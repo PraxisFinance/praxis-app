@@ -82,7 +82,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
                 type="button"
                 onClick={() => toggleCurrency(key)}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-[5px] px-2.5 py-1.5 text-2xs font-medium transition-all",
+                  "flex items-center gap-1.5 rounded-sm px-2.5 py-1.5 text-2xs font-medium transition-all",
                   isActive
                     ? "bg-main-lightGray text-main-darkPurple"
                     : "bg-main-lightGray/50 text-main-darkPurple/35"
@@ -117,7 +117,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
           {dropdownOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-[8px] bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
+              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-md bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
                 {BALANCES_CHART_INTERVALS.map((interval) => (
                   <button
                     key={interval.id}
@@ -143,7 +143,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
       </div>
 
       {/* Chart */}
-      <div className="rounded-[12px] bg-main-lightGray/50 p-3">
+      <div className="rounded-md bg-main-lightGray/50 p-3">
         <ChartContainer config={chartConfig} className="h-[180px] w-full">
           <AreaChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
             <defs>
