@@ -1,39 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { Balances } from "../Balances/Balances";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { RewardClaimRow } from "./RewardClaimRow";
 import type { RewardClaimItem } from "@/shared/types/profile";
 import { REWARDS_CLAIMS_MOCK } from "@/shared/constants/profile";
-
-interface RewardClaimRowProps {
-  item: RewardClaimItem;
-  onClaim: (id: string) => void;
-}
-
-function RewardClaimRow({ item, onClaim }: RewardClaimRowProps) {
-  return (
-    <div className="flex items-center gap-3 bg-main-lightGray rounded-sm px-3.5 py-3">
-      <Image src={item.iconUrl} alt={item.name} width={24} height={24} className="shrink-0" />
-
-      <span className="flex-1 text-main-darkPurple text-xs leading-5 min-w-0 truncate">
-        {item.name}
-      </span>
-
-      <span className="shrink-0 text-main-darkPurple text-xs leading-5 whitespace-nowrap">
-        Income:{" "}
-        <span className="text-main-darkPurple font-medium text-xs">
-          {item.income} {item.incomeCurrency}
-        </span>
-      </span>
-
-      <Button variant="primary" size="sm" onClick={() => onClaim(item.id)} className="shrink-0">
-        Claim
-      </Button>
-    </div>
-  );
-}
 
 interface RewardsSubPageProps {
   claims?: RewardClaimItem[];
