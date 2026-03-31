@@ -16,7 +16,11 @@ import {
   BALANCE_CURRENCY_META,
   BALANCES_CHART_MOCK_DATA,
 } from "@/shared/constants/balances";
-import type { BalancesChartDataPoint, BalancesChartInterval } from "@/shared/types/balances";
+import type {
+  BalanceCurrencyKey,
+  BalancesChartDataPoint,
+  BalancesChartInterval,
+} from "@/shared/types/balances";
 
 export type { BalancesChartDataPoint, BalancesChartInterval };
 
@@ -31,24 +35,71 @@ const chartConfig = BALANCE_CURRENCY_META.reduce<ChartConfig>(
   {}
 );
 
+const ALL_KEYS = new Set<BalanceCurrencyKey>(
+  BALANCE_CURRENCY_META.map((c) => c.key)
+);
+
 export function BalancesChart({ data, className }: BalancesChartProps) {
   const [activeInterval, setActiveInterval] = useState<BalancesChartInterval>("3D");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [activeCurrencies, setActiveCurrencies] = useState<Set<BalanceCurrencyKey>>(
+    new Set(ALL_KEYS)
+  );
 
   const activeLabel =
     BALANCES_CHART_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
 
-  const chartData =
-    data?.[activeInterval] ?? BALANCES_CHART_MOCK_DATA[activeInterval];
+  const chartData = data?.[activeInterval] ?? BALANCES_CHART_MOCK_DATA[activeInterval];
+
+  const visibleCurrencies = BALANCE_CURRENCY_META.filter((c) =>
+    activeCurrencies.has(c.key)
+  );
+
+  function toggleCurrency(key: BalanceCurrencyKey) {
+    setActiveCurrencies((prev) => {
+      // Prevent deselecting the last active currency
+      if (prev.has(key) && prev.size === 1) return prev;
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <SectionHeader>Balance chart</SectionHeader>
+      {/* Title */}
+      <SectionHeader>Balance chart</SectionHeader>
+
+      {/* Controls row */}
+      <div className="flex items-center gap-2">
+        {/* Currency filter pills */}
+        <div className="flex flex-1 flex-wrap items-center gap-1.5">
+          {BALANCE_CURRENCY_META.map(({ key, label, color }) => {
+            const isActive = activeCurrencies.has(key);
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => toggleCurrency(key)}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-[5px] px-2.5 py-1.5 text-2xs font-medium transition-all",
+                  isActive
+                    ? "bg-main-lightGray text-main-darkPurple"
+                    : "bg-main-lightGray/50 text-main-darkPurple/35"
+                )}
+              >
+                <span
+                  className="size-2 shrink-0 rounded-full transition-colors"
+                  style={{ backgroundColor: isActive ? color : "#dad8e6" }}
+                />
+                {label}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Interval selector */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setDropdownOpen((v) => !v)}
@@ -123,7 +174,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
               content={<ChartTooltipContent />}
             />
 
-            {BALANCE_CURRENCY_META.map(({ key, color }) => (
+            {visibleCurrencies.map(({ key, color }) => (
               <Area
                 key={key}
                 type="monotone"
@@ -137,19 +188,6 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
             ))}
           </AreaChart>
         </ChartContainer>
-      </div>
-
-      {/* Legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
-        {BALANCE_CURRENCY_META.map(({ key, label, color }) => (
-          <div key={key} className="flex items-center gap-1.5">
-            <span
-              className="inline-block size-2.5 rounded-full shrink-0"
-              style={{ backgroundColor: color }}
-            />
-            <span className="text-2xs font-medium text-main-darkPurple">{label}</span>
-          </div>
-        ))}
       </div>
     </div>
   );
