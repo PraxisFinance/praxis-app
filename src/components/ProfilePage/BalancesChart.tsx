@@ -113,7 +113,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
           {dropdownOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-md bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
+              <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-[8px] bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
                 {BALANCES_CHART_INTERVALS.map((interval) => (
                   <button
                     key={interval.id}
@@ -182,6 +182,19 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
             ))}
           </AreaChart>
         </ChartContainer>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
+        {BALANCE_CURRENCY_META.map(({ key, label, color }) => (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              className="inline-block size-2.5 rounded-full shrink-0"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-2xs font-medium text-main-darkPurple">{label}</span>
+          </div>
+        ))}
       </div>
     </div>
   );
