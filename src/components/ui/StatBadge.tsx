@@ -17,9 +17,7 @@ export function StatBadge({ label, value, className }: StatBadgeProps) {
       )}
     >
       <span className="text-main-darkPurple/65 text-2xs leading-tight">{label}:</span>
-      <span className="text-main-darkPurple text-2xs leading-tight tabular-nums">
-        {value}
-      </span>
+      <span className="text-main-darkPurple text-2xs leading-tight tabular-nums">{value}</span>
     </div>
   );
 }

@@ -34,10 +34,7 @@ function PoolSplitAndStatsRow({
         <div className="flex min-w-0 shrink justify-center px-1">
           <div className="flex min-w-0 max-w-full items-start justify-center gap-1.5">
             {statusLine.showLiveDot && (
-              <span
-                className="bg-main-red mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full"
-                aria-hidden
-              />
+              <span className="bg-main-red mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden />
             )}
             <span className="text-main-darkPurple min-w-0 text-center text-2xs leading-snug font-medium break-words">
               {statusLine.text}

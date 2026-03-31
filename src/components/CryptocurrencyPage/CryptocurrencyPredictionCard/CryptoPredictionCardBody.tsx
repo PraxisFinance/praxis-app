@@ -10,7 +10,10 @@ export interface CryptoPredictionCardBodyProps {
   onPickBinaryOutcome?: (outcomeId: string) => void;
 }
 
-export function CryptoPredictionCardBody({ prediction, onPickBinaryOutcome }: CryptoPredictionCardBodyProps) {
+export function CryptoPredictionCardBody({
+  prediction,
+  onPickBinaryOutcome,
+}: CryptoPredictionCardBodyProps) {
   const disabled = !prediction.isTradingOpen;
 
   switch (prediction.predictionType) {

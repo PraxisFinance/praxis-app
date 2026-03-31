@@ -5,15 +5,7 @@ import Image from "next/image";
 const STREAM_LINK_ICON = "/icons/online-link.png";
 
 function StreamIcon() {
-  return (
-    <Image
-      src={STREAM_LINK_ICON}
-      alt=""
-      width={20}
-      height={20}
-      className="object-contain"
-    />
-  );
+  return <Image src={STREAM_LINK_ICON} alt="" width={20} height={20} className="object-contain" />;
 }
 
 interface EsportStreamButtonProps {

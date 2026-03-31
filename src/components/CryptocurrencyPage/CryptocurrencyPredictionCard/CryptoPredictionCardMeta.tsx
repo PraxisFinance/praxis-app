@@ -16,7 +16,9 @@ export function CryptoPredictionCardMeta({ prediction }: CryptoPredictionCardMet
   }
   if (prediction.predictionType === "hit") {
     return (
-      <p className="text-main-darkPurple/80 text-2xs font-medium">Target {prediction.targetPriceLabel}</p>
+      <p className="text-main-darkPurple/80 text-2xs font-medium">
+        Target {prediction.targetPriceLabel}
+      </p>
     );
   }
   return null;

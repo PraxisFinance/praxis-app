@@ -62,9 +62,7 @@ const ChartContainer = React.forwardRef<
 ChartContainer.displayName = "Chart";
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
-  const colorConfig = Object.entries(config).filter(
-    ([, cfg]) => cfg.theme || cfg.color
-  );
+  const colorConfig = Object.entries(config).filter(([, cfg]) => cfg.theme || cfg.color);
 
   if (!colorConfig.length) return null;
 
@@ -77,8 +75,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
               `${prefix} [data-chart=${id}] {\n${colorConfig
                 .map(([key, itemConfig]) => {
                   const color =
-                    itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-                    itemConfig.color;
+                    itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
                   return color ? `  --color-${key}: ${color};` : null;
                 })
                 .filter(Boolean)
@@ -156,9 +153,7 @@ const ChartTooltipContent = React.forwardRef<HTMLDivElement, ChartTooltipContent
 
       if (labelFormatter) {
         return (
-          <div className={cn("font-medium", labelClassName)}>
-            {labelFormatter(value, payload)}
-          </div>
+          <div className={cn("font-medium", labelClassName)}>{labelFormatter(value, payload)}</div>
         );
       }
 
@@ -310,11 +305,7 @@ const ChartLegendContent = React.forwardRef<HTMLDivElement, ChartLegendContentPr
 );
 ChartLegendContent.displayName = "ChartLegend";
 
-function getPayloadConfigFromPayload(
-  config: ChartConfig,
-  payload: unknown,
-  key: string
-) {
+function getPayloadConfigFromPayload(config: ChartConfig, payload: unknown, key: string) {
   if (typeof payload !== "object" || payload === null) return undefined;
 
   const payloadPayload =
@@ -339,9 +330,7 @@ function getPayloadConfigFromPayload(
     configLabelKey = (payloadPayload as Record<string, unknown>)[key] as string;
   }
 
-  return configLabelKey in config
-    ? config[configLabelKey]
-    : config[key as keyof typeof config];
+  return configLabelKey in config ? config[configLabelKey] : config[key as keyof typeof config];
 }
 
 export {

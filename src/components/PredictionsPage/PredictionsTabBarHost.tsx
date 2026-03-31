@@ -9,7 +9,5 @@ export function PredictionsTabBarHost() {
   const router = useRouter();
   const showBackButton = isRandomRewardsPoolDetailPath(pathname);
 
-  return (
-    <PredictionsTabBar showBackButton={showBackButton} onBack={() => router.back()} />
-  );
+  return <PredictionsTabBar showBackButton={showBackButton} onBack={() => router.back()} />;
 }

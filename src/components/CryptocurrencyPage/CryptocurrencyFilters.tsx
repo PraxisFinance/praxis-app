@@ -26,7 +26,11 @@ export function CryptocurrencyFilters({
     <section className="flex flex-col gap-4">
       <SectionHeader className="text-main-darkPurple">Filters</SectionHeader>
 
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Cryptocurrency prediction timeframe">
+      <div
+        className="flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Cryptocurrency prediction timeframe"
+      >
         {CRYPTO_PREDICTION_TIME_FILTERS.map(({ id, label }) => {
           const isActive = timeId === id;
           return (
@@ -49,7 +53,11 @@ export function CryptocurrencyFilters({
         })}
       </div>
 
-      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Cryptocurrency prediction type">
+      <div
+        className="flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Cryptocurrency prediction type"
+      >
         {CRYPTO_PREDICTION_TYPE_FILTERS.map(({ id, label }) => {
           const isActive = typeId === id;
           return (

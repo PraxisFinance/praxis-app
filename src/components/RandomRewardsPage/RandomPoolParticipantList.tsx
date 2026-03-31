@@ -12,7 +12,9 @@ export interface RandomPoolParticipantListProps {
 export function RandomPoolParticipantList({ title, users }: RandomPoolParticipantListProps) {
   return (
     <section className="flex flex-col gap-3">
-      <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">{title}</SectionHeader>
+      <SectionHeader className="text-main-darkPurple text-lg font-bold leading-6">
+        {title}
+      </SectionHeader>
       <ul className="flex flex-col gap-2">
         {users.map((u) => (
           <RandomPoolUserRow key={`${u.username}-${u.amount}`} user={u} />

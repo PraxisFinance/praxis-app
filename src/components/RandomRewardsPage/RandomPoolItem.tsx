@@ -37,9 +37,7 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
       <div className="flex items-start justify-between gap-1.5">
         <div className="flex min-w-0 items-center gap-1.5">
           <RandomPoolIcon variant="list" iconUrl={pool.iconUrl} alt={pool.title} />
-          <h3 className="text-main-darkPurple truncate text-base leading-5">
-            {pool.title}
-          </h3>
+          <h3 className="text-main-darkPurple truncate text-base leading-5">{pool.title}</h3>
         </div>
 
         <div className="flex shrink-0 items-center gap-0.5">
@@ -49,9 +47,7 @@ export function RandomPoolItem({ pool, onJoin, onClaim }: RandomPoolItemProps) {
                 Ended
               </span>
               {pool.userWon && (
-                <span className="rounded-[4px] bg-main-success px-2 py-0.5 text-2xs">
-                  You won
-                </span>
+                <span className="rounded-[4px] bg-main-success px-2 py-0.5 text-2xs">You won</span>
               )}
             </>
           )}

@@ -35,9 +35,7 @@ const chartConfig = BALANCE_CURRENCY_META.reduce<ChartConfig>(
   {}
 );
 
-const ALL_KEYS = new Set<BalanceCurrencyKey>(
-  BALANCE_CURRENCY_META.map((c) => c.key)
-);
+const ALL_KEYS = new Set<BalanceCurrencyKey>(BALANCE_CURRENCY_META.map((c) => c.key));
 
 export function BalancesChart({ data, className }: BalancesChartProps) {
   const [activeInterval, setActiveInterval] = useState<BalancesChartInterval>("3D");
@@ -51,9 +49,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
 
   const chartData = data?.[activeInterval] ?? BALANCES_CHART_MOCK_DATA[activeInterval];
 
-  const visibleCurrencies = BALANCE_CURRENCY_META.filter((c) =>
-    activeCurrencies.has(c.key)
-  );
+  const visibleCurrencies = BALANCE_CURRENCY_META.filter((c) => activeCurrencies.has(c.key));
 
   function toggleCurrency(key: BalanceCurrencyKey) {
     setActiveCurrencies((prev) => {
@@ -128,9 +124,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
                     }}
                     className={cn(
                       "w-full px-3 py-2 text-left text-xs font-medium transition-colors hover:bg-main-lightGray",
-                      activeInterval === interval.id
-                        ? "text-main-purple"
-                        : "text-main-darkPurple"
+                      activeInterval === interval.id ? "text-main-purple" : "text-main-darkPurple"
                     )}
                   >
                     {interval.label}
@@ -149,8 +143,8 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
             <defs>
               {BALANCE_CURRENCY_META.map(({ key, color }) => (
                 <linearGradient key={key} id={`gradient-${key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%"  stopColor={color} stopOpacity={0.25} />
-                  <stop offset="95%" stopColor={color} stopOpacity={0}    />
+                  <stop offset="5%" stopColor={color} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={color} stopOpacity={0} />
                 </linearGradient>
               ))}
             </defs>
