@@ -5,6 +5,7 @@ import type {
   PredictionsStatsDataPoint,
   PredictionsStatsInterval,
   PredictionsStatsLineMeta,
+  RewardClaimItem,
 } from "@/shared/types/profile";
 
 // ── Predictions stats chart ────────────────────────────────────────────────
@@ -223,3 +224,12 @@ export const PREDICTIONS_HISTORY_MOCK_DATA: Record<
     ["won", "BTC/USDC", "Apr 25", 1000],
   ]),
 };
+
+// ── Rewards claims ─────────────────────────────────────────────────────────
+
+export const REWARDS_CLAIMS_MOCK: RewardClaimItem[] = [
+  { id: "1", name: "Steakhouse USDT", iconUrl: "/icons/usdc.png", income: 500, incomeCurrency: "ytPraxis" },
+  { id: "2", name: "Match: AVULUS", iconUrl: "/icons/w-usdc.png", income: 5, incomeCurrency: "ytPraxis" },
+  { id: "3", name: "Random pool #1", iconUrl: "/icons/yt-token.png", income: 35, incomeCurrency: "ytPraxis" },
+  { id: "4", name: "AERO Up or Down: Up", iconUrl: "/icons/w-usdc.png", income: 15, incomeCurrency: "ytPraxis" },
+];

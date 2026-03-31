@@ -55,3 +55,15 @@ export interface PredictionHistoryItem {
   amount: number;
   currency: string;
 }
+
+// ── Rewards claims ─────────────────────────────────────────────────────────
+
+export interface RewardClaimItem {
+  id: string;
+  /** Pool or market name shown in the row */
+  name: string;
+  iconUrl: string;
+  income: number;
+  /** Token ticker for income amount, e.g. "ytPraxis" */
+  incomeCurrency: string;
+}
