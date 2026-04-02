@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
@@ -8,6 +8,8 @@ import { InfoRow } from "@/components/ui/InfoRow";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnPosition } from "@/shared/types/earn";
+import { useVaultWithdraw } from "@/hooks/useVault";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface WithdrawDrawerProps {
   item: EarnPosition | null;
@@ -17,10 +19,45 @@ interface WithdrawDrawerProps {
 
 export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps) {
   const [amount, setAmount] = useState("");
+  const { refetch: refetchBalances } = useWalletBalances();
+  const { withdraw, status, errorMessage, reset, isPending } = useVaultWithdraw(
+    item?.vaultAddress ?? "0x0",
+    amount,
+  );
+
+  useEffect(() => {
+    if (!open) {
+      setAmount("");
+      reset();
+    }
+  }, [open, reset]);
+
+  useEffect(() => {
+    if (status === "success") {
+      refetchBalances();
+    }
+  }, [status, refetchBalances]);
 
   if (!item) return null;
 
   const availableAmount = item.yourDeposit;
+
+  function handleWithdraw() {
+    withdraw();
+  }
+
+  function handleClose() {
+    setAmount("");
+    reset();
+    onOpenChange(false);
+  }
+
+  const buttonLabel =
+    status === "withdrawing"
+      ? "Withdrawing…"
+      : status === "success"
+        ? "Done"
+        : "Withdraw";
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
@@ -52,7 +89,12 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
       <div className="flex flex-col gap-2">
         <span className="text-main-darkPurple text-lg leading-6">Amount</span>
 
-        <InputWithMax value={amount} onChange={setAmount} maxValue={availableAmount} />
+        <InputWithMax
+          value={amount}
+          onChange={setAmount}
+          maxValue={availableAmount}
+          disabled={isPending}
+        />
 
         <div className="flex items-center justify-between px-1">
           <span className="text-main-darkPurple text-xs font-normal leading-4">
@@ -64,9 +106,24 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
         </div>
       </div>
 
-      <Button variant="destructiveMuted" size="action">
-        Withdraw
-      </Button>
+      {errorMessage && (
+        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
+      )}
+
+      {status === "success" ? (
+        <Button variant="destructiveMuted" size="action" onClick={handleClose}>
+          {buttonLabel}
+        </Button>
+      ) : (
+        <Button
+          variant="destructiveMuted"
+          size="action"
+          onClick={handleWithdraw}
+          disabled={isPending || !amount || Number(amount) <= 0}
+        >
+          {buttonLabel}
+        </Button>
+      )}
     </DrawerShell>
   );
 }
