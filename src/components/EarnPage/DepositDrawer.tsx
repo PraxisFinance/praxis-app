@@ -10,7 +10,7 @@ import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnAvailableItem } from "@/shared/types/earn";
 import { getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
-import { useVaultDeposit } from "@/hooks/useVaultDeposit";
+import { useVaultDeposit } from "@/hooks/useVault";
 
 interface DepositDrawerProps {
   item: EarnAvailableItem | null;
@@ -22,7 +22,7 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
   const [amount, setAmount] = useState("");
   const { balances, refetch: refetchBalances } = useWalletBalances();
   const { deposit, status, errorMessage, reset, buyIn, totalCost, isPending } =
-    useVaultDeposit(amount);
+    useVaultDeposit(item?.vaultAddress ?? "0x0", amount);
 
   useEffect(() => {
     if (!open) {

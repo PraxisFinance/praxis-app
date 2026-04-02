@@ -2,6 +2,7 @@ import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export const EARN_AVAILABLE_ITEMS: EarnAvailableItem[] = [
   {
+    vaultAddress: "0xC0d21A1e2c571d4E1342CBD9fC094cb0374c28Cc",
     queueName: "Steakhouse USDC",
     poolLifetime: "1d 24h 54m 3s",
     depositCurrency: "USDC",
@@ -13,6 +14,7 @@ export const EARN_AVAILABLE_ITEMS: EarnAvailableItem[] = [
     ytPayoutTime: "30 days",
   },
   {
+    vaultAddress: "0xC0d21A1e2c571d4E1342CBD9fC094cb0374c28Cc",
     queueName: "wUSDC Yield Queue",
     poolLifetime: "12d 6h 20m 0s",
     depositCurrency: "wUSDC",
@@ -24,6 +26,7 @@ export const EARN_AVAILABLE_ITEMS: EarnAvailableItem[] = [
     ytPayoutTime: "60 days",
   },
   {
+    vaultAddress: "0xC0d21A1e2c571d4E1342CBD9fC094cb0374c28Cc",
     queueName: "Smart Predictions Pool",
     poolLifetime: "30d 0h 0m 0s",
     depositCurrency: "USDC",
