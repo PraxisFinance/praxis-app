@@ -5,6 +5,7 @@ import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 
 export interface VaultState {
   id: string;
+  maturity: bigint;
   totalDeposited: bigint;
   totalWithdrawn: bigint;
   totalBalance: bigint;
@@ -18,6 +19,7 @@ export interface VaultState {
 
 export interface UserPosition {
   id: string;
+  vault_id: string;
   address: string;
   totalDeposited: bigint;
   totalWithdrawn: bigint;
@@ -31,6 +33,7 @@ export interface UserPosition {
 
 export interface VaultDailySnapshot {
   id: string;
+  vault_id: string;
   date: string;
   timestamp: bigint;
   totalBalance: bigint;
@@ -45,6 +48,7 @@ export interface VaultDailySnapshot {
 
 export interface DepositEvent {
   id: string;
+  vault: string;
   principal: bigint;
   buyIn: bigint;
   receiver: string;
@@ -52,6 +56,7 @@ export interface DepositEvent {
 
 export interface WithdrawEvent {
   id: string;
+  vault: string;
   amount: bigint;
   yieldPayout: bigint;
   receiver: string;
@@ -59,54 +64,75 @@ export interface WithdrawEvent {
 
 export interface RedeemYieldEvent {
   id: string;
+  vault: string;
   ytBurn: bigint;
   payout: bigint;
   receiver: string;
 }
 
-// ── Store ────────────────────────────────────────────────────────────
+// ── Per-vault data bundle ────────────────────────────────────────────
 
-interface DepositsState {
-  vault: VaultState | null;
+export interface VaultData {
+  state: VaultState | null;
   userPosition: UserPosition | null;
   dailySnapshots: VaultDailySnapshot[];
   deposits: DepositEvent[];
   withdrawals: WithdrawEvent[];
   redeems: RedeemYieldEvent[];
+}
+
+function emptyVaultData(): VaultData {
+  return {
+    state: null,
+    userPosition: null,
+    dailySnapshots: [],
+    deposits: [],
+    withdrawals: [],
+    redeems: [],
+  };
+}
+
+// ── Store ────────────────────────────────────────────────────────────
+
+interface DepositsState {
+  vaults: Record<string, VaultData>;
+  activeVaultId: string | null;
   loading: boolean;
   error: string | null;
 
-  fetchVaultState: () => Promise<void>;
-  fetchUserPosition: (address: string) => Promise<void>;
-  fetchDailySnapshots: (limit?: number) => Promise<void>;
-  fetchUserDeposits: (address: string) => Promise<void>;
-  fetchUserWithdrawals: (address: string) => Promise<void>;
-  fetchUserRedeems: (address: string) => Promise<void>;
-  fetchAll: (userAddress?: string) => Promise<void>;
+  setActiveVault: (vaultId: string) => void;
+  getActiveVault: () => VaultData | undefined;
+  getVault: (vaultId: string) => VaultData | undefined;
+  getActiveVaults: () => VaultState[];
+  getMaturedVaults: () => VaultState[];
+  getUserPositions: () => UserPosition[];
 
-  getTotalUserDeposits: () => bigint;
-  getUserNetBalance: () => bigint;
+  fetchAllVaultStates: () => Promise<void>;
+  fetchUserPosition: (vaultId: string, address: string) => Promise<void>;
+  fetchDailySnapshots: (vaultId: string, limit?: number) => Promise<void>;
+  fetchUserDeposits: (vaultId: string, address: string) => Promise<void>;
+  fetchUserWithdrawals: (vaultId: string, address: string) => Promise<void>;
+  fetchUserRedeems: (vaultId: string, address: string) => Promise<void>;
+  fetchAllForVault: (vaultId: string, userAddress?: string) => Promise<void>;
+  fetchAll: (userAddress?: string) => Promise<void>;
 
   reset: () => void;
 }
 
 const initialState = {
-  vault: null as VaultState | null,
-  userPosition: null as UserPosition | null,
-  dailySnapshots: [] as VaultDailySnapshot[],
-  deposits: [] as DepositEvent[],
-  withdrawals: [] as WithdrawEvent[],
-  redeems: [] as RedeemYieldEvent[],
+  vaults: {} as Record<string, VaultData>,
+  activeVaultId: null as string | null,
   loading: false,
   error: null as string | null,
 };
 
 // ── GraphQL queries ──────────────────────────────────────────────────
 
-const VAULT_STATE_QUERY = `
-  query VaultState {
-    VaultState(limit: 1) {
+const ALL_VAULT_STATES_QUERY = `
+  query AllVaultStates {
+    VaultState {
       id
+      maturity
       totalDeposited
       totalWithdrawn
       totalBalance
@@ -121,9 +147,13 @@ const VAULT_STATE_QUERY = `
 `;
 
 const USER_POSITION_QUERY = `
-  query UserPosition($address: String!) {
-    UserPosition(where: { address: { _eq: $address } }, limit: 1) {
+  query UserPosition($vault_id: String!, $address: String!) {
+    UserPosition(
+      where: { vault_id: { _eq: $vault_id }, address: { _eq: $address } }
+      limit: 1
+    ) {
       id
+      vault_id
       address
       totalDeposited
       totalWithdrawn
@@ -138,9 +168,14 @@ const USER_POSITION_QUERY = `
 `;
 
 const DAILY_SNAPSHOTS_QUERY = `
-  query VaultDailySnapshots($limit: Int!) {
-    VaultDailySnapshot(order_by: { timestamp: desc }, limit: $limit) {
+  query VaultDailySnapshots($vault_id: String!, $limit: Int!) {
+    VaultDailySnapshot(
+      where: { vault_id: { _eq: $vault_id } }
+      order_by: { timestamp: desc }
+      limit: $limit
+    ) {
       id
+      vault_id
       date
       timestamp
       totalBalance
@@ -156,9 +191,12 @@ const DAILY_SNAPSHOTS_QUERY = `
 `;
 
 const USER_DEPOSITS_QUERY = `
-  query UserDeposits($receiver: String!) {
-    PraxisVault_Deposit(where: { receiver: { _eq: $receiver } }) {
+  query UserDeposits($vault: String!, $receiver: String!) {
+    PraxisVault_Deposit(
+      where: { vault: { _eq: $vault }, receiver: { _eq: $receiver } }
+    ) {
       id
+      vault
       principal
       buyIn
       receiver
@@ -167,9 +205,12 @@ const USER_DEPOSITS_QUERY = `
 `;
 
 const USER_WITHDRAWALS_QUERY = `
-  query UserWithdrawals($receiver: String!) {
-    PraxisVault_Withdraw(where: { receiver: { _eq: $receiver } }) {
+  query UserWithdrawals($vault: String!, $receiver: String!) {
+    PraxisVault_Withdraw(
+      where: { vault: { _eq: $vault }, receiver: { _eq: $receiver } }
+    ) {
       id
+      vault
       amount
       yieldPayout
       receiver
@@ -178,9 +219,12 @@ const USER_WITHDRAWALS_QUERY = `
 `;
 
 const USER_REDEEMS_QUERY = `
-  query UserRedeems($receiver: String!) {
-    PraxisVault_RedeemYield(where: { receiver: { _eq: $receiver } }) {
+  query UserRedeems($vault: String!, $receiver: String!) {
+    PraxisVault_RedeemYield(
+      where: { vault: { _eq: $vault }, receiver: { _eq: $receiver } }
+    ) {
       id
+      vault
       ytBurn
       payout
       receiver
@@ -192,6 +236,7 @@ const USER_REDEEMS_QUERY = `
 
 interface RawVaultState {
   id: string;
+  maturity: string;
   totalDeposited: string;
   totalWithdrawn: string;
   totalBalance: string;
@@ -206,6 +251,7 @@ interface RawVaultState {
 function mapVaultState(raw: RawVaultState): VaultState {
   return {
     id: raw.id,
+    maturity: toBigInt(raw.maturity),
     totalDeposited: toBigInt(raw.totalDeposited),
     totalWithdrawn: toBigInt(raw.totalWithdrawn),
     totalBalance: toBigInt(raw.totalBalance),
@@ -220,6 +266,7 @@ function mapVaultState(raw: RawVaultState): VaultState {
 
 interface RawUserPosition {
   id: string;
+  vault_id: string;
   address: string;
   totalDeposited: string;
   totalWithdrawn: string;
@@ -234,6 +281,7 @@ interface RawUserPosition {
 function mapUserPosition(raw: RawUserPosition): UserPosition {
   return {
     id: raw.id,
+    vault_id: raw.vault_id,
     address: raw.address,
     totalDeposited: toBigInt(raw.totalDeposited),
     totalWithdrawn: toBigInt(raw.totalWithdrawn),
@@ -248,6 +296,7 @@ function mapUserPosition(raw: RawUserPosition): UserPosition {
 
 interface RawSnapshot {
   id: string;
+  vault_id: string;
   date: string;
   timestamp: string;
   totalBalance: string;
@@ -263,6 +312,7 @@ interface RawSnapshot {
 function mapSnapshot(raw: RawSnapshot): VaultDailySnapshot {
   return {
     id: raw.id,
+    vault_id: raw.vault_id,
     date: raw.date,
     timestamp: toBigInt(raw.timestamp),
     totalBalance: toBigInt(raw.totalBalance),
@@ -278,6 +328,7 @@ function mapSnapshot(raw: RawSnapshot): VaultDailySnapshot {
 
 interface RawDeposit {
   id: string;
+  vault: string;
   principal: string;
   buyIn: string;
   receiver: string;
@@ -286,6 +337,7 @@ interface RawDeposit {
 function mapDeposit(raw: RawDeposit): DepositEvent {
   return {
     id: raw.id,
+    vault: raw.vault,
     principal: toBigInt(raw.principal),
     buyIn: toBigInt(raw.buyIn),
     receiver: raw.receiver,
@@ -294,6 +346,7 @@ function mapDeposit(raw: RawDeposit): DepositEvent {
 
 interface RawWithdraw {
   id: string;
+  vault: string;
   amount: string;
   yieldPayout: string;
   receiver: string;
@@ -302,6 +355,7 @@ interface RawWithdraw {
 function mapWithdraw(raw: RawWithdraw): WithdrawEvent {
   return {
     id: raw.id,
+    vault: raw.vault,
     amount: toBigInt(raw.amount),
     yieldPayout: toBigInt(raw.yieldPayout),
     receiver: raw.receiver,
@@ -310,6 +364,7 @@ function mapWithdraw(raw: RawWithdraw): WithdrawEvent {
 
 interface RawRedeem {
   id: string;
+  vault: string;
   ytBurn: string;
   payout: string;
   receiver: string;
@@ -318,10 +373,26 @@ interface RawRedeem {
 function mapRedeem(raw: RawRedeem): RedeemYieldEvent {
   return {
     id: raw.id,
+    vault: raw.vault,
     ytBurn: toBigInt(raw.ytBurn),
     payout: toBigInt(raw.payout),
     receiver: raw.receiver,
   };
+}
+
+// ── Helper to patch a single vault entry ─────────────────────────────
+
+function patchVault(
+  vaults: Record<string, VaultData>,
+  vaultId: string,
+  patch: Partial<VaultData>
+): Record<string, VaultData> {
+  const existing = vaults[vaultId] ?? emptyVaultData();
+  return { ...vaults, [vaultId]: { ...existing, ...patch } };
+}
+
+function nowSeconds(): bigint {
+  return BigInt(Math.floor(Date.now() / 1000));
 }
 
 // ── Zustand store ────────────────────────────────────────────────────
@@ -331,73 +402,153 @@ const USDC_DECIMALS = 6;
 export const useDepositsStore = create<DepositsState>((set, get) => ({
   ...initialState,
 
-  fetchVaultState: async () => {
+  setActiveVault: (vaultId) => set({ activeVaultId: vaultId }),
+
+  getActiveVault: () => {
+    const { vaults, activeVaultId } = get();
+    return activeVaultId ? vaults[activeVaultId] : undefined;
+  },
+
+  getVault: (vaultId) => get().vaults[vaultId],
+
+  getActiveVaults: () => {
+    const now = nowSeconds();
+    return Object.values(get().vaults)
+      .map((v) => v.state)
+      .filter((s): s is VaultState => s !== null && s.maturity > now);
+  },
+
+  getMaturedVaults: () => {
+    const now = nowSeconds();
+    return Object.values(get().vaults)
+      .map((v) => v.state)
+      .filter((s): s is VaultState => s !== null && s.maturity <= now);
+  },
+
+  getUserPositions: () => {
+    return Object.values(get().vaults)
+      .map((v) => v.userPosition)
+      .filter((p): p is UserPosition => p !== null && p.currentBalance > BigInt(0));
+  },
+
+  fetchAllVaultStates: async () => {
     try {
       set({ loading: true, error: null });
-      const data = await envioQuery<{ VaultState: RawVaultState[] }>(VAULT_STATE_QUERY);
-      const raw = data.VaultState[0];
-      set({ vault: raw ? mapVaultState(raw) : null, loading: false });
+      const data = await envioQuery<{ VaultState: RawVaultState[] }>(ALL_VAULT_STATES_QUERY);
+      const nextVaults = { ...get().vaults };
+      for (const raw of data.VaultState) {
+        const mapped = mapVaultState(raw);
+        const existing = nextVaults[mapped.id] ?? emptyVaultData();
+        nextVaults[mapped.id] = { ...existing, state: mapped };
+      }
+      const activeId = get().activeVaultId;
+      set({
+        vaults: nextVaults,
+        activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
+        loading: false,
+      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  fetchUserPosition: async (address) => {
+  fetchUserPosition: async (vaultId, address) => {
     try {
       set({ loading: true, error: null });
       const data = await envioQuery<{ UserPosition: RawUserPosition[] }>(USER_POSITION_QUERY, {
+        vault_id: vaultId,
         address,
       });
       const raw = data.UserPosition[0];
-      set({ userPosition: raw ? mapUserPosition(raw) : null, loading: false });
+      set((s) => ({
+        vaults: patchVault(s.vaults, vaultId, {
+          userPosition: raw ? mapUserPosition(raw) : null,
+        }),
+        loading: false,
+      }));
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  fetchDailySnapshots: async (limit = 30) => {
+  fetchDailySnapshots: async (vaultId, limit = 30) => {
     try {
       set({ loading: true, error: null });
       const data = await envioQuery<{ VaultDailySnapshot: RawSnapshot[] }>(
         DAILY_SNAPSHOTS_QUERY,
-        { limit }
+        { vault_id: vaultId, limit }
       );
-      set({ dailySnapshots: data.VaultDailySnapshot.map(mapSnapshot), loading: false });
+      set((s) => ({
+        vaults: patchVault(s.vaults, vaultId, {
+          dailySnapshots: data.VaultDailySnapshot.map(mapSnapshot),
+        }),
+        loading: false,
+      }));
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  fetchUserDeposits: async (address) => {
+  fetchUserDeposits: async (vaultId, address) => {
     try {
       const data = await envioQuery<{ PraxisVault_Deposit: RawDeposit[] }>(USER_DEPOSITS_QUERY, {
+        vault: vaultId,
         receiver: address,
       });
-      set({ deposits: data.PraxisVault_Deposit.map(mapDeposit) });
+      set((s) => ({
+        vaults: patchVault(s.vaults, vaultId, {
+          deposits: data.PraxisVault_Deposit.map(mapDeposit),
+        }),
+      }));
     } catch (err) {
       set({ error: (err as Error).message });
     }
   },
 
-  fetchUserWithdrawals: async (address) => {
+  fetchUserWithdrawals: async (vaultId, address) => {
     try {
       const data = await envioQuery<{ PraxisVault_Withdraw: RawWithdraw[] }>(
         USER_WITHDRAWALS_QUERY,
-        { receiver: address }
+        { vault: vaultId, receiver: address }
       );
-      set({ withdrawals: data.PraxisVault_Withdraw.map(mapWithdraw) });
+      set((s) => ({
+        vaults: patchVault(s.vaults, vaultId, {
+          withdrawals: data.PraxisVault_Withdraw.map(mapWithdraw),
+        }),
+      }));
     } catch (err) {
       set({ error: (err as Error).message });
     }
   },
 
-  fetchUserRedeems: async (address) => {
+  fetchUserRedeems: async (vaultId, address) => {
     try {
       const data = await envioQuery<{ PraxisVault_RedeemYield: RawRedeem[] }>(
         USER_REDEEMS_QUERY,
-        { receiver: address }
+        { vault: vaultId, receiver: address }
       );
-      set({ redeems: data.PraxisVault_RedeemYield.map(mapRedeem) });
+      set((s) => ({
+        vaults: patchVault(s.vaults, vaultId, {
+          redeems: data.PraxisVault_RedeemYield.map(mapRedeem),
+        }),
+      }));
+    } catch (err) {
+      set({ error: (err as Error).message });
+    }
+  },
+
+  fetchAllForVault: async (vaultId, userAddress) => {
+    try {
+      const promises: Promise<void>[] = [get().fetchDailySnapshots(vaultId)];
+      if (userAddress) {
+        promises.push(
+          get().fetchUserPosition(vaultId, userAddress),
+          get().fetchUserDeposits(vaultId, userAddress),
+          get().fetchUserWithdrawals(vaultId, userAddress),
+          get().fetchUserRedeems(vaultId, userAddress)
+        );
+      }
+      await Promise.all(promises);
     } catch (err) {
       set({ error: (err as Error).message });
     }
@@ -406,31 +557,13 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
   fetchAll: async (userAddress) => {
     set({ loading: true, error: null });
     try {
-      const promises: Promise<void>[] = [
-        get().fetchVaultState(),
-        get().fetchDailySnapshots(),
-      ];
-      if (userAddress) {
-        promises.push(
-          get().fetchUserPosition(userAddress),
-          get().fetchUserDeposits(userAddress),
-          get().fetchUserWithdrawals(userAddress),
-          get().fetchUserRedeems(userAddress)
-        );
-      }
-      await Promise.all(promises);
+      await get().fetchAllVaultStates();
+      const vaultIds = Object.keys(get().vaults);
+      await Promise.all(vaultIds.map((id) => get().fetchAllForVault(id, userAddress)));
       set({ loading: false });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
-  },
-
-  getTotalUserDeposits: () => {
-    return get().userPosition?.totalDeposited ?? BigInt(0);
-  },
-
-  getUserNetBalance: () => {
-    return get().userPosition?.currentBalance ?? BigInt(0);
   },
 
   reset: () => set(initialState),

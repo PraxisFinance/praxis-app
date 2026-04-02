@@ -22,6 +22,7 @@ export {
   type VaultState,
   type UserPosition,
   type VaultDailySnapshot,
+  type VaultData,
   type DepositEvent,
   type WithdrawEvent,
   type RedeemYieldEvent,
