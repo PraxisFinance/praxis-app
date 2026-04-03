@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useAccount, useReadContracts } from "wagmi";
 import { erc20Abi } from "viem";
+import { baseSepolia } from "wagmi/chains";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { formatTokenBalance } from "@/shared/utils/format";
 import type { Balance } from "@/shared/types/balances";
@@ -24,18 +25,21 @@ export function useWalletBalances() {
         abi: erc20Abi,
         functionName: "balanceOf" as const,
         args: [address] as const,
+        chainId: baseSepolia.id,
       },
       {
         address: TOKEN_ADDRESSES.PT,
         abi: erc20Abi,
         functionName: "balanceOf" as const,
         args: [address] as const,
+        chainId: baseSepolia.id,
       },
       {
         address: TOKEN_ADDRESSES.YT,
         abi: erc20Abi,
         functionName: "balanceOf" as const,
         args: [address] as const,
+        chainId: baseSepolia.id,
       },
     ];
   }, [address]);

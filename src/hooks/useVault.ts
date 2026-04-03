@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
+import { baseSepolia } from "wagmi/chains";
 import { config } from "@/config/wagmi";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { praxisVaultAbi } from "@/config/contracts";
@@ -20,7 +21,8 @@ export type DepositStatus =
 
 export function useVaultDeposit(
   vaultAddress: `0x${string}`,
-  amountInput: string
+  amountInput: string,
+  usdcBalance: bigint = BigInt(0)
 ) {
   const { address } = useAccount();
   const { writeContractAsync } = useWriteContract();
@@ -34,6 +36,7 @@ export function useVaultDeposit(
     abi: praxisVaultAbi,
     functionName: "quoteBuyIn",
     args: [principalAmount],
+    chainId: baseSepolia.id,
     query: { enabled: principalAmount > BigInt(0) },
   });
 
@@ -43,6 +46,8 @@ export function useVaultDeposit(
   const maxBuyIn = buyIn + buyIn / BigInt(100);
   const totalCost = principalAmount + maxBuyIn;
   const totalCostFormatted = formatTokenBalance(totalCost, TOKEN_DECIMALS.USDC);
+
+  const insufficientBalance = principalAmount > BigInt(0) && totalCost > usdcBalance;
 
   const deposit = useCallback(async () => {
     if (!address) {
@@ -57,6 +62,14 @@ export function useVaultDeposit(
       return;
     }
 
+    if (totalCost > usdcBalance) {
+      setErrorMessage(
+        `Insufficient balance. Deposit (${formatTokenBalance(principalAmount, TOKEN_DECIMALS.USDC)}) + buy-in fee (${buyInFormatted}) = ${totalCostFormatted} USDC, but you only have ${formatTokenBalance(usdcBalance, TOKEN_DECIMALS.USDC)} USDC.`
+      );
+      setStatus("error");
+      return;
+    }
+
     try {
       setErrorMessage(null);
 
@@ -65,6 +78,7 @@ export function useVaultDeposit(
         abi: erc20Abi,
         functionName: "allowance",
         args: [address, vaultAddress],
+        chainId: baseSepolia.id,
       });
 
       if (allowance < totalCost) {
@@ -75,6 +89,7 @@ export function useVaultDeposit(
           abi: erc20Abi,
           functionName: "approve",
           args: [vaultAddress, totalCost],
+          chainId: baseSepolia.id,
         });
 
         await waitForTransactionReceipt(config, { hash: approveTx });
@@ -87,6 +102,7 @@ export function useVaultDeposit(
         abi: praxisVaultAbi,
         functionName: "deposit",
         args: [principalAmount, address, maxBuyIn],
+        chainId: baseSepolia.id,
       });
 
       await waitForTransactionReceipt(config, { hash: depositTx });
@@ -104,6 +120,9 @@ export function useVaultDeposit(
     principalAmount,
     maxBuyIn,
     totalCost,
+    usdcBalance,
+    buyInFormatted,
+    totalCostFormatted,
     writeContractAsync,
   ]);
 
@@ -119,6 +138,7 @@ export function useVaultDeposit(
     reset,
     buyIn: buyInFormatted,
     totalCost: totalCostFormatted,
+    insufficientBalance,
     isPending: status === "approving" || status === "depositing",
   };
 }
@@ -160,6 +180,7 @@ export function useVaultWithdraw(
         abi: praxisVaultAbi,
         functionName: "withdraw",
         args: [amount, address],
+        chainId: baseSepolia.id,
       });
 
       await waitForTransactionReceipt(config, { hash: tx });
@@ -224,6 +245,7 @@ export function useVaultRedeemYield(
         abi: praxisVaultAbi,
         functionName: "redeemYield",
         args: [ytAmount, address],
+        chainId: baseSepolia.id,
       });
 
       await waitForTransactionReceipt(config, { hash: tx });
