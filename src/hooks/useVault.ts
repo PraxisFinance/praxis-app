@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
@@ -25,6 +25,8 @@ export function useVaultDeposit(
   usdcBalance: bigint = BigInt(0)
 ) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<DepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -73,6 +75,10 @@ export function useVaultDeposit(
     try {
       setErrorMessage(null);
 
+      if (chainId !== baseSepolia.id) {
+        await switchChainAsync({ chainId: baseSepolia.id });
+      }
+
       const allowance = await readContract(config, {
         address: TOKEN_ADDRESSES.USDC,
         abi: erc20Abi,
@@ -116,6 +122,8 @@ export function useVaultDeposit(
     }
   }, [
     address,
+    chainId,
+    switchChainAsync,
     vaultAddress,
     principalAmount,
     maxBuyIn,
@@ -152,6 +160,8 @@ export function useVaultWithdraw(
   amountInput: string
 ) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<WithdrawStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -173,6 +183,11 @@ export function useVaultWithdraw(
 
     try {
       setErrorMessage(null);
+
+      if (chainId !== baseSepolia.id) {
+        await switchChainAsync({ chainId: baseSepolia.id });
+      }
+
       setStatus("withdrawing");
 
       const tx = await writeContractAsync({
@@ -192,7 +207,7 @@ export function useVaultWithdraw(
         err instanceof Error ? err.message : "Transaction failed"
       );
     }
-  }, [address, vaultAddress, amount, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, vaultAddress, amount, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -217,6 +232,8 @@ export function useVaultRedeemYield(
   ytAmountInput: string
 ) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<RedeemYieldStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -238,6 +255,11 @@ export function useVaultRedeemYield(
 
     try {
       setErrorMessage(null);
+
+      if (chainId !== baseSepolia.id) {
+        await switchChainAsync({ chainId: baseSepolia.id });
+      }
+
       setStatus("redeeming");
 
       const tx = await writeContractAsync({
@@ -257,7 +279,7 @@ export function useVaultRedeemYield(
         err instanceof Error ? err.message : "Transaction failed"
       );
     }
-  }, [address, vaultAddress, ytAmount, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, vaultAddress, ytAmount, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
