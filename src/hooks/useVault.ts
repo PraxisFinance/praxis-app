@@ -12,12 +12,7 @@ import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
 
 // ── Deposit ───────────────────────────────────────────────────────────
 
-export type DepositStatus =
-  | "idle"
-  | "approving"
-  | "depositing"
-  | "success"
-  | "error";
+export type DepositStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
 export function useVaultDeposit(
   vaultAddress: `0x${string}`,
@@ -75,9 +70,9 @@ export function useVaultDeposit(
     try {
       setErrorMessage(null);
 
-      if (chainId !== baseSepolia.id) {
-        await switchChainAsync({ chainId: baseSepolia.id });
-      }
+      // if (chainId !== baseSepolia.id) {
+      await switchChainAsync({ chainId: baseSepolia.id });
+      // }
 
       const allowance = await readContract(config, {
         address: TOKEN_ADDRESSES.USDC,
@@ -116,9 +111,7 @@ export function useVaultDeposit(
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Transaction failed"
-      );
+      setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
   }, [
     address,
@@ -155,10 +148,7 @@ export function useVaultDeposit(
 
 export type WithdrawStatus = "idle" | "withdrawing" | "success" | "error";
 
-export function useVaultWithdraw(
-  vaultAddress: `0x${string}`,
-  amountInput: string
-) {
+export function useVaultWithdraw(vaultAddress: `0x${string}`, amountInput: string) {
   const { address } = useAccount();
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
@@ -203,9 +193,7 @@ export function useVaultWithdraw(
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Transaction failed"
-      );
+      setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
   }, [address, chainId, switchChainAsync, vaultAddress, amount, writeContractAsync]);
 
@@ -227,10 +215,7 @@ export function useVaultWithdraw(
 
 export type RedeemYieldStatus = "idle" | "redeeming" | "success" | "error";
 
-export function useVaultRedeemYield(
-  vaultAddress: `0x${string}`,
-  ytAmountInput: string
-) {
+export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: string) {
   const { address } = useAccount();
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
@@ -275,9 +260,7 @@ export function useVaultRedeemYield(
       setStatus("success");
     } catch (err) {
       setStatus("error");
-      setErrorMessage(
-        err instanceof Error ? err.message : "Transaction failed"
-      );
+      setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
   }, [address, chainId, switchChainAsync, vaultAddress, ytAmount, writeContractAsync]);
 
