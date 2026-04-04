@@ -44,7 +44,7 @@ const MOCK_HISTORY: HistoryItem[] = [
   {
     id: "hist-5",
     time: Date.now() - 5 * 24 * 60 * 60 * 1000, // 5 days ago
-    text: "Entered Weekly Lottery #42",
+    text: "Entered Weekly RYD #42",
     amount: BigInt("-100000000"), // -100 USDC
   },
   {
