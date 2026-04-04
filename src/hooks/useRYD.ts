@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
@@ -20,6 +20,8 @@ export function useRYDDeposit(
   ytBalance: bigint = BigInt(0)
 ) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<RYDDepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -50,6 +52,8 @@ export function useRYDDeposit(
 
     try {
       setErrorMessage(null);
+
+      await switchChainAsync({ chainId: baseSepolia.id });
 
       const allowance = await readContract(config, {
         address: TOKEN_ADDRESSES.YT,
@@ -90,7 +94,7 @@ export function useRYDDeposit(
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, rydAddress, amount, ytBalance, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, amount, ytBalance, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -113,6 +117,8 @@ export type RYDWithdrawStatus = "idle" | "withdrawing" | "success" | "error";
 
 export function useRYDWithdraw(rydAddress: `0x${string}`, amountInput: string) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<RYDWithdrawStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -134,6 +140,9 @@ export function useRYDWithdraw(rydAddress: `0x${string}`, amountInput: string) {
 
     try {
       setErrorMessage(null);
+
+      await switchChainAsync({ chainId: baseSepolia.id });
+
       setStatus("withdrawing");
 
       const tx = await writeContractAsync({
@@ -151,7 +160,7 @@ export function useRYDWithdraw(rydAddress: `0x${string}`, amountInput: string) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, rydAddress, amount, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, amount, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -173,6 +182,8 @@ export type RequestDrawStatus = "idle" | "requesting" | "success" | "error";
 
 export function useRYDRequestDraw(rydAddress: `0x${string}`) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<RequestDrawStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -186,6 +197,9 @@ export function useRYDRequestDraw(rydAddress: `0x${string}`) {
 
     try {
       setErrorMessage(null);
+
+      await switchChainAsync({ chainId: baseSepolia.id });
+
       setStatus("requesting");
 
       const tx = await writeContractAsync({
@@ -202,7 +216,7 @@ export function useRYDRequestDraw(rydAddress: `0x${string}`) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, rydAddress, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -224,6 +238,8 @@ export type ResolveWinnersStatus = "idle" | "resolving" | "success" | "error";
 
 export function useRYDResolveWinners(rydAddress: `0x${string}`) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<ResolveWinnersStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -237,6 +253,9 @@ export function useRYDResolveWinners(rydAddress: `0x${string}`) {
 
     try {
       setErrorMessage(null);
+
+      await switchChainAsync({ chainId: baseSepolia.id });
+
       setStatus("resolving");
 
       const tx = await writeContractAsync({
@@ -253,7 +272,7 @@ export function useRYDResolveWinners(rydAddress: `0x${string}`) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, rydAddress, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -275,6 +294,8 @@ export type ClaimPrizeStatus = "idle" | "claiming" | "success" | "error";
 
 export function useRYDClaim(rydAddress: `0x${string}`) {
   const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<ClaimPrizeStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -288,6 +309,9 @@ export function useRYDClaim(rydAddress: `0x${string}`) {
 
     try {
       setErrorMessage(null);
+
+      await switchChainAsync({ chainId: baseSepolia.id });
+
       setStatus("claiming");
 
       const tx = await writeContractAsync({
@@ -304,7 +328,7 @@ export function useRYDClaim(rydAddress: `0x${string}`) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, rydAddress, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, writeContractAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
