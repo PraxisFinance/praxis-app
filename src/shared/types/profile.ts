@@ -88,6 +88,20 @@ export interface ProfileMatchPrediction extends ProfilePredictionBase {
 
 export type ProfilePredictionItem = ProfilePoolPrediction | ProfileMatchPrediction;
 
+// ── Settings ───────────────────────────────────────────────────────────────
+
+export interface NotificationSetting {
+  id: string;
+  label: string;
+  enabled: boolean;
+}
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 // ── Rewards claims ─────────────────────────────────────────────────────────
 
 export interface RewardClaimItem {

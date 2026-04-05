@@ -1,11 +1,15 @@
 "use client";
 
+import { SettingsNotifications } from "./SettingsNotifications";
+import { SettingsSupport } from "./SettingsSupport";
+import { SettingsFaq } from "./SettingsFaq";
+
 export function SettingsSubPage() {
   return (
-    <div className="flex flex-col items-center gap-6 pt-8">
-      <p className="text-main-darkPurple text-base font-normal text-center leading-6">
-        Settings coming soon.
-      </p>
+    <div className="flex flex-col gap-6">
+      <SettingsNotifications />
+      <SettingsSupport />
+      <SettingsFaq />
     </div>
   );
 }
