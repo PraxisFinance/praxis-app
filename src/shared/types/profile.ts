@@ -56,6 +56,38 @@ export interface PredictionHistoryItem {
   currency: string;
 }
 
+// ── Profile predictions ────────────────────────────────────────────────────
+
+export type ProfilePredictionStatusFilter = "all" | "complete" | "in_progress";
+export type ProfilePredictionTimeInterval = "1D" | "3D" | "7D" | "1M" | "1Y";
+export type ProfilePredictionKind = "pool" | "match";
+
+interface ProfilePredictionBase {
+  id: string;
+  kind: ProfilePredictionKind;
+  name: string;
+  iconUrl: string;
+  ended: boolean;
+  userWon: boolean;
+}
+
+export interface ProfilePoolPrediction extends ProfilePredictionBase {
+  kind: "pool";
+  tvl: string;
+  earnings: string;
+  usersWon: number;
+  progressPercent: number;
+}
+
+export interface ProfileMatchPrediction extends ProfilePredictionBase {
+  kind: "match";
+  coeff: number;
+  prediction: string;
+  earnings: string;
+}
+
+export type ProfilePredictionItem = ProfilePoolPrediction | ProfileMatchPrediction;
+
 // ── Rewards claims ─────────────────────────────────────────────────────────
 
 export interface RewardClaimItem {

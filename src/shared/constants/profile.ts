@@ -6,6 +6,9 @@ import type {
   PredictionsStatsInterval,
   PredictionsStatsLineMeta,
   RewardClaimItem,
+  ProfilePredictionItem,
+  ProfilePredictionStatusFilter,
+  ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
 
 // ── Predictions stats chart ────────────────────────────────────────────────
@@ -232,4 +235,87 @@ export const REWARDS_CLAIMS_MOCK: RewardClaimItem[] = [
   { id: "2", name: "Match: AVULUS", iconUrl: "/icons/w-usdc.png", income: 5, incomeCurrency: "ytPraxis" },
   { id: "3", name: "Random pool #1", iconUrl: "/icons/yt-token.png", income: 35, incomeCurrency: "ytPraxis" },
   { id: "4", name: "AERO Up or Down: Up", iconUrl: "/icons/w-usdc.png", income: 15, incomeCurrency: "ytPraxis" },
+];
+
+// ── Profile predictions ────────────────────────────────────────────────────
+
+export const PROFILE_PREDICTION_STATUS_FILTERS: {
+  id: ProfilePredictionStatusFilter;
+  label: string;
+}[] = [
+  { id: "all", label: "All" },
+  { id: "complete", label: "Complete" },
+  { id: "in_progress", label: "In Progress" },
+];
+
+export const PROFILE_PREDICTION_TIME_INTERVALS: {
+  id: ProfilePredictionTimeInterval;
+  label: string;
+}[] = [
+  { id: "1D", label: "24h" },
+  { id: "3D", label: "3 days" },
+  { id: "7D", label: "7 days" },
+  { id: "1M", label: "1 month" },
+  { id: "1Y", label: "1 year" },
+];
+
+export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
+  {
+    id: "pp1",
+    kind: "pool",
+    name: "Random pool #3",
+    iconUrl: "/icons/yt-token.png",
+    ended: true,
+    userWon: false,
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    progressPercent: 100,
+  },
+  {
+    id: "pp2",
+    kind: "pool",
+    name: "Random pool #4",
+    iconUrl: "/icons/yt-token.png",
+    ended: true,
+    userWon: true,
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    progressPercent: 100,
+  },
+  {
+    id: "pp3",
+    kind: "match",
+    name: "Match outcome: AVULUS",
+    iconUrl: "/icons/w-usdc.png",
+    ended: true,
+    userWon: true,
+    coeff: 3.4,
+    prediction: "$294 wUSDC",
+    earnings: "$1000 wUSDC",
+  },
+  {
+    id: "pp4",
+    kind: "pool",
+    name: "Random pool #5",
+    iconUrl: "/icons/yt-token.png",
+    ended: false,
+    userWon: false,
+    tvl: "54.500$",
+    earnings: "$320",
+    usersWon: 0,
+    progressPercent: 62,
+  },
+  {
+    id: "pp5",
+    kind: "match",
+    name: "Match outcome: Chelsea",
+    iconUrl: "/icons/w-usdc.png",
+    ended: false,
+    userWon: false,
+    coeff: 2.1,
+    prediction: "$150 wUSDC",
+    earnings: "$315 wUSDC",
+  },
 ];
