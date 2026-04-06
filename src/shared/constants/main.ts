@@ -1,4 +1,10 @@
 import type { MenuItem } from "@/shared/types/main";
+import {
+  EARN_ROUTE,
+  PREDICTIONS_CRYPTOCURRENCY_ROUTE,
+  PREDICTIONS_ESPORTS_ROUTE,
+  PREDICTIONS_RANDOM_REWARDS_ROUTE,
+} from "@/lib/routes";
 import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
 import { LEADERBOARD_ROUTE } from "@/shared/constants/leaderboard";
 import { HOW_IT_WORKS_ROUTE } from "@/shared/constants/howItWorks";
@@ -17,28 +23,28 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "yield",
     type: "middle",
     backgroundImage: "/main/yield.png",
-    redirectUrl: "",
+    redirectUrl: EARN_ROUTE,
     redirectLabel: "Yield",
   },
   {
     key: "random-distribution",
     type: "middle",
     backgroundImage: "/main/random-distribution.png",
-    redirectUrl: "",
+    redirectUrl: PREDICTIONS_RANDOM_REWARDS_ROUTE,
     redirectLabel: "Random distribution",
   },
   {
     key: "financial-predictions",
     type: "middle",
     backgroundImage: "/main/financial-predictions.png",
-    redirectUrl: "",
+    redirectUrl: PREDICTIONS_CRYPTOCURRENCY_ROUTE,
     redirectLabel: "Financial predictions",
   },
   {
     key: "e-sports-predictions",
     type: "middle",
     backgroundImage: "/main/e-sports-predictions.png",
-    redirectUrl: "",
+    redirectUrl: PREDICTIONS_ESPORTS_ROUTE,
     redirectLabel: "E-sport predictions",
   },
   {
