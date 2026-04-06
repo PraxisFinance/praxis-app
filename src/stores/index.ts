@@ -30,12 +30,10 @@ export {
 
 export {
   useRYDStore,
-  getRYDRegistry,
   formatRYDAmount,
   formatWinProbability,
   formatRYDStatus,
   shortenAddress,
-  type RYDConfig,
   type RYDStatus,
   type RYDState,
   type RYDParticipant,

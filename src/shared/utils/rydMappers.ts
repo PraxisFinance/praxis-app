@@ -22,12 +22,13 @@ function calcRemainingTime(endTimeSec: bigint): RandomPoolRemainingTime & { tota
 }
 
 export function rydDataToRandomPool(data: RYDData): RandomPool | null {
-  const { state, config, userParticipation } = data;
+  const { state, userParticipation } = data;
   if (!state) return null;
 
   const isLive = state.state === "Open" || state.state === "DrawRequested";
   const tvl = formatRYDAmount(state.totalDeposits, YT_DECIMALS);
   const totalPrize = state.prizePerWinner * BigInt(state.numWinners);
+  const title = `YT RYD ${shortenAddress(state.id)}`;
 
   if (isLive) {
     const rt = calcRemainingTime(state.endTime);
@@ -40,8 +41,8 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
           );
 
     return {
-      id: config.key,
-      title: config.label,
+      id: state.id,
+      title,
       iconUrl: "/icons/yt-token.png",
       status: "live",
       tvl,
@@ -58,8 +59,8 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
   }
 
   return {
-    id: config.key,
-    title: config.label,
+    id: state.id,
+    title,
     iconUrl: "/icons/yt-token.png",
     status: "ended",
     tvl,
