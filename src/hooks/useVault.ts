@@ -70,9 +70,7 @@ export function useVaultDeposit(
     try {
       setErrorMessage(null);
 
-      // if (chainId !== baseSepolia.id) {
       await switchChainAsync({ chainId: baseSepolia.id });
-      // }
 
       const allowance = await readContract(config, {
         address: TOKEN_ADDRESSES.USDC,
@@ -174,9 +172,7 @@ export function useVaultWithdraw(vaultAddress: `0x${string}`, amountInput: strin
     try {
       setErrorMessage(null);
 
-      if (chainId !== baseSepolia.id) {
-        await switchChainAsync({ chainId: baseSepolia.id });
-      }
+      await switchChainAsync({ chainId: baseSepolia.id });
 
       setStatus("withdrawing");
 
@@ -241,9 +237,7 @@ export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: 
     try {
       setErrorMessage(null);
 
-      if (chainId !== baseSepolia.id) {
-        await switchChainAsync({ chainId: baseSepolia.id });
-      }
+      await switchChainAsync({ chainId: baseSepolia.id });
 
       setStatus("redeeming");
 

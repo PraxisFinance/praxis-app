@@ -17,7 +17,7 @@ Praxis lets users participate in prediction markets — sport, economic, and ran
 
 ## Features
 
-- **Prediction Markets** — Sport (team pools & odds), economic (binary outcomes), and random (lottery-style) events
+- **Prediction Markets** — Sport (team pools & odds), economic (binary outcomes), and random (RYD — Random Yield Distribution) events
 - **Principal Protection** — Deposit into vaults with maturity dates and APY; principal stays safe while yield funds predictions
 - **YT Tokens** — Yield Tokens represent your share of vault returns
 - **Claims & History** — Track pending and claimed income from resolved events

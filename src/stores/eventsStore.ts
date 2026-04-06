@@ -148,7 +148,7 @@ const MOCK_RANDOM_EVENTS: RandomEvent[] = [
   {
     id: "random-1",
     type: "random",
-    name: "Weekly Lottery #42",
+    name: "Weekly RYD #42",
     poolSize: BigInt("100000000000"), // 100,000 USDC
     amountOfWinners: 10,
     lockTime: Date.now() + 5 * 24 * 60 * 60 * 1000,

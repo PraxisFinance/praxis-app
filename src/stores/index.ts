@@ -29,20 +29,20 @@ export {
 } from "./depositsStore";
 
 export {
-  useLotteryStore,
-  getLotteryRegistry,
-  formatLotteryAmount,
+  useRYDStore,
+  getRYDRegistry,
+  formatRYDAmount,
   formatWinProbability,
-  formatLotteryStatus,
+  formatRYDStatus,
   shortenAddress,
-  type LotteryConfig,
-  type LotteryStatus,
-  type LotteryState,
-  type LotteryParticipant,
-  type LotteryWinner,
-  type LotteryDailySnapshot,
-  type LotteryData,
-} from "./lotteryStore";
+  type RYDConfig,
+  type RYDStatus,
+  type RYDState,
+  type RYDParticipant,
+  type RYDWinner,
+  type RYDDailySnapshot,
+  type RYDData,
+} from "./rydStore";
 
 export {
   useHistoryStore,

@@ -6,6 +6,8 @@ import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 export interface VaultState {
   id: string;
   maturity: bigint;
+  pt: string;
+  yt: string;
   totalDeposited: bigint;
   totalWithdrawn: bigint;
   totalBalance: bigint;
@@ -133,6 +135,8 @@ const ALL_VAULT_STATES_QUERY = `
     VaultState {
       id
       maturity
+      pt
+      yt
       totalDeposited
       totalWithdrawn
       totalBalance
@@ -237,6 +241,8 @@ const USER_REDEEMS_QUERY = `
 interface RawVaultState {
   id: string;
   maturity: string;
+  pt: string;
+  yt: string;
   totalDeposited: string;
   totalWithdrawn: string;
   totalBalance: string;
@@ -252,6 +258,8 @@ function mapVaultState(raw: RawVaultState): VaultState {
   return {
     id: raw.id,
     maturity: toBigInt(raw.maturity),
+    pt: raw.pt,
+    yt: raw.yt,
     totalDeposited: toBigInt(raw.totalDeposited),
     totalWithdrawn: toBigInt(raw.totalWithdrawn),
     totalBalance: toBigInt(raw.totalBalance),
