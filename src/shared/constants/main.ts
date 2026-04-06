@@ -1,6 +1,7 @@
 import type { MenuItem } from "@/shared/types/main";
 import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
 import { LEADERBOARD_ROUTE } from "@/shared/constants/leaderboard";
+import { HOW_IT_WORKS_ROUTE } from "@/shared/constants/howItWorks";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -9,7 +10,7 @@ export const MENU_ITEMS: MenuItem[] = [
     title: "Smart predictions",
     description: "Earning mechanism that combines yield and prediction market mechanics.",
     backgroundImage: "/main/smart-predictions.png",
-    redirectUrl: "",
+    redirectUrl: HOW_IT_WORKS_ROUTE,
     redirectLabel: "How it works",
   },
   {
