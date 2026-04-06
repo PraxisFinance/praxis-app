@@ -1,4 +1,5 @@
 import type { MenuItem } from "@/shared/types/main";
+import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -42,7 +43,7 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "invite-friends",
     type: "middle",
     backgroundImage: "/main/invite-friends.png",
-    redirectUrl: "",
+    redirectUrl: INVITE_FRIENDS_ROUTE,
     redirectLabel: "Invite friends",
   },
   {
