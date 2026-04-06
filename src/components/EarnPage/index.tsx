@@ -18,7 +18,14 @@ import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function EarnPage() {
   const { address } = useAccount();
-  const { vaults, loading, fetchAll, getActiveVaults, getUserPositions } = useDepositsStore();
+  const {
+    vaults,
+    loading,
+    fetchAll,
+    fetchUserDataForAllVaults,
+    getActiveVaults,
+    getUserPositions,
+  } = useDepositsStore();
 
   const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
     null,
@@ -32,6 +39,13 @@ export function EarnPage() {
   useEffect(() => {
     fetchAll(address);
   }, [address, fetchAll]);
+
+  const vaultCount = Object.keys(vaults).length;
+  useEffect(() => {
+    if (address && vaultCount > 0) {
+      fetchUserDataForAllVaults(address);
+    }
+  }, [address, vaultCount, fetchUserDataForAllVaults]);
 
   const availableItems = useMemo(
     () => getActiveVaults().map(vaultStateToAvailableItem),

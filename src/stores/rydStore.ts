@@ -1,24 +1,6 @@
 import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 
-// ── RYD (Random Yield Distribution) registry ─────────────────────────
-// Each entry maps a human-readable key to its on-chain/indexer entity ID.
-// Add new RYDs here and they'll automatically be available.
-
-export interface RYDConfig {
-  key: string;
-  label: string;
-  entityId: string;
-}
-
-const RYD_REGISTRY: RYDConfig[] = [
-  { key: "yt-ryd", label: "YT RYD", entityId: "PraxisYTRYD" },
-];
-
-export function getRYDRegistry(): RYDConfig[] {
-  return RYD_REGISTRY;
-}
-
 // ── Envio-derived types ──────────────────────────────────────────────
 
 export type RYDStatus = "Open" | "DrawRequested" | "ReadyToResolve" | "Finished";
@@ -115,7 +97,6 @@ export interface RYDPrizeClaimedEvent {
 // ── Per-RYD data bundle ──────────────────────────────────────────────
 
 export interface RYDData {
-  config: RYDConfig;
   state: RYDState | null;
   participants: RYDParticipant[];
   winners: RYDWinner[];
@@ -123,9 +104,8 @@ export interface RYDData {
   userParticipation: RYDParticipant | null;
 }
 
-function emptyRYDData(config: RYDConfig): RYDData {
+function emptyRYDData(): RYDData {
   return {
-    config,
     state: null,
     participants: [],
     winners: [],
@@ -138,45 +118,37 @@ function emptyRYDData(config: RYDConfig): RYDData {
 
 interface RYDStoreState {
   ryds: Record<string, RYDData>;
-  activeRYDKey: string;
+  activeRYDId: string | null;
   loading: boolean;
   error: string | null;
 
-  setActiveRYD: (key: string) => void;
+  setActiveRYD: (id: string) => void;
   getActiveRYD: () => RYDData | undefined;
-  getRYD: (key: string) => RYDData | undefined;
+  getRYD: (id: string) => RYDData | undefined;
 
-  fetchRYDState: (key: string) => Promise<void>;
-  fetchParticipants: (key: string, limit?: number) => Promise<void>;
-  fetchWinners: (key: string) => Promise<void>;
-  fetchDailySnapshots: (key: string, limit?: number) => Promise<void>;
-  fetchUserParticipation: (key: string, address: string) => Promise<void>;
-  fetchAllForRYD: (key: string, userAddress?: string) => Promise<void>;
+  fetchAllRYDStates: () => Promise<void>;
+  fetchParticipants: (rydId: string, limit?: number) => Promise<void>;
+  fetchWinners: (rydId: string) => Promise<void>;
+  fetchDailySnapshots: (rydId: string, limit?: number) => Promise<void>;
+  fetchUserParticipation: (rydId: string, address: string) => Promise<void>;
+  fetchAllForRYD: (rydId: string, userAddress?: string) => Promise<void>;
   fetchAll: (userAddress?: string) => Promise<void>;
 
   reset: () => void;
 }
 
-function buildInitialRYDs(): Record<string, RYDData> {
-  const map: Record<string, RYDData> = {};
-  for (const config of RYD_REGISTRY) {
-    map[config.key] = emptyRYDData(config);
-  }
-  return map;
-}
-
 const initialState = {
-  ryds: buildInitialRYDs(),
-  activeRYDKey: RYD_REGISTRY[0]?.key ?? "",
+  ryds: {} as Record<string, RYDData>,
+  activeRYDId: null as string | null,
   loading: false,
   error: null as string | null,
 };
 
 // ── GraphQL queries ──────────────────────────────────────────────────
 
-const RYD_STATE_QUERY = `
-  query RYDState {
-    RYDState(limit: 1) {
+const ALL_RYD_STATES_QUERY = `
+  query AllRYDStates {
+    RYDState {
       id
       vault
       yt
@@ -387,12 +359,11 @@ function mapRYDSnapshot(raw: RawRYDSnapshot): RYDDailySnapshot {
 
 function patchRYD(
   ryds: Record<string, RYDData>,
-  key: string,
+  rydId: string,
   patch: Partial<RYDData>
 ): Record<string, RYDData> {
-  const existing = ryds[key];
-  if (!existing) return ryds;
-  return { ...ryds, [key]: { ...existing, ...patch } };
+  const existing = ryds[rydId] ?? emptyRYDData();
+  return { ...ryds, [rydId]: { ...existing, ...patch } };
 }
 
 // ── Zustand store ────────────────────────────────────────────────────
@@ -400,39 +371,44 @@ function patchRYD(
 export const useRYDStore = create<RYDStoreState>((set, get) => ({
   ...initialState,
 
-  setActiveRYD: (key) => set({ activeRYDKey: key }),
+  setActiveRYD: (id) => set({ activeRYDId: id }),
 
   getActiveRYD: () => {
-    const { ryds, activeRYDKey } = get();
-    return ryds[activeRYDKey];
+    const { ryds, activeRYDId } = get();
+    return activeRYDId ? ryds[activeRYDId] : undefined;
   },
 
-  getRYD: (key) => get().ryds[key],
+  getRYD: (id) => get().ryds[id],
 
-  fetchRYDState: async (key) => {
+  fetchAllRYDStates: async () => {
     try {
       set({ loading: true, error: null });
-      const data = await envioQuery<{ RYDState: RawRYDState[] }>(RYD_STATE_QUERY);
-      const raw = data.RYDState[0];
-      set((s) => ({
-        ryds: patchRYD(s.ryds, key, {
-          state: raw ? mapRYDState(raw) : null,
-        }),
+      const data = await envioQuery<{ RYDState: RawRYDState[] }>(ALL_RYD_STATES_QUERY);
+      const nextRyds = { ...get().ryds };
+      for (const raw of data.RYDState) {
+        const mapped = mapRYDState(raw);
+        const existing = nextRyds[mapped.id] ?? emptyRYDData();
+        nextRyds[mapped.id] = { ...existing, state: mapped };
+      }
+      const activeId = get().activeRYDId;
+      set({
+        ryds: nextRyds,
+        activeRYDId: activeId && nextRyds[activeId] ? activeId : (data.RYDState[0]?.id ?? null),
         loading: false,
-      }));
+      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  fetchParticipants: async (key, limit = 100) => {
+  fetchParticipants: async (rydId, limit = 100) => {
     try {
       const data = await envioQuery<{ RYDParticipant: RawRYDParticipant[] }>(
         RYD_PARTICIPANTS_QUERY,
         { limit }
       );
       set((s) => ({
-        ryds: patchRYD(s.ryds, key, {
+        ryds: patchRYD(s.ryds, rydId, {
           participants: data.RYDParticipant.map(mapParticipant),
         }),
       }));
@@ -441,11 +417,11 @@ export const useRYDStore = create<RYDStoreState>((set, get) => ({
     }
   },
 
-  fetchWinners: async (key) => {
+  fetchWinners: async (rydId) => {
     try {
       const data = await envioQuery<{ RYDWinner: RawRYDWinner[] }>(RYD_WINNERS_QUERY);
       set((s) => ({
-        ryds: patchRYD(s.ryds, key, {
+        ryds: patchRYD(s.ryds, rydId, {
           winners: data.RYDWinner.map(mapWinner),
         }),
       }));
@@ -454,14 +430,14 @@ export const useRYDStore = create<RYDStoreState>((set, get) => ({
     }
   },
 
-  fetchDailySnapshots: async (key, limit = 30) => {
+  fetchDailySnapshots: async (rydId, limit = 30) => {
     try {
       const data = await envioQuery<{ RYDDailySnapshot: RawRYDSnapshot[] }>(
         RYD_DAILY_SNAPSHOTS_QUERY,
         { limit }
       );
       set((s) => ({
-        ryds: patchRYD(s.ryds, key, {
+        ryds: patchRYD(s.ryds, rydId, {
           dailySnapshots: data.RYDDailySnapshot.map(mapRYDSnapshot),
         }),
       }));
@@ -470,15 +446,15 @@ export const useRYDStore = create<RYDStoreState>((set, get) => ({
     }
   },
 
-  fetchUserParticipation: async (key, address) => {
+  fetchUserParticipation: async (rydId, address) => {
     try {
       const data = await envioQuery<{ RYDParticipant: RawRYDParticipant[] }>(
         RYD_USER_PARTICIPATION_QUERY,
-        { address }
+        { address: address.toLowerCase() }
       );
       const raw = data.RYDParticipant[0];
       set((s) => ({
-        ryds: patchRYD(s.ryds, key, {
+        ryds: patchRYD(s.ryds, rydId, {
           userParticipation: raw ? mapParticipant(raw) : null,
         }),
       }));
@@ -487,38 +463,31 @@ export const useRYDStore = create<RYDStoreState>((set, get) => ({
     }
   },
 
-  fetchAllForRYD: async (key, userAddress) => {
-    set({ loading: true, error: null });
-    try {
-      const promises: Promise<void>[] = [
-        get().fetchRYDState(key),
-        get().fetchParticipants(key),
-        get().fetchWinners(key),
-        get().fetchDailySnapshots(key),
-      ];
-      if (userAddress) {
-        promises.push(get().fetchUserParticipation(key, userAddress));
-      }
-      await Promise.all(promises);
-      set({ loading: false });
-    } catch (err) {
-      set({ error: (err as Error).message, loading: false });
+  fetchAllForRYD: async (rydId, userAddress) => {
+    const promises: Promise<void>[] = [
+      get().fetchParticipants(rydId),
+      get().fetchWinners(rydId),
+      get().fetchDailySnapshots(rydId),
+    ];
+    if (userAddress) {
+      promises.push(get().fetchUserParticipation(rydId, userAddress));
     }
+    await Promise.all(promises);
   },
 
   fetchAll: async (userAddress) => {
     set({ loading: true, error: null });
     try {
-      await Promise.all(
-        RYD_REGISTRY.map((cfg) => get().fetchAllForRYD(cfg.key, userAddress))
-      );
+      await get().fetchAllRYDStates();
+      const rydIds = Object.keys(get().ryds);
+      await Promise.all(rydIds.map((id) => get().fetchAllForRYD(id, userAddress)));
       set({ loading: false });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  reset: () => set({ ...initialState, ryds: buildInitialRYDs() }),
+  reset: () => set({ ...initialState, ryds: {} }),
 }));
 
 // ── Formatting helpers ───────────────────────────────────────────────

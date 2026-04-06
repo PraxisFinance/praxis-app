@@ -117,6 +117,7 @@ interface DepositsState {
   fetchUserRedeems: (vaultId: string, address: string) => Promise<void>;
   fetchAllForVault: (vaultId: string, userAddress?: string) => Promise<void>;
   fetchAll: (userAddress?: string) => Promise<void>;
+  fetchUserDataForAllVaults: (userAddress: string) => Promise<void>;
 
   reset: () => void;
 }
@@ -464,8 +465,8 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
     try {
       set({ loading: true, error: null });
       const data = await envioQuery<{ UserPosition: RawUserPosition[] }>(USER_POSITION_QUERY, {
-        vault_id: vaultId,
-        address,
+        vault_id: vaultId.toLowerCase(),
+        address: address.toLowerCase(),
       });
       const raw = data.UserPosition[0];
       set((s) => ({
@@ -500,8 +501,8 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
   fetchUserDeposits: async (vaultId, address) => {
     try {
       const data = await envioQuery<{ PraxisVault_Deposit: RawDeposit[] }>(USER_DEPOSITS_QUERY, {
-        vault: vaultId,
-        receiver: address,
+        vault: vaultId.toLowerCase(),
+        receiver: address.toLowerCase(),
       });
       set((s) => ({
         vaults: patchVault(s.vaults, vaultId, {
@@ -517,7 +518,7 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
     try {
       const data = await envioQuery<{ PraxisVault_Withdraw: RawWithdraw[] }>(
         USER_WITHDRAWALS_QUERY,
-        { vault: vaultId, receiver: address }
+        { vault: vaultId.toLowerCase(), receiver: address.toLowerCase() }
       );
       set((s) => ({
         vaults: patchVault(s.vaults, vaultId, {
@@ -533,7 +534,7 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
     try {
       const data = await envioQuery<{ PraxisVault_RedeemYield: RawRedeem[] }>(
         USER_REDEEMS_QUERY,
-        { vault: vaultId, receiver: address }
+        { vault: vaultId.toLowerCase(), receiver: address.toLowerCase() }
       );
       set((s) => ({
         vaults: patchVault(s.vaults, vaultId, {
@@ -568,6 +569,27 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
       await get().fetchAllVaultStates();
       const vaultIds = Object.keys(get().vaults);
       await Promise.all(vaultIds.map((id) => get().fetchAllForVault(id, userAddress)));
+      set({ loading: false });
+    } catch (err) {
+      set({ error: (err as Error).message, loading: false });
+    }
+  },
+
+  fetchUserDataForAllVaults: async (userAddress) => {
+    set({ loading: true, error: null });
+    try {
+      const vaultIds = Object.keys(get().vaults);
+      if (vaultIds.length === 0) return;
+      await Promise.all(
+        vaultIds.map((id) =>
+          Promise.all([
+            get().fetchUserPosition(id, userAddress),
+            get().fetchUserDeposits(id, userAddress),
+            get().fetchUserWithdrawals(id, userAddress),
+            get().fetchUserRedeems(id, userAddress),
+          ])
+        )
+      );
       set({ loading: false });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
