@@ -1,5 +1,6 @@
 import type { MenuItem } from "@/shared/types/main";
 import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
+import { LEADERBOARD_ROUTE } from "@/shared/constants/leaderboard";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -50,7 +51,7 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "leaderboard",
     type: "middle",
     backgroundImage: "/main/leaderboard.png",
-    redirectUrl: "",
+    redirectUrl: LEADERBOARD_ROUTE,
     redirectLabel: "Leaderboard",
   },
 ];
