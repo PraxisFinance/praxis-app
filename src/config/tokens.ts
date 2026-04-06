@@ -1,7 +1,7 @@
 export const TOKEN_ADDRESSES = {
-  USDC: "0xA9B7dd598f92d88dadF43aAF96BEA8B2B6f518B3" as `0x${string}`,
-  PT: "0xd58aF8EBE73a5E0A51ac190b2995533C4dAF0B91" as `0x${string}`,
-  YT: "0x8D905630868624F595F751c6F44c9798F0fF0B74" as `0x${string}`,
+  USDC: "0x6a10a9fd32b894A1d4E10E957A73160067B047b6" as `0x${string}`,
+  PT: "0xA00510EcC1600133972C7Bbd93f7a002f78E90BE" as `0x${string}`,
+  YT: "0x30EE6bB8BdC76ac9ff99eD30bf06E663221DE7b7" as `0x${string}`,
 } as const;
 
 export const TOKEN_DECIMALS = {
