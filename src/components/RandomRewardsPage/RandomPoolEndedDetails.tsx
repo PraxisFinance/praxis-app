@@ -3,15 +3,15 @@
 import { Frown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { MOCK_POOL_WINNERS } from "@/shared/constants/randomRewards";
-import type { RandomPoolEnded } from "@/shared/types/randomPool";
+import type { RandomPoolEnded, RandomPoolUserInPool } from "@/shared/types/randomPool";
 import { RandomPoolParticipantList } from "./RandomPoolParticipantList";
 
 export interface RandomPoolEndedDetailsProps {
   pool: RandomPoolEnded;
+  winners?: RandomPoolUserInPool[];
 }
 
-export function RandomPoolEndedDetails({ pool }: RandomPoolEndedDetailsProps) {
+export function RandomPoolEndedDetails({ pool, winners = [] }: RandomPoolEndedDetailsProps) {
   return (
     <div className="flex flex-col gap-3">
       <section className="flex flex-col gap-3">
@@ -39,7 +39,7 @@ export function RandomPoolEndedDetails({ pool }: RandomPoolEndedDetailsProps) {
         )}
       </section>
 
-      <RandomPoolParticipantList title="Winners" users={MOCK_POOL_WINNERS} />
+      <RandomPoolParticipantList title="Winners" users={winners} />
     </div>
   );
 }

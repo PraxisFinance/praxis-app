@@ -1,6 +1,7 @@
 export type EarnPositionStatus = "active" | "ended";
 
 export interface EarnPosition {
+  vaultAddress: `0x${string}`;
   queueName: string;
   poolLifetime: string;
   depositCurrency: string;
@@ -15,6 +16,7 @@ export interface EarnPosition {
 }
 
 export interface EarnAvailableItem {
+  vaultAddress: `0x${string}`;
   queueName: string;
   poolLifetime: string;
   depositCurrency: string;

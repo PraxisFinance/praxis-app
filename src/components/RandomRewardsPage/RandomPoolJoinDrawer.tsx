@@ -5,9 +5,17 @@ import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
-import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
+import { useRYDDeposit } from "@/hooks/useRYD";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { formatTokenBalance } from "@/shared/utils/format";
+import { TOKEN_DECIMALS } from "@/config/tokens";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
+
+const STATUS_LABELS: Record<string, string> = {
+  approving: "Approving…",
+  depositing: "Depositing…",
+};
 
 interface RandomPoolJoinDrawerProps {
   pool: RandomPoolLive | null;
@@ -17,14 +25,31 @@ interface RandomPoolJoinDrawerProps {
 
 export function RandomPoolJoinDrawer({ pool, open, onOpenChange }: RandomPoolJoinDrawerProps) {
   const [amount, setAmount] = useState("");
+  const { raw, refetch } = useWalletBalances();
+
+  const rydAddress = (pool?.id ?? "0x0") as `0x${string}`;
+
+  const { deposit, status, errorMessage, reset, isPending, insufficientBalance } =
+    useRYDDeposit(rydAddress, amount, raw.yt);
 
   useEffect(() => {
-    if (open && pool) setAmount("");
+    if (open && pool) {
+      setAmount("");
+      reset();
+    }
   }, [open, pool?.id]);
+
+  useEffect(() => {
+    if (status === "success") {
+      refetch();
+      onOpenChange(false);
+    }
+  }, [status]);
 
   if (!pool) return null;
 
-  const walletBalance = getBalanceValueByIconUrl(DEFAULT_BALANCES, pool.iconUrl);
+  const ytBalanceFormatted = formatTokenBalance(raw.yt, TOKEN_DECIMALS.YT);
+  const canDeposit = !!pool && !isPending && !insufficientBalance && amount !== "";
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
@@ -50,13 +75,22 @@ export function RandomPoolJoinDrawer({ pool, open, onOpenChange }: RandomPoolJoi
           <InputWithMax
             value={amount}
             onChange={setAmount}
-            maxValue={walletBalance}
+            maxValue={ytBalanceFormatted}
             placeholder="Deposit amount"
           />
         </div>
 
-        <Button variant="primary" size="action">
-          Place deposit
+        {errorMessage && (
+          <p className="text-xs text-red-500">{errorMessage}</p>
+        )}
+
+        <Button
+          variant="primary"
+          size="action"
+          disabled={!canDeposit}
+          onClick={deposit}
+        >
+          {STATUS_LABELS[status] ?? "Place deposit"}
         </Button>
       </div>
     </DrawerShell>

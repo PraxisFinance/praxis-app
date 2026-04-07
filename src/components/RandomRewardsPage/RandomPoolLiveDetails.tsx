@@ -3,19 +3,21 @@
 import { Button } from "@/components/ui/button";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { MOCK_USERS_IN_POOL } from "@/shared/constants/randomRewards";
+import type { RandomPoolUserInPool } from "@/shared/types/randomPool";
 import { RandomPoolParticipantList } from "./RandomPoolParticipantList";
 
 export interface RandomPoolLiveDetailsProps {
   amount: string;
   onAmountChange: (value: string) => void;
   walletBalance: string;
+  participants?: RandomPoolUserInPool[];
 }
 
 export function RandomPoolLiveDetails({
   amount,
   onAmountChange,
   walletBalance,
+  participants = [],
 }: RandomPoolLiveDetailsProps) {
   return (
     <div className="flex flex-col gap-3">
@@ -34,7 +36,7 @@ export function RandomPoolLiveDetails({
         </Button>
       </section>
 
-      <RandomPoolParticipantList title="Users in pool" users={MOCK_USERS_IN_POOL} />
+      <RandomPoolParticipantList title="Users in pool" users={participants} />
     </div>
   );
 }

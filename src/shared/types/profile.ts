@@ -101,7 +101,6 @@ export interface FaqItem {
   question: string;
   answer: string;
 }
-
 // ── Rewards claims ─────────────────────────────────────────────────────────
 
 export interface RewardClaimItem {
