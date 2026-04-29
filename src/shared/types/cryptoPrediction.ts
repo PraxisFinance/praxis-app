@@ -56,8 +56,8 @@ type CryptoPredictionBase = {
   status: CryptoPredictionStatus;
   /** ISO 8601 — конец приёма ставок / окончание окна для подписи «End in: …» */
   endsAt: string;
-  /** Совпадает с вкладками фильтра типа прогноза (кроме «all») */
-  predictionType: Exclude<CryptoPredictionTypeFilterId, "all">;
+  /** Совпадает с вкладками фильтра типа прогноза (кроме «all» и Two-Pool) */
+  predictionType: Exclude<CryptoPredictionTypeFilterId, "all" | "two_pool">;
   /** Можно ли открыть ставку / предикт (закрыт рынок, технические причины) */
   isTradingOpen: boolean;
 };

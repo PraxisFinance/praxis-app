@@ -24,7 +24,7 @@ export function CryptoPredictionCardBody({
         <CryptoPredictionBinaryOutcomesBlock
           outcomes={prediction.outcomes}
           disabled={disabled}
-          statusLine={getCryptoPredictionStatusFooter(prediction)}
+          statusLine={getCryptoPredictionStatusFooter(prediction.status)}
           onOutcomePick={onPickBinaryOutcome}
         />
       );

@@ -1,5 +1,5 @@
 import { format, isThisYear, isToday, isTomorrow } from "date-fns";
-import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import type { CryptoPrediction, CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -59,12 +59,12 @@ export function getCryptoPredictionEndLine(endsAt: string): string {
 
 /**
  * Статус под прогресс-баром / в футере: live (с точкой), upcoming («Starts at…» или подпись), ended.
+ * Принимает `CryptoPredictionStatus` напрямую, чтобы переиспользоваться и для TwoPool-карточек.
  */
-export function getCryptoPredictionStatusFooter(prediction: CryptoPrediction): {
+export function getCryptoPredictionStatusFooter(status: CryptoPredictionStatus): {
   showLiveDot: boolean;
   text: string;
 } {
-  const { status } = prediction;
   switch (status.kind) {
     case "live":
       return { showLiveDot: true, text: status.label ?? "Live now" };
