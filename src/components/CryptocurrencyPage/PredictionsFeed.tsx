@@ -73,10 +73,7 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
   const [twoPoolDrawerPool, setTwoPoolDrawerPool] = useState<TwoPool | null>(null);
   const [twoPoolDrawerSide, setTwoPoolDrawerSide] = useState<TwoPoolSide | null>(null);
 
-  const merged = useMemo(
-    () => buildMergedFeed(twoPools, twoPoolsFirst),
-    [twoPools, twoPoolsFirst]
-  );
+  const merged = useMemo(() => buildMergedFeed(twoPools, twoPoolsFirst), [twoPools, twoPoolsFirst]);
   // timeFilter is wired to the filter bar UI but not yet applied to list filtering
   const visible = useMemo(
     () => merged.filter((item) => matchesTypeFilter(item, typeFilter)),

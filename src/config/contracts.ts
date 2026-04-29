@@ -43,3 +43,17 @@ export const praxisVaultAbi = [
     inputs: [],
   },
 ] as const;
+
+/** Two-pool vault: `enum Side { Stable, Elevated }` → ABI `uint8`. */
+export const twoPoolAbi = [
+  {
+    type: "function",
+    name: "deposit",
+    inputs: [
+      { name: "side", type: "uint8" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;

@@ -1,24 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { InputWithMax } from "@/components/ui/InputWithMax";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
+import { getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import {
   getActiveFeeScheduleSide,
   getEntranceFeePercentForSide,
   getNetDepositPercentAfterFee,
 } from "@/shared/utils/twoPool";
-import { TWO_POOL_NOT_DEFINED_STR } from "@/shared/constants/twoPoolSentinels";
-
-const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === "/icons/yt-token.png")?.value ??
-  DEFAULT_BALANCES[0]?.value ??
-  "0";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { useTwoPoolDeposit } from "@/hooks/useTwoPoolDeposit";
+import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
 
 export interface TwoPoolDrawerProps {
   pool: TwoPool | null;
@@ -35,21 +32,59 @@ export function TwoPoolDrawer({ pool, initialSide, open, onOpenChange }: TwoPool
           key={`${pool.id}-${initialSide}`}
           pool={pool}
           initialSide={initialSide}
+          onRequestClose={() => onOpenChange(false)}
         />
       ) : null}
     </DrawerShell>
   );
 }
 
-function TwoPoolDrawerBody({ pool, initialSide }: { pool: TwoPool; initialSide: TwoPoolSide }) {
+function TwoPoolDrawerBody({
+  pool,
+  initialSide,
+  onRequestClose,
+}: {
+  pool: TwoPool;
+  initialSide: TwoPoolSide;
+  onRequestClose: () => void;
+}) {
   const [side, setSide] = useState<TwoPoolSide>(initialSide);
   const [amount, setAmount] = useState("");
+  const { balances, refetch: refetchBalances } = useWalletBalances();
+  const fetchTwoPools = useTwoPoolsStore((s) => s.fetchPools);
+  const { deposit, status, errorMessage, reset, isPending } = useTwoPoolDeposit(pool, side, amount);
+
+  useEffect(() => {
+    if (status === "success") {
+      void refetchBalances();
+      void fetchTwoPools();
+    }
+  }, [status, refetchBalances, fetchTwoPools]);
+
   const isAvailable = pool.isTradingOpen;
   const feePct = getEntranceFeePercentForSide(pool, side);
   const netPct = getNetDepositPercentAfterFee(feePct);
   const scheduleSide = getActiveFeeScheduleSide(pool);
   const targetApy = pool.targetApyPercent;
   const predictedApy = pool.predictedApyPercent;
+  const walletUsdc = getBalanceValueByIconUrl(balances, "/icons/usdc.png");
+
+  const buttonLabel =
+    status === "approving"
+      ? "Approving USDC…"
+      : status === "depositing"
+        ? "Depositing…"
+        : status === "success"
+          ? "Done"
+          : "Join pool";
+
+  const amountPositive = amount.length > 0 && Number(amount) > 0;
+
+  const handleDone = () => {
+    reset();
+    setAmount("");
+    onRequestClose();
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -104,14 +139,35 @@ function TwoPoolDrawerBody({ pool, initialSide }: { pool: TwoPool; initialSide: 
       <InputWithMax
         value={amount}
         onChange={setAmount}
-        maxValue={PREDICTION_MAX_BALANCE}
+        maxValue={walletUsdc}
         placeholder="Deposit amount"
-        disabled={!isAvailable}
+        disabled={!isAvailable || isPending}
       />
 
-      <Button variant="primary" size="action" disabled={!isAvailable}>
-        Join pool
-      </Button>
+      <p className="text-main-darkPurple/80 text-2xs px-0.5">
+        Available: {walletUsdc} USDC
+      </p>
+
+      {errorMessage ? (
+        <p className="text-main-red text-xs leading-snug px-0.5" role="alert">
+          {errorMessage}
+        </p>
+      ) : null}
+
+      {status === "success" ? (
+        <Button variant="success" size="action" onClick={handleDone}>
+          {buttonLabel}
+        </Button>
+      ) : (
+        <Button
+          variant="primary"
+          size="action"
+          disabled={!isAvailable || isPending || !amountPositive}
+          onClick={() => void deposit()}
+        >
+          {buttonLabel}
+        </Button>
+      )}
     </div>
   );
 }
