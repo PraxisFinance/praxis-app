@@ -3,5 +3,5 @@
 import { PredictionsFeed } from "./PredictionsFeed";
 
 export function CryptocurrencyPage() {
-  return <PredictionsFeed sectionTitle="Cryptocurrencies" />;
+  return <PredictionsFeed sectionTitle="Cryptocurrencies" twoPoolsFirst />;
 }

@@ -20,15 +20,22 @@ export type FeedItem =
   | { kind: "crypto"; prediction: CryptoPrediction }
   | { kind: "twoPool"; pool: TwoPool };
 
-function buildMergedFeed(): FeedItem[] {
+function endsAtMs(item: FeedItem): number {
+  return new Date(item.kind === "crypto" ? item.prediction.endsAt : item.pool.endsAt).getTime();
+}
+
+function buildMergedFeed(twoPoolsFirst: boolean): FeedItem[] {
   const items: FeedItem[] = [
     ...CRYPTO_PREDICTION_MOCKS.map((prediction) => ({ kind: "crypto" as const, prediction })),
     ...TWO_POOL_MOCKS.map((pool) => ({ kind: "twoPool" as const, pool })),
   ];
   items.sort((a, b) => {
-    const endA = a.kind === "crypto" ? a.prediction.endsAt : a.pool.endsAt;
-    const endB = b.kind === "crypto" ? b.prediction.endsAt : b.pool.endsAt;
-    return new Date(endA).getTime() - new Date(endB).getTime();
+    if (twoPoolsFirst) {
+      const aTp = a.kind === "twoPool";
+      const bTp = b.kind === "twoPool";
+      if (aTp !== bTp) return aTp ? -1 : 1;
+    }
+    return endsAtMs(a) - endsAtMs(b);
   });
   return items;
 }
@@ -41,9 +48,11 @@ function matchesTypeFilter(item: FeedItem, typeId: CryptoPredictionTypeFilterId)
 
 export interface PredictionsFeedProps {
   sectionTitle: string;
+  /** When true (Cryptocurrencies tab), Two-Pool cards are listed before other prediction cards. */
+  twoPoolsFirst?: boolean;
 }
 
-export function PredictionsFeed({ sectionTitle }: PredictionsFeedProps) {
+export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: PredictionsFeedProps) {
   const [timeFilter, setTimeFilter] = useState<CryptoPredictionTimeFilterId>("all");
   const [typeFilter, setTypeFilter] = useState<CryptoPredictionTypeFilterId>("all");
 
@@ -55,7 +64,7 @@ export function PredictionsFeed({ sectionTitle }: PredictionsFeedProps) {
   const [twoPoolDrawerPool, setTwoPoolDrawerPool] = useState<TwoPool | null>(null);
   const [twoPoolDrawerSide, setTwoPoolDrawerSide] = useState<TwoPoolSide | null>(null);
 
-  const merged = useMemo(() => buildMergedFeed(), []);
+  const merged = useMemo(() => buildMergedFeed(twoPoolsFirst), [twoPoolsFirst]);
   // timeFilter is wired to the filter bar UI but not yet applied to list filtering
   const visible = useMemo(
     () => merged.filter((item) => matchesTypeFilter(item, typeFilter)),
