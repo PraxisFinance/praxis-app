@@ -13,6 +13,7 @@ import {
   getEntranceFeePercentForSide,
   getNetDepositPercentAfterFee,
 } from "@/shared/utils/twoPool";
+import { TWO_POOL_NOT_DEFINED_STR } from "@/shared/constants/twoPoolSentinels";
 
 const PREDICTION_MAX_BALANCE =
   DEFAULT_BALANCES.find((b) => b.iconUrl === "/icons/yt-token.png")?.value ??
@@ -47,6 +48,8 @@ function TwoPoolDrawerBody({ pool, initialSide }: { pool: TwoPool; initialSide: 
   const feePct = getEntranceFeePercentForSide(pool, side);
   const netPct = getNetDepositPercentAfterFee(feePct);
   const scheduleSide = getActiveFeeScheduleSide(pool);
+  const targetApy = pool.targetApyPercent;
+  const predictedApy = pool.predictedApyPercent;
 
   return (
     <div className="flex flex-col gap-3">
@@ -55,9 +58,9 @@ function TwoPoolDrawerBody({ pool, initialSide }: { pool: TwoPool; initialSide: 
       <div className="flex flex-col gap-2 rounded-sm bg-main-grayPurple/80 px-4 py-3">
         <p className="text-main-darkPurple text-sm leading-tight font-medium">{pool.title}</p>
         <p className="text-main-darkPurple/70 text-2xs leading-snug">
-          Target APY {pool.targetApyPercent}% · Predicted {pool.predictedApyPercent}% · Fee schedule:{" "}
+          Target {targetApy}% APY · Predicted {predictedApy}% APY · Fee schedule:{" "}
           {scheduleSide === "elevated" ? "Elevated" : "Stable"} (predicted{" "}
-          {pool.predictedApyPercent > pool.targetApyPercent ? ">" : "≤"} target)
+          {predictedApy > targetApy ? ">" : "≤"} target)
         </p>
       </div>
 

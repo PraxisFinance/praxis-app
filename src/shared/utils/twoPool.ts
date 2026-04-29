@@ -1,8 +1,11 @@
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 
-/** Fee schedule row used when quoting the protocol “active” entrance line (predicted vs target). */
+/** Fee schedule row when predicted vs target APY is known; otherwise stable. */
 export function getActiveFeeScheduleSide(pool: TwoPool): TwoPoolSide {
-  return pool.predictedApyPercent > pool.targetApyPercent ? "elevated" : "stable";
+  const t = pool.targetApyPercent;
+  const p = pool.predictedApyPercent;
+  if (t == null || p == null) return "stable";
+  return p > t ? "elevated" : "stable";
 }
 
 export function getEntranceFeePercentForSide(pool: TwoPool, side: TwoPoolSide): number {

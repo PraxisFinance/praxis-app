@@ -11,6 +11,7 @@ import {
 } from "@/shared/utils/cryptoPredictionFormat";
 import { getActiveFeeScheduleSide, getEntranceFeePercentForSide } from "@/shared/utils/twoPool";
 import { CryptoPredictionCardHeader } from "../CryptocurrencyPredictionCard/CryptoPredictionCardHeader";
+import { TwoPoolIndexerNotes } from "./TwoPoolIndexerNotes";
 import { TwoPoolSplitBar } from "./TwoPoolSplitBar";
 
 export interface TwoPoolCardProps {
@@ -37,6 +38,10 @@ export function TwoPoolCard({ pool, onJoin }: TwoPoolCardProps) {
         {scheduleSide === "elevated" ? "Elevated" : "Stable"}
       </p>
 
+      <p className="text-main-darkPurple/70 text-2xs font-mono leading-snug">
+        actualRate (raw): {pool.actualRateRaw}
+      </p>
+
       <TwoPoolSplitBar
         stablePoolPercent={pool.stablePoolPercent}
         elevatedPoolPercent={pool.elevatedPoolPercent}
@@ -53,8 +58,11 @@ export function TwoPoolCard({ pool, onJoin }: TwoPoolCardProps) {
       </div>
 
       <p className="text-main-darkPurple/65 text-2xs leading-snug">
-        Fee reduces shares you receive — charged as a percent of your deposit, not a flat token amount.
+        Fee reduces shares you receive — when indexed, shown as % of deposit (pool-level fees are not
+        on <span className="font-mono">TwoPoolState</span>).
       </p>
+
+      <TwoPoolIndexerNotes pool={pool} />
 
       <div className="flex flex-col gap-2">
         <div className="flex gap-3">

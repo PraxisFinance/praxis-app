@@ -3,8 +3,9 @@ import type { CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
 export type TwoPoolSide = "stable" | "elevated";
 
 /**
- * Two-pool yield product: stable vs elevated deposits; yield split vs deploy-time target APY;
- * entrance fee as % of deposit (fewer shares).
+ * Two-pool yield product. Fields not present on `TwoPoolState` use
+ * `TWO_POOL_NOT_DEFINED_STR` / `TWO_POOL_NOT_DEFINED_NUM` from `@/shared/constants/twoPoolSentinels`
+ * — never `undefined`.
  */
 export type TwoPool = {
   id: string;
@@ -14,16 +15,20 @@ export type TwoPool = {
   status: CryptoPredictionStatus;
   endsAt: string;
   isTradingOpen: boolean;
-  /** Deploy-time target APY % — yield split hinges on realized vs this target */
+  /** Deploy-time target APY %, or -1 if not on indexer */
   targetApyPercent: number;
-  /** Model / predicted future APY % — drives which entrance fee row applies */
+  /** Model / predicted APY %, or -1 if not on indexer */
   predictedApyPercent: number;
-  /** Deposit share in stable pool (0–100) */
+  /** Share of TVL on stable side (0–100), derived from `sideTVLStable` / `sideTVLElevated` */
   stablePoolPercent: number;
-  /** Deposit share in elevated pool (0–100) */
+  /** Share of TVL on elevated side (0–100) */
   elevatedPoolPercent: number;
-  /** Entrance fee as % of deposit for stable side (fewer shares) */
+  /** Entrance fee % of deposit (stable), or -1 if not on indexer */
   stableEntranceFeePercent: number;
-  /** Entrance fee as % of deposit for elevated side */
+  /** Entrance fee % of deposit (elevated), or -1 if not on indexer */
   elevatedEntranceFeePercent: number;
+  /** Raw `actualRate` from indexer, or "Not defined" if absent */
+  actualRateRaw: string;
+  /** What the indexer row could not supply or only approximated */
+  indexerGaps: readonly string[];
 };

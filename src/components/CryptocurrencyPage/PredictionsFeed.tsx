@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type {
   CryptoPredictionTimeFilterId,
   CryptoPredictionTypeFilterId,
@@ -54,6 +54,13 @@ export interface PredictionsFeedProps {
 
 export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: PredictionsFeedProps) {
   const twoPools = useTwoPoolsStore((s) => s.pools);
+  const twoPoolsLoading = useTwoPoolsStore((s) => s.loading);
+  const twoPoolsError = useTwoPoolsStore((s) => s.error);
+  const fetchTwoPools = useTwoPoolsStore((s) => s.fetchPools);
+
+  useEffect(() => {
+    void fetchTwoPools();
+  }, [fetchTwoPools]);
 
   const [timeFilter, setTimeFilter] = useState<CryptoPredictionTimeFilterId>("all");
   const [typeFilter, setTypeFilter] = useState<CryptoPredictionTypeFilterId>("all");
@@ -113,6 +120,14 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
         typeId={typeFilter}
         onTypeChange={setTypeFilter}
       />
+      {twoPoolsError ? (
+        <p className="text-main-red text-sm leading-snug" role="alert">
+          Two-Pool indexer: {twoPoolsError}
+        </p>
+      ) : null}
+      {twoPoolsLoading && twoPools.length === 0 ? (
+        <p className="text-main-darkPurple/70 text-sm">Loading two-pools…</p>
+      ) : null}
       <section className="flex flex-col gap-3">
         <SectionHeader className="text-main-darkPurple">{sectionTitle}</SectionHeader>
         <div className="flex flex-col gap-3">

@@ -11,12 +11,14 @@ import {
   getCryptoPredictionEndLine,
   getCryptoPredictionStatusFooter,
 } from "@/shared/utils/cryptoPredictionFormat";
+import { TWO_POOL_NOT_DEFINED_STR } from "@/shared/constants/twoPoolSentinels";
 import {
   getActiveFeeScheduleSide,
   getEntranceFeePercentForSide,
   getNetDepositPercentAfterFee,
 } from "@/shared/utils/twoPool";
 import { TwoPoolDrawer } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolDrawer";
+import { TwoPoolIndexerNotes } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolIndexerNotes";
 import { TwoPoolSplitBar } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolSplitBar";
 
 export interface TwoPoolPageProps {
@@ -32,6 +34,10 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
   const scheduleSide = getActiveFeeScheduleSide(pool);
   const stableFee = getEntranceFeePercentForSide(pool, "stable");
   const elevatedFee = getEntranceFeePercentForSide(pool, "elevated");
+  const stableNetPct = getNetDepositPercentAfterFee(stableFee);
+  const elevatedNetPct = getNetDepositPercentAfterFee(elevatedFee);
+  const targetApy = pool.targetApyPercent;
+  const predictedApy = pool.predictedApyPercent;
 
   const openJoin = (side: TwoPoolSide) => {
     setDrawerSide(side);
@@ -47,6 +53,15 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
     <div className="flex flex-col gap-4">
       <Card>
         <PoolHeader iconUrl={pool.iconUrl} name={pool.title} subtitle={endSubtitle} emphasized />
+
+        <TwoPoolIndexerNotes pool={pool} />
+
+        {pool.actualRateRaw !== TWO_POOL_NOT_DEFINED_STR && pool.actualRateRaw !== "0" ? (
+          <p className="text-main-darkPurple/70 text-2xs font-mono leading-snug">
+            Indexer <span className="font-semibold">actualRate</span> (raw, units not mapped to UI
+            APY%): {pool.actualRateRaw}
+          </p>
+        ) : null}
 
         <p className="text-main-darkPurple/80 text-2xs font-medium">
           <span className="bg-main-purple/15 text-main-purple mr-1.5 inline-block rounded-[5px] px-1.5 py-0.5 font-semibold">
@@ -69,15 +84,6 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
             share of yield; if above target, elevated receives more.
           </li>
           <li>
-            Target APY is set at deploy: <strong>{pool.targetApyPercent}%</strong>.
-          </li>
-          <li>
-            Predicted APY (model): <strong>{pool.predictedApyPercent}%</strong> — used to select the
-            active fee schedule row:{" "}
-            <strong>{scheduleSide === "elevated" ? "Elevated" : "Stable"}</strong> when predicted is{" "}
-            {pool.predictedApyPercent > pool.targetApyPercent ? "above" : "at or below"} target.
-          </li>
-          <li>
             Your breakeven vs others depends on pool mix and realized yield; the UI shows fees and
             splits, not a single guaranteed personal breakeven.
           </li>
@@ -87,10 +93,7 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
           <div className="flex flex-col gap-2 rounded-md border border-main-grayPurple/60 p-3">
             <p className="text-main-darkPurple text-sm font-semibold">Stable</p>
             <InfoRow label="Entrance fee" value={`${stableFee}% of deposit`} />
-            <InfoRow
-              label="Shares from deposit"
-              value={`~${getNetDepositPercentAfterFee(stableFee).toFixed(2)}%`}
-            />
+            <InfoRow label="Shares from deposit" value={`~${stableNetPct.toFixed(2)}%`} />
             <Button
               variant="success"
               size="action"
@@ -103,10 +106,7 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
           <div className="flex flex-col gap-2 rounded-md border border-main-grayPurple/60 p-3">
             <p className="text-main-darkPurple text-sm font-semibold">Elevated</p>
             <InfoRow label="Entrance fee" value={`${elevatedFee}% of deposit`} />
-            <InfoRow
-              label="Shares from deposit"
-              value={`~${getNetDepositPercentAfterFee(elevatedFee).toFixed(2)}%`}
-            />
+            <InfoRow label="Shares from deposit" value={`~${elevatedNetPct.toFixed(2)}%`} />
             <Button
               variant="destructiveMuted"
               size="action"
@@ -120,8 +120,8 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
 
         <p className="text-main-darkPurple/65 text-2xs leading-snug">
           Joining applies the fee for the side you pick: Stable {stableFee}% · Elevated{" "}
-          {elevatedFee}% of deposit. Fee row highlight reflects predicted vs target, not which button
-          you press.
+          {elevatedFee}% of deposit. Fee row highlight reflects predicted vs target, not which
+          button you press.
         </p>
       </Card>
 
