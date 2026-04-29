@@ -6,7 +6,8 @@ function isoInHours(hoursFromNow: number): string {
 
 const MOCK_ICON = "/icons/usdc.png";
 
-export const TWO_POOL_MOCKS: TwoPool[] = [
+/** Seed data for `useTwoPoolsStore` (and static detail lookup via store `getState`). */
+export const INITIAL_TWO_POOLS: TwoPool[] = [
   {
     id: "btc-twopool-live",
     title: "BTC Two-Pool",
@@ -38,7 +39,3 @@ export const TWO_POOL_MOCKS: TwoPool[] = [
     elevatedEntranceFeePercent: 1.1,
   },
 ];
-
-export function getTwoPoolById(id: string): TwoPool | undefined {
-  return TWO_POOL_MOCKS.find((p) => p.id === id);
-}
