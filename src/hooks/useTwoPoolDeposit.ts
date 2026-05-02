@@ -11,12 +11,7 @@ import { parseTokenAmount } from "@/shared/utils/format";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { ensureAppChain } from "@/lib/ensureAppChain";
 
-export type TwoPoolDepositStatus =
-  | "idle"
-  | "approving"
-  | "depositing"
-  | "success"
-  | "error";
+export type TwoPoolDepositStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
 function sideToUint8(side: TwoPoolSide): 0 | 1 {
   return side === "stable" ? 0 : 1;
@@ -51,7 +46,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       await ensureAppChain(chainId, switchChainAsync);
 
       const allowance = await readContract(config, {
-        address: TOKEN_ADDRESSES.USDC,
+        address: TOKEN_ADDRESSES.YT,
         abi: erc20Abi,
         functionName: "allowance",
         args: [address, poolAddress],
@@ -60,7 +55,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       if (allowance < amount) {
         setStatus("approving");
         const approveTx = await writeContractAsync({
-          address: TOKEN_ADDRESSES.USDC,
+          address: TOKEN_ADDRESSES.YT,
           abi: erc20Abi,
           functionName: "approve",
           args: [poolAddress, amount],
