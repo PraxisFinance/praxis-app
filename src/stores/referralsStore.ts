@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 export interface Referral {
   id: string;
@@ -17,32 +17,32 @@ interface ReferralsState {
   reset: () => void;
 }
 
-const MOCK_REFERRAL_CODE = 'PRAXIS-7X9K2M';
+const MOCK_REFERRAL_CODE = "PRAXIS-7X9K2M";
 
 const MOCK_REFERRALS: Referral[] = [
   {
-    id: 'ref-1',
-    name: 'alice.eth',
+    id: "ref-1",
+    name: "alice.eth",
     score: 2500,
   },
   {
-    id: 'ref-2',
-    name: 'bob.base',
+    id: "ref-2",
+    name: "bob.base",
     score: 1800,
   },
   {
-    id: 'ref-3',
-    name: '0x742d...8dB2',
+    id: "ref-3",
+    name: "0x742d...8dB2",
     score: 950,
   },
   {
-    id: 'ref-4',
-    name: 'charlie.eth',
+    id: "ref-4",
+    name: "charlie.eth",
     score: 3200,
   },
   {
-    id: 'ref-5',
-    name: '0x1234...5678',
+    id: "ref-5",
+    name: "0x1234...5678",
     score: 420,
   },
 ];
@@ -59,9 +59,10 @@ export const useReferralsStore = create<ReferralsState>((set, get) => ({
 
   setReferrals: (referrals) => set({ referrals }),
 
-  addReferral: (referral) => set((state) => ({
-    referrals: [...state.referrals, referral],
-  })),
+  addReferral: (referral) =>
+    set((state) => ({
+      referrals: [...state.referrals, referral],
+    })),
 
   getTotalScore: () => {
     return get().referrals.reduce((sum, r) => sum + r.score, 0);
@@ -77,5 +78,5 @@ export const loadMockReferrals = () => {
 };
 
 export const formatScore = (score: number): string => {
-  return score.toLocaleString('en-US');
+  return score.toLocaleString("en-US");
 };

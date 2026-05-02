@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
 
 interface OnDevelopmentPageProps {
@@ -12,26 +13,18 @@ export function OnDevelopmentPage({ onBack, onMainMenu }: OnDevelopmentPageProps
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center gap-2.5">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 px-4 py-2 bg-main-purple rounded-[30px] text-white text-sm font-medium leading-4"
-        >
+        <Button variant="pillPrimary" size="pill" onClick={onBack}>
           <ArrowIcon className="w-4 h-4 rotate-180" />
           Back
-        </button>
+        </Button>
 
-        <button
-          onClick={onMainMenu}
-          className="px-4 py-2 bg-main-lightGray rounded-[30px] text-main-darkPurple text-sm font-medium leading-4"
-        >
+        <Button variant="pillSecondary" size="pill" onClick={onMainMenu}>
           Main menu
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col items-center gap-6 pt-4">
-        <h1 className="text-main-darkPurple text-3xl font-bold leading-tight">
-          Sorry!
-        </h1>
+        <h1 className="text-main-darkPurple text-3xl font-bold leading-tight">Sorry!</h1>
 
         <div className="relative w-48 h-48">
           <Image

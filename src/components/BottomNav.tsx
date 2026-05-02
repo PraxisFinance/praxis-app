@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isPredictionsSectionPath, isProfileSectionPath } from "@/lib/routes";
 import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "./ui/icons/NavIcons";
 
 interface NavItem {
@@ -12,11 +13,11 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { id: "main",        label: "Main",        href: "/main",        icon: HomeIcon },
-  { id: "earn",        label: "Earn",        href: "/earn",        icon: EarnIcon },
+  { id: "main", label: "Main", href: "/main", icon: HomeIcon },
+  { id: "earn", label: "Earn", href: "/earn", icon: EarnIcon },
   { id: "predictions", label: "Predictions", href: "/predictions", icon: PredictionsIcon },
-  { id: "history",     label: "History",     href: "/history",     icon: HistoryIcon },
-  { id: "profile",     label: "Profile",     href: "/profile",     icon: ProfileIcon },
+  { id: "history", label: "History", href: "/history", icon: HistoryIcon },
+  { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
 export function BottomNav() {
@@ -27,7 +28,12 @@ export function BottomNav() {
       <div className="max-w-md mx-auto bg-white rounded-t-[10px] shadow-[0px_-10px_20px_0px_rgba(218,216,230,0.50)]">
         <div className="flex justify-around items-center h-16 px-4">
           {navItems.map((item) => {
-            const isActive = pathname === item.href;
+            const isActive =
+              item.id === "predictions"
+                ? isPredictionsSectionPath(pathname)
+                : item.id === "profile"
+                  ? isProfileSectionPath(pathname)
+                  : pathname === item.href;
             const Icon = item.icon;
             return (
               <Link
@@ -36,9 +42,11 @@ export function BottomNav() {
                 className="flex flex-col items-center gap-1 min-w-[48px] transition-colors"
               >
                 <Icon className="w-6 h-6" active={isActive} />
-                <span className={`text-xs leading-4 ${
-                  isActive ? "text-violet-400 font-medium" : "text-indigo-950 font-normal"
-                }`}>
+                <span
+                  className={`text-xs leading-4 ${
+                    isActive ? "text-violet-400 font-medium" : "text-indigo-950 font-normal"
+                  }`}
+                >
                   {item.label}
                 </span>
               </Link>

@@ -7,7 +7,7 @@ export const config = createConfig({
   connectors: [
     injected(),
     baseAccount({
-      appName: "My Base App",
+      appName: "Praxis Finance",
     }),
   ],
   storage: createStorage({ storage: cookieStorage }),
