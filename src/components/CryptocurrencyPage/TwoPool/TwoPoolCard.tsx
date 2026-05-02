@@ -11,8 +11,8 @@ import {
 } from "@/shared/utils/cryptoPredictionFormat";
 import { getActiveFeeScheduleSide, getEntranceFeePercentForSide } from "@/shared/utils/twoPool";
 import { CryptoPredictionCardHeader } from "../CryptocurrencyPredictionCard/CryptoPredictionCardHeader";
-import { TwoPoolIndexerNotes } from "./TwoPoolIndexerNotes";
 import { TwoPoolSplitBar } from "./TwoPoolSplitBar";
+import { TWO_POOL_NOT_DEFINED_STR } from "@/shared/constants/twoPoolSentinels";
 
 export interface TwoPoolCardProps {
   pool: TwoPool;
@@ -28,7 +28,11 @@ export function TwoPoolCard({ pool, onJoin }: TwoPoolCardProps) {
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">
-      <CryptoPredictionCardHeader iconUrl={pool.iconUrl} title={pool.title} endLine={endLine} />
+      <CryptoPredictionCardHeader
+        iconUrl={pool.iconUrl == TWO_POOL_NOT_DEFINED_STR ? "" : pool.iconUrl}
+        title={pool.title}
+        endLine={endLine}
+      />
 
       <p className="text-main-darkPurple/80 text-2xs font-medium">
         <span className="bg-main-purple/15 text-main-purple mr-1.5 inline-block rounded-[5px] px-1.5 py-0.5 font-semibold">
@@ -58,11 +62,9 @@ export function TwoPoolCard({ pool, onJoin }: TwoPoolCardProps) {
       </div>
 
       <p className="text-main-darkPurple/65 text-2xs leading-snug">
-        Fee reduces shares you receive — when indexed, shown as % of deposit (pool-level fees are not
-        on <span className="font-mono">TwoPoolState</span>).
+        Fee reduces shares you receive — when indexed, shown as % of deposit (pool-level fees are
+        not on <span className="font-mono">TwoPoolState</span>).
       </p>
-
-      <TwoPoolIndexerNotes pool={pool} />
 
       <div className="flex flex-col gap-2">
         <div className="flex gap-3">

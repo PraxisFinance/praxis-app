@@ -1,4 +1,3 @@
-export { TwoPoolIndexerNotes } from "./TwoPoolIndexerNotes";
 export { TwoPoolCard } from "./TwoPoolCard";
 export type { TwoPoolCardProps } from "./TwoPoolCard";
 export { TwoPoolDrawer } from "./TwoPoolDrawer";

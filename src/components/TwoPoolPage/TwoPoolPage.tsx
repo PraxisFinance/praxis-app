@@ -18,7 +18,6 @@ import {
   getNetDepositPercentAfterFee,
 } from "@/shared/utils/twoPool";
 import { TwoPoolDrawer } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolDrawer";
-import { TwoPoolIndexerNotes } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolIndexerNotes";
 import { TwoPoolSplitBar } from "@/components/CryptocurrencyPage/TwoPool/TwoPoolSplitBar";
 
 export interface TwoPoolPageProps {
@@ -53,8 +52,6 @@ export function TwoPoolPage({ pool }: TwoPoolPageProps) {
     <div className="flex flex-col gap-4">
       <Card>
         <PoolHeader iconUrl={pool.iconUrl} name={pool.title} subtitle={endSubtitle} emphasized />
-
-        <TwoPoolIndexerNotes pool={pool} />
 
         {pool.actualRateRaw !== TWO_POOL_NOT_DEFINED_STR && pool.actualRateRaw !== "0" ? (
           <p className="text-main-darkPurple/70 text-2xs font-mono leading-snug">
