@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useAccount } from "wagmi";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Balances } from "../Balances/Balances";
 import { EarnAvailableCard } from "./EarnAvailableCard";
@@ -8,18 +9,55 @@ import { EarnMyPositionsCard } from "./EarnMyPositionsCard";
 import { DepositDrawer } from "./DepositDrawer";
 import { WithdrawDrawer } from "./WithdrawDrawer";
 import { ClaimDrawer } from "./ClaimDrawer";
-import { EARN_AVAILABLE_ITEMS, EARN_MY_POSITIONS } from "@/shared/constants/earn";
+import { useDepositsStore } from "@/stores/depositsStore";
+import {
+  vaultStateToAvailableItem,
+  userPositionToEarnPosition,
+} from "@/shared/utils/earnMappers";
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function EarnPage() {
+  const { address } = useAccount();
+  const {
+    vaults,
+    loading,
+    fetchAll,
+    fetchUserDataForAllVaults,
+    getActiveVaults,
+    getUserPositions,
+  } = useDepositsStore();
+
   const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
-    null
+    null,
   );
   const [depositDrawerOpen, setDepositDrawerOpen] = useState(false);
 
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    fetchAll(address);
+  }, [address, fetchAll]);
+
+  const vaultCount = Object.keys(vaults).length;
+  useEffect(() => {
+    if (address && vaultCount > 0) {
+      fetchUserDataForAllVaults(address);
+    }
+  }, [address, vaultCount, fetchUserDataForAllVaults]);
+
+  const availableItems = useMemo(
+    () => getActiveVaults().map(vaultStateToAvailableItem),
+    [vaults, getActiveVaults],
+  );
+
+  const myPositions = useMemo(() => {
+    return getUserPositions().map((pos) => {
+      const vault = vaults[pos.vault_id]?.state ?? null;
+      return userPositionToEarnPosition(pos, vault);
+    });
+  }, [vaults, getUserPositions]);
 
   function handleDeposit(item: EarnAvailableItem) {
     setSelectedAvailableItem(item);
@@ -43,9 +81,15 @@ export function EarnPage() {
       <section className="flex flex-col gap-3">
         <SectionHeader>My positions</SectionHeader>
         <div className="flex flex-col gap-3">
-          {EARN_MY_POSITIONS.map((item) => (
+          {loading && myPositions.length === 0 && (
+            <p className="text-sm text-gray-400 px-1">Loading positions…</p>
+          )}
+          {!loading && myPositions.length === 0 && (
+            <p className="text-sm text-gray-400 px-1">No active positions</p>
+          )}
+          {myPositions.map((item) => (
             <EarnMyPositionsCard
-              key={`${item.queueName}-${item.stakeDate}`}
+              key={`${item.vaultAddress}-${item.stakeDate}`}
               item={item}
               onWithdraw={handleWithdraw}
               onClaim={handleClaim}
@@ -57,8 +101,14 @@ export function EarnPage() {
       <section className="flex flex-col gap-3">
         <SectionHeader>Available pools</SectionHeader>
         <div className="flex flex-col gap-3">
-          {EARN_AVAILABLE_ITEMS.map((item) => (
-            <EarnAvailableCard key={item.queueName} item={item} onDeposit={handleDeposit} />
+          {loading && availableItems.length === 0 && (
+            <p className="text-sm text-gray-400 px-1">Loading pools…</p>
+          )}
+          {!loading && availableItems.length === 0 && (
+            <p className="text-sm text-gray-400 px-1">No available pools</p>
+          )}
+          {availableItems.map((item) => (
+            <EarnAvailableCard key={item.vaultAddress} item={item} onDeposit={handleDeposit} />
           ))}
         </div>
       </section>

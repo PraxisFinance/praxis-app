@@ -22,26 +22,25 @@ export {
   type VaultState,
   type UserPosition,
   type VaultDailySnapshot,
+  type VaultData,
   type DepositEvent,
   type WithdrawEvent,
   type RedeemYieldEvent,
 } from "./depositsStore";
 
 export {
-  useLotteryStore,
-  getLotteryRegistry,
-  formatLotteryAmount,
+  useRYDStore,
+  formatRYDAmount,
   formatWinProbability,
-  formatLotteryStatus,
+  formatRYDStatus,
   shortenAddress,
-  type LotteryConfig,
-  type LotteryStatus,
-  type LotteryState,
-  type LotteryParticipant,
-  type LotteryWinner,
-  type LotteryDailySnapshot,
-  type LotteryData,
-} from "./lotteryStore";
+  type RYDStatus,
+  type RYDState,
+  type RYDParticipant,
+  type RYDWinner,
+  type RYDDailySnapshot,
+  type RYDData,
+} from "./rydStore";
 
 export {
   useHistoryStore,

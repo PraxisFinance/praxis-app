@@ -1,31 +1,16 @@
 import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 
-// ── Lottery registry ─────────────────────────────────────────────────
-// Each entry maps a human-readable key to its on-chain/indexer entity ID.
-// Add new lotteries here and they'll automatically be available.
-
-export interface LotteryConfig {
-  key: string;
-  label: string;
-  entityId: string;
-}
-
-const LOTTERY_REGISTRY: LotteryConfig[] = [
-  { key: "yt-lottery", label: "YT Lottery", entityId: "PraxisYTLottery" },
-];
-
-export function getLotteryRegistry(): LotteryConfig[] {
-  return LOTTERY_REGISTRY;
-}
-
 // ── Envio-derived types ──────────────────────────────────────────────
 
-export type LotteryStatus = "Open" | "DrawRequested" | "Finished";
+export type RYDStatus = "Open" | "DrawRequested" | "ReadyToResolve" | "Finished";
 
-export interface LotteryState {
+export interface RYDState {
   id: string;
-  state: LotteryStatus;
+  vault: string;
+  yt: string;
+  endTime: bigint;
+  state: RYDStatus;
   totalDeposits: bigint;
   participantCount: number;
   numWinners: number;
@@ -33,13 +18,14 @@ export interface LotteryState {
   prizePerWinner: bigint;
   vrfRequestId: bigint;
   drawRequestedAt: bigint;
+  randomnessReceivedAt: bigint;
   finishedAt: bigint;
   totalClaimed: bigint;
   claimsRemaining: number;
   lastUpdatedAt: bigint;
 }
 
-export interface LotteryParticipant {
+export interface RYDParticipant {
   id: string;
   address: string;
   depositAmount: bigint;
@@ -53,7 +39,7 @@ export interface LotteryParticipant {
   winProbabilityBps: number;
 }
 
-export interface LotteryWinner {
+export interface RYDWinner {
   id: string;
   address: string;
   rank: number;
@@ -63,7 +49,7 @@ export interface LotteryWinner {
   claimedAt: bigint;
 }
 
-export interface LotteryDailySnapshot {
+export interface RYDDailySnapshot {
   id: string;
   date: string;
   timestamp: bigint;
@@ -74,49 +60,52 @@ export interface LotteryDailySnapshot {
   netFlow: bigint;
 }
 
-export interface LotteryDepositEvent {
+export interface RYDDepositEvent {
   id: string;
   user: string;
   amount: bigint;
 }
 
-export interface LotteryWithdrawEvent {
+export interface RYDWithdrawEvent {
   id: string;
   user: string;
   amount: bigint;
 }
 
-export interface LotteryDrawRequestedEvent {
+export interface RYDDrawRequestedEvent {
   id: string;
   requestId: bigint;
 }
 
-export interface LotteryWinnersSelectedEvent {
+export interface RYDWinnersSelectedEvent {
   id: string;
   winners: string[];
   prizePerWinner: bigint;
 }
 
-export interface LotteryPrizeClaimedEvent {
+export interface RYDRandomnessReceivedEvent {
+  id: string;
+  requestId: bigint;
+}
+
+export interface RYDPrizeClaimedEvent {
   id: string;
   winner: string;
   amount: bigint;
 }
 
-// ── Per-lottery data bundle ──────────────────────────────────────────
+// ── Per-RYD data bundle ──────────────────────────────────────────────
 
-export interface LotteryData {
-  config: LotteryConfig;
-  state: LotteryState | null;
-  participants: LotteryParticipant[];
-  winners: LotteryWinner[];
-  dailySnapshots: LotteryDailySnapshot[];
-  userParticipation: LotteryParticipant | null;
+export interface RYDData {
+  state: RYDState | null;
+  participants: RYDParticipant[];
+  winners: RYDWinner[];
+  dailySnapshots: RYDDailySnapshot[];
+  userParticipation: RYDParticipant | null;
 }
 
-function emptyLotteryData(config: LotteryConfig): LotteryData {
+function emptyRYDData(): RYDData {
   return {
-    config,
     state: null,
     participants: [],
     winners: [],
@@ -127,48 +116,43 @@ function emptyLotteryData(config: LotteryConfig): LotteryData {
 
 // ── Store ────────────────────────────────────────────────────────────
 
-interface LotteryStoreState {
-  lotteries: Record<string, LotteryData>;
-  activeLotteryKey: string;
+interface RYDStoreState {
+  ryds: Record<string, RYDData>;
+  activeRYDId: string | null;
   loading: boolean;
   error: string | null;
 
-  setActiveLottery: (key: string) => void;
-  getActiveLottery: () => LotteryData | undefined;
-  getLottery: (key: string) => LotteryData | undefined;
+  setActiveRYD: (id: string) => void;
+  getActiveRYD: () => RYDData | undefined;
+  getRYD: (id: string) => RYDData | undefined;
 
-  fetchLotteryState: (key: string) => Promise<void>;
-  fetchParticipants: (key: string, limit?: number) => Promise<void>;
-  fetchWinners: (key: string) => Promise<void>;
-  fetchDailySnapshots: (key: string, limit?: number) => Promise<void>;
-  fetchUserParticipation: (key: string, address: string) => Promise<void>;
-  fetchAllForLottery: (key: string, userAddress?: string) => Promise<void>;
+  fetchAllRYDStates: () => Promise<void>;
+  fetchParticipants: (rydId: string, limit?: number) => Promise<void>;
+  fetchWinners: (rydId: string) => Promise<void>;
+  fetchDailySnapshots: (rydId: string, limit?: number) => Promise<void>;
+  fetchUserParticipation: (rydId: string, address: string) => Promise<void>;
+  fetchAllForRYD: (rydId: string, userAddress?: string) => Promise<void>;
   fetchAll: (userAddress?: string) => Promise<void>;
 
   reset: () => void;
 }
 
-function buildInitialLotteries(): Record<string, LotteryData> {
-  const map: Record<string, LotteryData> = {};
-  for (const config of LOTTERY_REGISTRY) {
-    map[config.key] = emptyLotteryData(config);
-  }
-  return map;
-}
-
 const initialState = {
-  lotteries: buildInitialLotteries(),
-  activeLotteryKey: LOTTERY_REGISTRY[0]?.key ?? "",
+  ryds: {} as Record<string, RYDData>,
+  activeRYDId: null as string | null,
   loading: false,
   error: null as string | null,
 };
 
 // ── GraphQL queries ──────────────────────────────────────────────────
 
-const LOTTERY_STATE_QUERY = `
-  query LotteryState {
-    LotteryState(limit: 1) {
+const ALL_RYD_STATES_QUERY = `
+  query AllRYDStates {
+    RYDState {
       id
+      vault
+      yt
+      endTime
       state
       totalDeposits
       participantCount
@@ -177,6 +161,7 @@ const LOTTERY_STATE_QUERY = `
       prizePerWinner
       vrfRequestId
       drawRequestedAt
+      randomnessReceivedAt
       finishedAt
       totalClaimed
       claimsRemaining
@@ -185,9 +170,9 @@ const LOTTERY_STATE_QUERY = `
   }
 `;
 
-const LOTTERY_PARTICIPANTS_QUERY = `
-  query LotteryParticipants($limit: Int!) {
-    LotteryParticipant(order_by: { depositAmount: desc }, limit: $limit) {
+const RYD_PARTICIPANTS_QUERY = `
+  query RYDParticipants($limit: Int!) {
+    RYDParticipant(order_by: { depositAmount: desc }, limit: $limit) {
       id
       address
       depositAmount
@@ -203,9 +188,9 @@ const LOTTERY_PARTICIPANTS_QUERY = `
   }
 `;
 
-const LOTTERY_WINNERS_QUERY = `
-  query LotteryWinners {
-    LotteryWinner(order_by: { rank: asc }) {
+const RYD_WINNERS_QUERY = `
+  query RYDWinners {
+    RYDWinner(order_by: { rank: asc }) {
       id
       address
       rank
@@ -217,9 +202,9 @@ const LOTTERY_WINNERS_QUERY = `
   }
 `;
 
-const LOTTERY_DAILY_SNAPSHOTS_QUERY = `
-  query LotteryDailySnapshots($limit: Int!) {
-    LotteryDailySnapshot(order_by: { timestamp: desc }, limit: $limit) {
+const RYD_DAILY_SNAPSHOTS_QUERY = `
+  query RYDDailySnapshots($limit: Int!) {
+    RYDDailySnapshot(order_by: { timestamp: desc }, limit: $limit) {
       id
       date
       timestamp
@@ -232,9 +217,9 @@ const LOTTERY_DAILY_SNAPSHOTS_QUERY = `
   }
 `;
 
-const LOTTERY_USER_PARTICIPATION_QUERY = `
-  query LotteryUserParticipation($address: String!) {
-    LotteryParticipant(where: { address: { _eq: $address } }, limit: 1) {
+const RYD_USER_PARTICIPATION_QUERY = `
+  query RYDUserParticipation($address: String!) {
+    RYDParticipant(where: { address: { _eq: $address } }, limit: 1) {
       id
       address
       depositAmount
@@ -252,8 +237,11 @@ const LOTTERY_USER_PARTICIPATION_QUERY = `
 
 // ── Raw → typed mappers ──────────────────────────────────────────────
 
-interface RawLotteryState {
+interface RawRYDState {
   id: string;
+  vault: string;
+  yt: string;
+  endTime: string;
   state: string;
   totalDeposits: string;
   participantCount: number;
@@ -262,16 +250,20 @@ interface RawLotteryState {
   prizePerWinner: string;
   vrfRequestId: string;
   drawRequestedAt: string;
+  randomnessReceivedAt: string;
   finishedAt: string;
   totalClaimed: string;
   claimsRemaining: number;
   lastUpdatedAt: string;
 }
 
-function mapLotteryState(raw: RawLotteryState): LotteryState {
+function mapRYDState(raw: RawRYDState): RYDState {
   return {
     id: raw.id,
-    state: raw.state as LotteryStatus,
+    vault: raw.vault,
+    yt: raw.yt,
+    endTime: toBigInt(raw.endTime),
+    state: raw.state as RYDStatus,
     totalDeposits: toBigInt(raw.totalDeposits),
     participantCount: raw.participantCount,
     numWinners: raw.numWinners,
@@ -279,6 +271,7 @@ function mapLotteryState(raw: RawLotteryState): LotteryState {
     prizePerWinner: toBigInt(raw.prizePerWinner),
     vrfRequestId: toBigInt(raw.vrfRequestId),
     drawRequestedAt: toBigInt(raw.drawRequestedAt),
+    randomnessReceivedAt: toBigInt(raw.randomnessReceivedAt),
     finishedAt: toBigInt(raw.finishedAt),
     totalClaimed: toBigInt(raw.totalClaimed),
     claimsRemaining: raw.claimsRemaining,
@@ -286,7 +279,7 @@ function mapLotteryState(raw: RawLotteryState): LotteryState {
   };
 }
 
-interface RawLotteryParticipant {
+interface RawRYDParticipant {
   id: string;
   address: string;
   depositAmount: string;
@@ -300,7 +293,7 @@ interface RawLotteryParticipant {
   winProbabilityBps: number;
 }
 
-function mapParticipant(raw: RawLotteryParticipant): LotteryParticipant {
+function mapParticipant(raw: RawRYDParticipant): RYDParticipant {
   return {
     id: raw.id,
     address: raw.address,
@@ -316,7 +309,7 @@ function mapParticipant(raw: RawLotteryParticipant): LotteryParticipant {
   };
 }
 
-interface RawLotteryWinner {
+interface RawRYDWinner {
   id: string;
   address: string;
   rank: number;
@@ -326,7 +319,7 @@ interface RawLotteryWinner {
   claimedAt: string;
 }
 
-function mapWinner(raw: RawLotteryWinner): LotteryWinner {
+function mapWinner(raw: RawRYDWinner): RYDWinner {
   return {
     id: raw.id,
     address: raw.address,
@@ -338,7 +331,7 @@ function mapWinner(raw: RawLotteryWinner): LotteryWinner {
   };
 }
 
-interface RawLotterySnapshot {
+interface RawRYDSnapshot {
   id: string;
   date: string;
   timestamp: string;
@@ -349,7 +342,7 @@ interface RawLotterySnapshot {
   netFlow: string;
 }
 
-function mapLotterySnapshot(raw: RawLotterySnapshot): LotteryDailySnapshot {
+function mapRYDSnapshot(raw: RawRYDSnapshot): RYDDailySnapshot {
   return {
     id: raw.id,
     date: raw.date,
@@ -362,57 +355,61 @@ function mapLotterySnapshot(raw: RawLotterySnapshot): LotteryDailySnapshot {
   };
 }
 
-// ── Helper to patch a single lottery entry ───────────────────────────
+// ── Helper to patch a single RYD entry ───────────────────────────────
 
-function patchLottery(
-  lotteries: Record<string, LotteryData>,
-  key: string,
-  patch: Partial<LotteryData>
-): Record<string, LotteryData> {
-  const existing = lotteries[key];
-  if (!existing) return lotteries;
-  return { ...lotteries, [key]: { ...existing, ...patch } };
+function patchRYD(
+  ryds: Record<string, RYDData>,
+  rydId: string,
+  patch: Partial<RYDData>
+): Record<string, RYDData> {
+  const existing = ryds[rydId] ?? emptyRYDData();
+  return { ...ryds, [rydId]: { ...existing, ...patch } };
 }
 
 // ── Zustand store ────────────────────────────────────────────────────
 
-export const useLotteryStore = create<LotteryStoreState>((set, get) => ({
+export const useRYDStore = create<RYDStoreState>((set, get) => ({
   ...initialState,
 
-  setActiveLottery: (key) => set({ activeLotteryKey: key }),
+  setActiveRYD: (id) => set({ activeRYDId: id }),
 
-  getActiveLottery: () => {
-    const { lotteries, activeLotteryKey } = get();
-    return lotteries[activeLotteryKey];
+  getActiveRYD: () => {
+    const { ryds, activeRYDId } = get();
+    return activeRYDId ? ryds[activeRYDId] : undefined;
   },
 
-  getLottery: (key) => get().lotteries[key],
+  getRYD: (id) => get().ryds[id],
 
-  fetchLotteryState: async (key) => {
+  fetchAllRYDStates: async () => {
     try {
       set({ loading: true, error: null });
-      const data = await envioQuery<{ LotteryState: RawLotteryState[] }>(LOTTERY_STATE_QUERY);
-      const raw = data.LotteryState[0];
-      set((s) => ({
-        lotteries: patchLottery(s.lotteries, key, {
-          state: raw ? mapLotteryState(raw) : null,
-        }),
+      const data = await envioQuery<{ RYDState: RawRYDState[] }>(ALL_RYD_STATES_QUERY);
+      const nextRyds = { ...get().ryds };
+      for (const raw of data.RYDState) {
+        const mapped = mapRYDState(raw);
+        const existing = nextRyds[mapped.id] ?? emptyRYDData();
+        nextRyds[mapped.id] = { ...existing, state: mapped };
+      }
+      const activeId = get().activeRYDId;
+      set({
+        ryds: nextRyds,
+        activeRYDId: activeId && nextRyds[activeId] ? activeId : (data.RYDState[0]?.id ?? null),
         loading: false,
-      }));
+      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  fetchParticipants: async (key, limit = 100) => {
+  fetchParticipants: async (rydId, limit = 100) => {
     try {
-      const data = await envioQuery<{ LotteryParticipant: RawLotteryParticipant[] }>(
-        LOTTERY_PARTICIPANTS_QUERY,
+      const data = await envioQuery<{ RYDParticipant: RawRYDParticipant[] }>(
+        RYD_PARTICIPANTS_QUERY,
         { limit }
       );
       set((s) => ({
-        lotteries: patchLottery(s.lotteries, key, {
-          participants: data.LotteryParticipant.map(mapParticipant),
+        ryds: patchRYD(s.ryds, rydId, {
+          participants: data.RYDParticipant.map(mapParticipant),
         }),
       }));
     } catch (err) {
@@ -420,12 +417,12 @@ export const useLotteryStore = create<LotteryStoreState>((set, get) => ({
     }
   },
 
-  fetchWinners: async (key) => {
+  fetchWinners: async (rydId) => {
     try {
-      const data = await envioQuery<{ LotteryWinner: RawLotteryWinner[] }>(LOTTERY_WINNERS_QUERY);
+      const data = await envioQuery<{ RYDWinner: RawRYDWinner[] }>(RYD_WINNERS_QUERY);
       set((s) => ({
-        lotteries: patchLottery(s.lotteries, key, {
-          winners: data.LotteryWinner.map(mapWinner),
+        ryds: patchRYD(s.ryds, rydId, {
+          winners: data.RYDWinner.map(mapWinner),
         }),
       }));
     } catch (err) {
@@ -433,15 +430,15 @@ export const useLotteryStore = create<LotteryStoreState>((set, get) => ({
     }
   },
 
-  fetchDailySnapshots: async (key, limit = 30) => {
+  fetchDailySnapshots: async (rydId, limit = 30) => {
     try {
-      const data = await envioQuery<{ LotteryDailySnapshot: RawLotterySnapshot[] }>(
-        LOTTERY_DAILY_SNAPSHOTS_QUERY,
+      const data = await envioQuery<{ RYDDailySnapshot: RawRYDSnapshot[] }>(
+        RYD_DAILY_SNAPSHOTS_QUERY,
         { limit }
       );
       set((s) => ({
-        lotteries: patchLottery(s.lotteries, key, {
-          dailySnapshots: data.LotteryDailySnapshot.map(mapLotterySnapshot),
+        ryds: patchRYD(s.ryds, rydId, {
+          dailySnapshots: data.RYDDailySnapshot.map(mapRYDSnapshot),
         }),
       }));
     } catch (err) {
@@ -449,15 +446,15 @@ export const useLotteryStore = create<LotteryStoreState>((set, get) => ({
     }
   },
 
-  fetchUserParticipation: async (key, address) => {
+  fetchUserParticipation: async (rydId, address) => {
     try {
-      const data = await envioQuery<{ LotteryParticipant: RawLotteryParticipant[] }>(
-        LOTTERY_USER_PARTICIPATION_QUERY,
-        { address }
+      const data = await envioQuery<{ RYDParticipant: RawRYDParticipant[] }>(
+        RYD_USER_PARTICIPATION_QUERY,
+        { address: address.toLowerCase() }
       );
-      const raw = data.LotteryParticipant[0];
+      const raw = data.RYDParticipant[0];
       set((s) => ({
-        lotteries: patchLottery(s.lotteries, key, {
+        ryds: patchRYD(s.ryds, rydId, {
           userParticipation: raw ? mapParticipant(raw) : null,
         }),
       }));
@@ -466,43 +463,36 @@ export const useLotteryStore = create<LotteryStoreState>((set, get) => ({
     }
   },
 
-  fetchAllForLottery: async (key, userAddress) => {
-    set({ loading: true, error: null });
-    try {
-      const promises: Promise<void>[] = [
-        get().fetchLotteryState(key),
-        get().fetchParticipants(key),
-        get().fetchWinners(key),
-        get().fetchDailySnapshots(key),
-      ];
-      if (userAddress) {
-        promises.push(get().fetchUserParticipation(key, userAddress));
-      }
-      await Promise.all(promises);
-      set({ loading: false });
-    } catch (err) {
-      set({ error: (err as Error).message, loading: false });
+  fetchAllForRYD: async (rydId, userAddress) => {
+    const promises: Promise<void>[] = [
+      get().fetchParticipants(rydId),
+      get().fetchWinners(rydId),
+      get().fetchDailySnapshots(rydId),
+    ];
+    if (userAddress) {
+      promises.push(get().fetchUserParticipation(rydId, userAddress));
     }
+    await Promise.all(promises);
   },
 
   fetchAll: async (userAddress) => {
     set({ loading: true, error: null });
     try {
-      await Promise.all(
-        LOTTERY_REGISTRY.map((cfg) => get().fetchAllForLottery(cfg.key, userAddress))
-      );
+      await get().fetchAllRYDStates();
+      const rydIds = Object.keys(get().ryds);
+      await Promise.all(rydIds.map((id) => get().fetchAllForRYD(id, userAddress)));
       set({ loading: false });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
-  reset: () => set({ ...initialState, lotteries: buildInitialLotteries() }),
+  reset: () => set({ ...initialState, ryds: {} }),
 }));
 
 // ── Formatting helpers ───────────────────────────────────────────────
 
-export const formatLotteryAmount = (amount: bigint, decimals = 6): string => {
+export const formatRYDAmount = (amount: bigint, decimals = 6): string => {
   const value = Number(amount) / 10 ** decimals;
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -516,10 +506,11 @@ export const formatWinProbability = (bps: number): string => {
   return `${(bps / 100).toFixed(2)}%`;
 };
 
-export const formatLotteryStatus = (status: LotteryStatus): string => {
-  const labels: Record<LotteryStatus, string> = {
+export const formatRYDStatus = (status: RYDStatus): string => {
+  const labels: Record<RYDStatus, string> = {
     Open: "Open",
     DrawRequested: "Drawing…",
+    ReadyToResolve: "Ready to Resolve",
     Finished: "Finished",
   };
   return labels[status];

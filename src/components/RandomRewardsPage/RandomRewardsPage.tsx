@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
+import { useAccount } from "wagmi";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
 import {
   RANDOM_POOLS_HINT,
-  RANDOM_POOL_MOCKS,
   RANDOM_REWARDS_FILTERS,
   type RandomRewardsFilterId,
 } from "@/shared/constants/randomRewards";
+import { useRYDStore } from "@/stores/rydStore";
+import { rydDataToRandomPool, filterRydPools } from "@/shared/utils/rydMappers";
 import { RandomPoolItem } from "./RandomPoolItem";
 import { RandomPoolJoinDrawer } from "./RandomPoolJoinDrawer";
 import { Button } from "@/components/ui/button";
@@ -18,10 +20,27 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { cn } from "@/lib/utils";
 
 export function RandomRewardsPage() {
+  const { address } = useAccount();
+  const { ryds, loading, fetchAll } = useRYDStore();
+
   const [filter, setFilter] = useState<RandomRewardsFilterId>("all");
   const [poolsHintOpen, setPoolsHintOpen] = useState(false);
   const [joinPool, setJoinPool] = useState<RandomPoolLive | null>(null);
   const [joinDrawerOpen, setJoinDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    fetchAll(address);
+  }, [address, fetchAll]);
+
+  const allPools = useMemo(
+    () =>
+      Object.values(ryds)
+        .map(rydDataToRandomPool)
+        .filter((p): p is NonNullable<typeof p> => p !== null),
+    [ryds],
+  );
+
+  const visiblePools = useMemo(() => filterRydPools(allPools, filter), [allPools, filter]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -41,7 +60,7 @@ export function RandomRewardsPage() {
                   "px-3 py-1.5 rounded-[5px] text-xs font-medium transition-all",
                   isActive
                     ? "bg-main-purple text-white"
-                    : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple"
+                    : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple",
                 )}
               >
                 {label}
@@ -64,7 +83,13 @@ export function RandomRewardsPage() {
           </Button>
         </div>
         <div className="flex flex-col gap-3">
-          {RANDOM_POOL_MOCKS.map((pool) => (
+          {loading && visiblePools.length === 0 && (
+            <p className="px-1 text-sm text-gray-400">Loading pools…</p>
+          )}
+          {!loading && visiblePools.length === 0 && (
+            <p className="px-1 text-sm text-gray-400">No pools found</p>
+          )}
+          {visiblePools.map((pool) => (
             <RandomPoolItem
               key={pool.id}
               pool={pool}

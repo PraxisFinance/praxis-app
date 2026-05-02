@@ -1,11 +1,14 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnPosition } from "@/shared/types/earn";
+import { useVaultRedeemYield } from "@/hooks/useVault";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface ClaimDrawerProps {
   item: EarnPosition | null;
@@ -14,7 +17,42 @@ interface ClaimDrawerProps {
 }
 
 export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
+  const { refetch: refetchBalances } = useWalletBalances();
+  const ytAmount = item?.yieldGenerated ?? "0";
+  const { redeemYield, status, errorMessage, reset, isPending } = useVaultRedeemYield(
+    item?.vaultAddress ?? "0x0",
+    ytAmount,
+  );
+
+  useEffect(() => {
+    if (!open) {
+      reset();
+    }
+  }, [open, reset]);
+
+  useEffect(() => {
+    if (status === "success") {
+      refetchBalances();
+    }
+  }, [status, refetchBalances]);
+
   if (!item) return null;
+
+  function handleClaim() {
+    redeemYield();
+  }
+
+  function handleClose() {
+    reset();
+    onOpenChange(false);
+  }
+
+  const buttonLabel =
+    status === "redeeming"
+      ? "Claiming…"
+      : status === "success"
+        ? "Done"
+        : "Claim Funds";
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
@@ -43,9 +81,24 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
         </div>
       </div>
 
-      <Button variant="primary" size="action">
-        Claim Funds
-      </Button>
+      {errorMessage && (
+        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
+      )}
+
+      {status === "success" ? (
+        <Button variant="primary" size="action" onClick={handleClose}>
+          {buttonLabel}
+        </Button>
+      ) : (
+        <Button
+          variant="primary"
+          size="action"
+          onClick={handleClaim}
+          disabled={isPending}
+        >
+          {buttonLabel}
+        </Button>
+      )}
     </DrawerShell>
   );
 }

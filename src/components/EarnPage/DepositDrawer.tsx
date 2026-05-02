@@ -10,7 +10,7 @@ import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnAvailableItem } from "@/shared/types/earn";
 import { getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
-import { useVaultDeposit } from "@/hooks/useVaultDeposit";
+import { useVaultDeposit } from "@/hooks/useVault";
 
 interface DepositDrawerProps {
   item: EarnAvailableItem | null;
@@ -20,9 +20,9 @@ interface DepositDrawerProps {
 
 export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) {
   const [amount, setAmount] = useState("");
-  const { balances, refetch: refetchBalances } = useWalletBalances();
-  const { deposit, status, errorMessage, reset, buyIn, totalCost, isPending } =
-    useVaultDeposit(amount);
+  const { balances, raw, refetch: refetchBalances } = useWalletBalances();
+  const { deposit, status, errorMessage, reset, buyIn, totalCost, insufficientBalance, isPending } =
+    useVaultDeposit(item?.vaultAddress ?? "0x0", amount, raw.usdc);
 
   useEffect(() => {
     if (!open) {
@@ -105,6 +105,11 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
           <div className="flex flex-col gap-1 px-1 pt-1">
             <InfoRow label="Buy-in cost:" value={`${buyIn} ${item.depositCurrency}`} />
             <InfoRow label="Total cost:" value={`${totalCost} ${item.depositCurrency}`} />
+            {insufficientBalance && (
+              <span className="text-red-500 text-xs mt-0.5">
+                Total cost exceeds your balance of {walletBalance} {item.depositCurrency}
+              </span>
+            )}
           </div>
         )}
       </div>
@@ -122,9 +127,9 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
           variant="success"
           size="action"
           onClick={handleDeposit}
-          disabled={isPending || !amount || Number(amount) <= 0}
+          disabled={isPending || !amount || Number(amount) <= 0 || insufficientBalance}
         >
-          {buttonLabel}
+          {insufficientBalance ? "Insufficient balance (includes buy-in fee)" : buttonLabel}
         </Button>
       )}
     </DrawerShell>

@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useAccount } from "wagmi";
 import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
-import { RANDOM_POOL_MOCKS } from "@/shared/constants/randomRewards";
+import { useRYDStore } from "@/stores/rydStore";
+import {
+  rydDataToRandomPool,
+  rydParticipantToPoolUser,
+  rydWinnerToPoolUser,
+} from "@/shared/utils/rydMappers";
 import { RandomPoolEndedDetails } from "./RandomPoolEndedDetails";
 import { RandomPoolLiveDetails } from "./RandomPoolLiveDetails";
 import { RandomPoolMainData } from "./RandomPoolMainData";
@@ -12,9 +18,34 @@ interface RandomPoolItemDetailsProps {
 }
 
 export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
+  const { address } = useAccount();
+  const { getRYD, fetchAllForRYD, loading } = useRYDStore();
   const [amount, setAmount] = useState("");
 
-  const pool = useMemo(() => RANDOM_POOL_MOCKS.find((p) => p.id === poolId) ?? null, [poolId]);
+  useEffect(() => {
+    fetchAllForRYD(poolId, address);
+  }, [poolId, address, fetchAllForRYD]);
+
+  const rydData = getRYD(poolId);
+  const pool = useMemo(() => (rydData ? rydDataToRandomPool(rydData) : null), [rydData]);
+
+  const participants = useMemo(
+    () => (rydData?.participants ?? []).map(rydParticipantToPoolUser),
+    [rydData?.participants],
+  );
+
+  const winners = useMemo(
+    () => (rydData?.winners ?? []).map(rydWinnerToPoolUser),
+    [rydData?.winners],
+  );
+
+  if (loading && !pool) {
+    return (
+      <div className="text-main-darkPurple/70 flex flex-col gap-2 py-8 text-center text-sm">
+        <p>Loading pool…</p>
+      </div>
+    );
+  }
 
   if (!pool) {
     return (
@@ -29,12 +60,13 @@ export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
     <div className="flex flex-col gap-3">
       <RandomPoolMainData pool={pool} />
       {pool.status === "ended" ? (
-        <RandomPoolEndedDetails pool={pool} />
+        <RandomPoolEndedDetails pool={pool} winners={winners} />
       ) : (
         <RandomPoolLiveDetails
           amount={amount}
           onAmountChange={setAmount}
           walletBalance={getBalanceValueByIconUrl(DEFAULT_BALANCES, pool.iconUrl)}
+          participants={participants}
         />
       )}
     </div>
