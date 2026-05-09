@@ -60,6 +60,8 @@ type CryptoPredictionBase = {
   predictionType: Exclude<CryptoPredictionTypeFilterId, "all" | "two_pool">;
   /** Можно ли открыть ставку / предикт (закрыт рынок, технические причины) */
   isTradingOpen: boolean;
+  /** On-chain pool ID passed to `depositBet(poolId, ...)`. */
+  cpfPoolId: bigint;
 };
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */

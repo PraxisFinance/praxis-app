@@ -13,6 +13,7 @@ const MOCK_ICON = "/icons/usdc.png";
 export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   {
     id: "aero-updown-live",
+    cpfPoolId: BigInt(1),
     title: "AERO Up or Down",
     assetSymbol: "AERO",
     iconUrl: MOCK_ICON,
@@ -27,6 +28,7 @@ export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   },
   {
     id: "eth-updown-upcoming",
+    cpfPoolId: BigInt(2),
     title: "ETH Up or Down",
     assetSymbol: "ETH",
     iconUrl: MOCK_ICON,
@@ -41,6 +43,7 @@ export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   },
   {
     id: "sol-above-below",
+    cpfPoolId: BigInt(3),
     title: "SOL above key levels",
     assetSymbol: "SOL",
     iconUrl: MOCK_ICON,
@@ -71,6 +74,7 @@ export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   },
   {
     id: "btc-range",
+    cpfPoolId: BigInt(4),
     title: "BTC price range (Feb close)",
     assetSymbol: "BTC",
     iconUrl: MOCK_ICON,
@@ -87,6 +91,7 @@ export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   },
   {
     id: "hype-hit",
+    cpfPoolId: BigInt(5),
     title: "HYPE hits target",
     assetSymbol: "HYPE",
     iconUrl: MOCK_ICON,
@@ -102,6 +107,7 @@ export const CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   },
   {
     id: "link-ended",
+    cpfPoolId: BigInt(6),
     title: "LINK Up or Down",
     assetSymbol: "LINK",
     iconUrl: MOCK_ICON,
