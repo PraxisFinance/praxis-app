@@ -3,12 +3,7 @@ import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 
 // ── Types ────────────────────────────────────────────────────────────
 
-export type CPFPoolStatus =
-  | "Open"
-  | "Locked"
-  | "Resolved"
-  | "Canceled"
-  | "Voided";
+export type CPFPoolStatus = "Open" | "Locked" | "Resolved" | "Canceled" | "Voided";
 
 export interface CPFGlobalState {
   id: string;
@@ -259,6 +254,19 @@ interface RawCPFPoolState {
   uniqueBettors: number;
 }
 
+const KNOWN_POOL_STATUSES: readonly CPFPoolStatus[] = [
+  "Open",
+  "Locked",
+  "Resolved",
+  "Canceled",
+  "Voided",
+];
+
+function normalizeIndexerPoolStatus(raw: string): CPFPoolStatus {
+  const s = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+  return (KNOWN_POOL_STATUSES as readonly string[]).includes(s) ? (s as CPFPoolStatus) : "Open";
+}
+
 function mapPoolState(raw: RawCPFPoolState): CPFPoolState {
   return {
     id: raw.id,
@@ -266,7 +274,7 @@ function mapPoolState(raw: RawCPFPoolState): CPFPoolState {
     poolId: toBigInt(raw.poolId),
     ctfAddress: raw.ctfAddress,
     conditionId: raw.conditionId,
-    state: raw.state as CPFPoolStatus,
+    state: normalizeIndexerPoolStatus(raw.state),
     stakeInFavor: toBigInt(raw.stakeInFavor),
     stakeAgainst: toBigInt(raw.stakeAgainst),
     winningOutcome: raw.winningOutcome,
@@ -361,10 +369,9 @@ export const useEventsStore = create<EventsState>((set, get) => ({
 
   fetchGlobalState: async (cpfAddress) => {
     try {
-      const data = await envioQuery<{ CPFGlobalState: RawCPFGlobalState[] }>(
-        GLOBAL_STATE_QUERY,
-        { id: cpfAddress.toLowerCase() }
-      );
+      const data = await envioQuery<{ CPFGlobalState: RawCPFGlobalState[] }>(GLOBAL_STATE_QUERY, {
+        id: cpfAddress.toLowerCase(),
+      });
       const raw = data.CPFGlobalState[0];
       if (raw) set({ globalState: mapGlobalState(raw) });
     } catch (err) {

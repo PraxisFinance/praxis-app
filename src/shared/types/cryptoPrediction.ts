@@ -16,6 +16,16 @@ export type CryptoPredictionStatus =
       startsAt?: string;
     }
   | {
+      /** Pool no longer accepting bets but resolution has not yet started (chain-Locked, or after vote deadline / before expiration). */
+      kind: "locked";
+      label?: string;
+    }
+  | {
+      /** Lock period ended on the calendar but the indexer still shows the pool Open — settlement in flight. */
+      kind: "resolving";
+      label?: string;
+    }
+  | {
       kind: "ended";
       label?: string;
       /** Кратко, что произошло (опционально): «Resolved Up», «Void», … */
@@ -51,6 +61,10 @@ type CryptoPredictionBase = {
   id: string;
   /** Заголовок карточки, напр. «AERO Up or Down» */
   title: string;
+  /** Human-readable description from the offchain database, if available. */
+  description?: string | null;
+  /** Taxonomy tags from the offchain database, if available. */
+  categories?: string[];
   assetSymbol: string;
   iconUrl: string;
   status: CryptoPredictionStatus;
