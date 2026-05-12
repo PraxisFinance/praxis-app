@@ -3,12 +3,16 @@
 import { useState } from "react";
 import Image from "next/image";
 import { HintIcon } from "@/components/icons/base/hintIcon";
+import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
 import { BALANCE_INFO } from "@/shared/constants/balances";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 export function Balances() {
@@ -42,7 +46,21 @@ export function Balances() {
           {BALANCE_INFO.map((item) => (
             <div key={item.label} className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
-                <Image src={item.iconUrl} alt={item.label} width={24} height={24} />
+                {isUsdcIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <UsdcTokenIcon className="h-6 w-6" />
+                  </span>
+                ) : isWUsdcIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <WUsdcTokenIcon className="h-6 w-6" />
+                  </span>
+                ) : isYtIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <YtTokenIcon className="h-6 w-6" />
+                  </span>
+                ) : (
+                  <Image src={item.iconUrl} alt={item.label} width={24} height={24} />
+                )}
                 <span className="text-main-darkPurple text-base font-semibold leading-5">
                   {item.label}
                 </span>

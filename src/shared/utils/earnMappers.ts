@@ -1,5 +1,6 @@
 import type { VaultState, UserPosition } from "@/stores/depositsStore";
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
+import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import { formatTokenBalance } from "@/shared/utils/format";
 
 const USDC_DECIMALS = 6;
@@ -34,7 +35,7 @@ export function vaultStateToAvailableItem(vault: VaultState): EarnAvailableItem 
     poolLifetime: formatTimeLeft(vault.maturity),
     depositCurrency: "USDC",
     depositCurrencyIcon: "usdc",
-    depositCurrencyIconUrl: "/icons/usdc.png",
+    depositCurrencyIconUrl: USDC_ICON_URL,
     depositsAmount: formatCompactUSDC(vault.totalDeposited),
     liquidityAmount: formatCompactUSDC(vault.totalBalance),
     yieldApyPercent: "—",
@@ -60,7 +61,7 @@ export function userPositionToEarnPosition(
     poolLifetime: isMatured ? "Ended" : vault ? formatTimeLeft(vault.maturity) : "—",
     depositCurrency: "USDC",
     depositCurrencyIcon: "usdc",
-    depositCurrencyIconUrl: "/icons/usdc.png",
+    depositCurrencyIconUrl: USDC_ICON_URL,
     yourDeposit: formatTokenBalance(pos.currentBalance, USDC_DECIMALS),
     yieldApyPercent: "—",
     yieldGenerated: formatTokenBalance(pos.totalYieldClaimed, USDC_DECIMALS),

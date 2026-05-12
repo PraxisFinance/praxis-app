@@ -1,5 +1,6 @@
 import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
+import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 export const RANDOM_REWARDS_FILTERS = [
   { id: "all", label: "All" },
@@ -21,20 +22,20 @@ export const RANDOM_POOLS_HINT = {
 } as const;
 
 /** Default currency icon for pool user amounts when `currencyIconUrl` is not set */
-export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = "/icons/w-usdc.png";
+export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = WUSDC_ICON_URL;
 
 /** Mock users shown on pool details (until API exists). */
 export const MOCK_USERS_IN_POOL: RandomPoolUserInPool[] = [
-  { username: "Mizori", amount: "$1000", avatarUrl: "/icons/usdc.png" },
+  { username: "Mizori", amount: "$1000", avatarUrl: USDC_ICON_URL },
   { username: "Kisara", amount: "$1500" },
   { username: "Tazumi", amount: "$800", avatarUrl: INLINE_HINT_ICON_URL },
-  { username: "Rinara", amount: "$2200", currencyIconUrl: "/icons/yt-token.png" },
+  { username: "Rinara", amount: "$2200", currencyIconUrl: YT_ICON_URL },
   { username: "Yoshiko", amount: "$500" },
 ];
 
 /** Mock winners list for ended pool details (until API exists). */
 export const MOCK_POOL_WINNERS: RandomPoolUserInPool[] = [
-  { username: "Mizori", amount: "$333,33", avatarUrl: "/icons/usdc.png" },
+  { username: "Mizori", amount: "$333,33", avatarUrl: USDC_ICON_URL },
   { username: "Kisara", amount: "$333,33" },
   { username: "Tazumi", amount: "$333,34" },
 ];

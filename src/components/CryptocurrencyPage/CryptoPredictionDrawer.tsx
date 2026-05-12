@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
+import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
 import { DEFAULT_BALANCES } from "@/shared/constants/balances";
+import { YT_ICON_URL, isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type {
   CryptoBinaryOutcome,
   CryptoPrediction,
@@ -17,7 +21,7 @@ import type {
 import { getCryptoDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
 
 const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === "/icons/yt-token.png")?.value ??
+  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
   DEFAULT_BALANCES[0]?.value ??
   "0";
 
@@ -96,7 +100,21 @@ function CryptoPredictionDrawerBody({
           </p>
           <div className="relative h-6 w-6 shrink-0">
             {iconUrl ? (
-              <Image src={iconUrl} alt="" width={24} height={24} className="object-contain" />
+              isUsdcIconUrl(iconUrl) ? (
+                <span className="inline-flex" aria-hidden>
+                  <UsdcTokenIcon className="h-6 w-6" />
+                </span>
+              ) : isWUsdcIconUrl(iconUrl) ? (
+                <span className="inline-flex" aria-hidden>
+                  <WUsdcTokenIcon className="h-6 w-6" />
+                </span>
+              ) : isYtIconUrl(iconUrl) ? (
+                <span className="inline-flex" aria-hidden>
+                  <YtTokenIcon className="h-6 w-6" />
+                </span>
+              ) : (
+                <Image src={iconUrl} alt="" width={24} height={24} className="object-contain" />
+              )
             ) : (
               <span className="block h-6 w-6 rounded-sm bg-main-grayPurple" aria-hidden />
             )}

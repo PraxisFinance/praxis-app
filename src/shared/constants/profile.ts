@@ -12,6 +12,7 @@ import type {
   ProfilePredictionStatusFilter,
   ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
+import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 // ── Predictions stats chart ────────────────────────────────────────────────
 
@@ -233,10 +234,10 @@ export const PREDICTIONS_HISTORY_MOCK_DATA: Record<
 // ── Rewards claims ─────────────────────────────────────────────────────────
 
 export const REWARDS_CLAIMS_MOCK: RewardClaimItem[] = [
-  { id: "1", name: "Steakhouse USDT", iconUrl: "/icons/usdc.png", income: 500, incomeCurrency: "ytPraxis" },
-  { id: "2", name: "Match: AVULUS", iconUrl: "/icons/w-usdc.png", income: 5, incomeCurrency: "ytPraxis" },
-  { id: "3", name: "Random pool #1", iconUrl: "/icons/yt-token.png", income: 35, incomeCurrency: "ytPraxis" },
-  { id: "4", name: "AERO Up or Down: Up", iconUrl: "/icons/w-usdc.png", income: 15, incomeCurrency: "ytPraxis" },
+  { id: "1", name: "Steakhouse USDT", iconUrl: USDC_ICON_URL, income: 500, incomeCurrency: "ytPraxis" },
+  { id: "2", name: "Match: AVULUS", iconUrl: WUSDC_ICON_URL, income: 5, incomeCurrency: "ytPraxis" },
+  { id: "3", name: "Random pool #1", iconUrl: YT_ICON_URL, income: 35, incomeCurrency: "ytPraxis" },
+  { id: "4", name: "AERO Up or Down: Up", iconUrl: WUSDC_ICON_URL, income: 15, incomeCurrency: "ytPraxis" },
 ];
 
 // ── Profile predictions ────────────────────────────────────────────────────
@@ -266,7 +267,7 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp1",
     kind: "pool",
     name: "Random pool #3",
-    iconUrl: "/icons/yt-token.png",
+    iconUrl: YT_ICON_URL,
     ended: true,
     userWon: false,
     tvl: "100.000$",
@@ -278,7 +279,7 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp2",
     kind: "pool",
     name: "Random pool #4",
-    iconUrl: "/icons/yt-token.png",
+    iconUrl: YT_ICON_URL,
     ended: true,
     userWon: true,
     tvl: "100.000$",
@@ -290,7 +291,7 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp3",
     kind: "match",
     name: "Match outcome: AVULUS",
-    iconUrl: "/icons/w-usdc.png",
+    iconUrl: WUSDC_ICON_URL,
     ended: true,
     userWon: true,
     coeff: 3.4,
@@ -301,7 +302,7 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp4",
     kind: "pool",
     name: "Random pool #5",
-    iconUrl: "/icons/yt-token.png",
+    iconUrl: YT_ICON_URL,
     ended: false,
     userWon: false,
     tvl: "54.500$",
@@ -313,7 +314,7 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp5",
     kind: "match",
     name: "Match outcome: Chelsea",
-    iconUrl: "/icons/w-usdc.png",
+    iconUrl: WUSDC_ICON_URL,
     ended: false,
     userWon: false,
     coeff: 2.1,

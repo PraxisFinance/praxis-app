@@ -2,8 +2,12 @@
 
 import Image from "next/image";
 import { HintIcon } from "@/components/icons/base/hintIcon";
+import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
 import { DEFAULT_POOL_USER_CURRENCY_ICON_URL } from "@/shared/constants/randomRewards";
 import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { RandomPoolUserInPool } from "@/shared/types/randomPool";
 
 export interface RandomPoolUserRowProps {
@@ -12,6 +16,7 @@ export interface RandomPoolUserRowProps {
 
 export function RandomPoolUserRow({ user: u }: RandomPoolUserRowProps) {
   const showHintAvatar = isInlineHintIconUrl(u.avatarUrl);
+  const currencyUrl = u.currencyIconUrl ?? DEFAULT_POOL_USER_CURRENCY_ICON_URL;
 
   return (
     <li className="bg-main-lightGray flex items-center justify-between gap-3 rounded-md px-3 py-1.5">
@@ -21,6 +26,18 @@ export function RandomPoolUserRow({ user: u }: RandomPoolUserRowProps) {
             <div className="text-main-darkPurple flex h-full w-full items-center justify-center">
               <HintIcon className="h-5 w-5" aria-hidden />
             </div>
+          ) : isUsdcIconUrl(u.avatarUrl) ? (
+            <span className="flex h-full w-full items-center justify-center" aria-hidden>
+              <UsdcTokenIcon className="h-full w-full" />
+            </span>
+          ) : isWUsdcIconUrl(u.avatarUrl) ? (
+            <span className="flex h-full w-full items-center justify-center" aria-hidden>
+              <WUsdcTokenIcon className="h-full w-full" />
+            </span>
+          ) : isYtIconUrl(u.avatarUrl) ? (
+            <span className="flex h-full w-full items-center justify-center" aria-hidden>
+              <YtTokenIcon className="h-full w-full" />
+            </span>
           ) : u.avatarUrl ? (
             <Image
               src={u.avatarUrl}
@@ -38,13 +55,27 @@ export function RandomPoolUserRow({ user: u }: RandomPoolUserRowProps) {
         <span className="text-main-darkPurple truncate text-sm font-medium">{u.username}</span>
       </div>
       <div className="text-main-darkPurple flex shrink-0 items-center gap-1.5 text-sm font-medium tabular-nums">
-        <Image
-          src={u.currencyIconUrl ?? DEFAULT_POOL_USER_CURRENCY_ICON_URL}
-          alt=""
-          width={18}
-          height={18}
-          className="size-4 shrink-0 object-contain"
-        />
+        {isUsdcIconUrl(currencyUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <UsdcTokenIcon className="size-4" />
+          </span>
+        ) : isWUsdcIconUrl(currencyUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <WUsdcTokenIcon className="size-4" />
+          </span>
+        ) : isYtIconUrl(currencyUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <YtTokenIcon className="size-4" />
+          </span>
+        ) : (
+          <Image
+            src={currencyUrl}
+            alt=""
+            width={18}
+            height={18}
+            className="size-4 shrink-0 object-contain"
+          />
+        )}
         {u.amount}
       </div>
     </li>

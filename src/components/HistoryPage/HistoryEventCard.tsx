@@ -1,5 +1,9 @@
 import Image from "next/image";
+import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
 import { BALANCE_CURRENCY_META } from "@/shared/constants/balances";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { HISTORY_EVENT_TYPE_LABELS } from "@/shared/constants/history";
 import type { HistoryEvent } from "@/shared/types/history";
 import { formatHistoryTimestamp, formatSignedHistoryAmount } from "./historyEventFormat";
@@ -26,13 +30,27 @@ export function HistoryEventCard({ event }: { event: HistoryEvent }) {
         </span>
 
         <div className="flex shrink-0 items-center gap-1.5 rounded-sm bg-main-grayPurple px-2 py-1">
-          <Image
-            src={iconUrl}
-            alt=""
-            width={14}
-            height={14}
-            className="size-3.5 shrink-0 rounded-full"
-          />
+          {isUsdcIconUrl(iconUrl) ? (
+            <span className="inline-flex shrink-0" aria-hidden>
+              <UsdcTokenIcon className="size-3.5 rounded-full" />
+            </span>
+          ) : isWUsdcIconUrl(iconUrl) ? (
+            <span className="inline-flex shrink-0" aria-hidden>
+              <WUsdcTokenIcon className="size-3.5 rounded-full" />
+            </span>
+          ) : isYtIconUrl(iconUrl) ? (
+            <span className="inline-flex shrink-0" aria-hidden>
+              <YtTokenIcon className="size-3.5 rounded-full" />
+            </span>
+          ) : (
+            <Image
+              src={iconUrl}
+              alt=""
+              width={14}
+              height={14}
+              className="size-3.5 shrink-0 rounded-full"
+            />
+          )}
           <span className="text-main-darkPurple text-2xs leading-4 tabular-nums">
             {formatSignedHistoryAmount(event.amount)}
           </span>

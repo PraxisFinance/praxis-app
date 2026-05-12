@@ -1,11 +1,12 @@
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 function isoInHours(hoursFromNow: number): string {
   return new Date(Date.now() + hoursFromNow * 60 * 60 * 1000).toISOString();
 }
 
-/** Пока нет ассетов по тикерам — один общий плейсхолдер из `public/`. */
-const MOCK_ICON = "/icons/usdc.png";
+/** Пока нет ассетов по тикерам — один общий маркер USDC для UI (`UsdcTokenIcon`). */
+const MOCK_ICON = USDC_ICON_URL;
 
 /**
  * Примеры карточек для верстки и фильтров; даты относительные, чтобы «Live» и «End in» выглядели правдоподобно.

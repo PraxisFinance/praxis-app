@@ -2,7 +2,11 @@
 
 import Image from "next/image";
 import { HintIcon } from "@/components/icons/base/hintIcon";
+import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
 import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 export type RandomPoolIconVariant = "list" | "details";
 
@@ -23,6 +27,18 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
           <div className="text-main-darkPurple flex h-full w-full items-center justify-center">
             <HintIcon className="h-6 w-6" aria-hidden />
           </div>
+        ) : isUsdcIconUrl(iconUrl) ? (
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
+            <UsdcTokenIcon className="h-full w-full" />
+          </span>
+        ) : isWUsdcIconUrl(iconUrl) ? (
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
+            <WUsdcTokenIcon className="h-full w-full" />
+          </span>
+        ) : isYtIconUrl(iconUrl) ? (
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
+            <YtTokenIcon className="h-full w-full" />
+          </span>
         ) : iconUrl ? (
           <Image
             src={iconUrl}
@@ -42,6 +58,18 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
     <div className="bg-main-lightGray ring-main-grayPurple/40 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm ring-1 ring-inset">
       {showHint ? (
         <HintIcon className="text-main-darkPurple h-9 w-9" aria-hidden />
+      ) : isUsdcIconUrl(iconUrl) ? (
+        <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
+          <UsdcTokenIcon className="h-9 w-9" />
+        </span>
+      ) : isWUsdcIconUrl(iconUrl) ? (
+        <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
+          <WUsdcTokenIcon className="h-9 w-9" />
+        </span>
+      ) : isYtIconUrl(iconUrl) ? (
+        <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
+          <YtTokenIcon className="h-9 w-9" />
+        </span>
       ) : iconUrl ? (
         <Image src={iconUrl} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
       ) : (
