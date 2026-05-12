@@ -6,12 +6,22 @@ interface IconProps {
 export function HomeIcon({ className = "w-6 h-6", active = false }: IconProps) {
   const color = active ? "#a78bfa" : "#1e1b4b";
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      className={className}
+      width="26"
+      height="24"
+      viewBox="0 0 26 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
-        d="M3 9.5L12 3L21 9.5V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9.5Z"
+        d="M12.4259 3.84099C12.5782 3.70054 12.7847 3.62165 13 3.62165C13.2153 3.62165 13.4218 3.70054 13.5742 3.84099L22.9884 12.531C23.0633 12.6026 23.153 12.6597 23.2522 12.699C23.3513 12.7382 23.4579 12.7589 23.5658 12.7597C23.6737 12.7605 23.7807 12.7415 23.8805 12.7037C23.9804 12.666 24.071 12.6102 24.1473 12.5398C24.2236 12.4693 24.2838 12.3856 24.3246 12.2934C24.3655 12.2012 24.386 12.1024 24.385 12.0028C24.384 11.9032 24.3615 11.8048 24.3189 11.7134C24.2763 11.6219 24.2143 11.5391 24.1367 11.47L14.7236 2.77999C14.4973 2.57106 14.2286 2.40532 13.9328 2.29225C13.6371 2.17917 13.3201 2.12097 13 2.12097C12.6799 2.12097 12.363 2.17917 12.0672 2.29225C11.7715 2.40532 11.5028 2.57106 11.2764 2.77999L1.86227 11.47C1.7847 11.5392 1.72285 11.622 1.68031 11.7135C1.63778 11.805 1.61542 11.9035 1.61453 12.003C1.61364 12.1026 1.63425 12.2014 1.67515 12.2935C1.71605 12.3857 1.77643 12.4694 1.85275 12.5398C1.92907 12.6102 2.01982 12.6658 2.11969 12.7035C2.21956 12.7412 2.32656 12.7601 2.43444 12.7592C2.54232 12.7583 2.64893 12.7375 2.74804 12.6982C2.84715 12.6588 2.93677 12.6017 3.01169 12.53L12.4259 3.84099Z"
         fill={color}
       />
-      <path d="M9 22V12H15V22" stroke={active ? "#a78bfa" : "#1e1b4b"} strokeWidth="2" />
+      <path
+        d="M13 5.43201L21.8389 13.591C21.8714 13.621 21.9039 13.649 21.9375 13.677V19.875C21.9375 20.91 21.0275 21.75 19.9063 21.75H16.25C16.0345 21.75 15.8279 21.671 15.6755 21.5303C15.5231 21.3897 15.4375 21.1989 15.4375 21V16.5C15.4375 16.3011 15.3519 16.1103 15.1995 15.9697C15.0472 15.829 14.8405 15.75 14.625 15.75H11.375C11.1595 15.75 10.9528 15.829 10.8005 15.9697C10.6481 16.1103 10.5625 16.3011 10.5625 16.5V21C10.5625 21.1989 10.4769 21.3897 10.3245 21.5303C10.1722 21.671 9.96549 21.75 9.75 21.75H6.09375C5.55503 21.75 5.03837 21.5525 4.65744 21.2008C4.27651 20.8492 4.0625 20.3723 4.0625 19.875V13.677C4.0962 13.6492 4.12908 13.6205 4.16108 13.591L13 5.43201Z"
+        fill={color}
+      />
     </svg>
   );
 }
@@ -19,9 +29,21 @@ export function HomeIcon({ className = "w-6 h-6", active = false }: IconProps) {
 export function EarnIcon({ className = "w-6 h-6", active = false }: IconProps) {
   const color = active ? "#a78bfa" : "#1e1b4b";
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="4" width="16" height="18" rx="2" fill={color} />
-      <path d="M8 10H16M8 14H16M8 18H12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M9.5 2H18.5L13 9H20.5L8.5 22L11 12.5H4L9.5 2Z"
+        fill={color}
+        stroke={color}
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -29,14 +51,17 @@ export function EarnIcon({ className = "w-6 h-6", active = false }: IconProps) {
 export function PredictionsIcon({ className = "w-6 h-6", active = false }: IconProps) {
   const color = active ? "#a78bfa" : "#1e1b4b";
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 3V21H21" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <svg
+      className={className}
+      width="18"
+      height="20"
+      viewBox="0 0 18 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
-        d="M7 14L11 10L15 14L21 8"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M15.375 0C14.34 0 13.5 0.84 13.5 1.875V17.625C13.5 18.66 14.34 19.5 15.375 19.5H16.125C17.16 19.5 18 18.66 18 17.625V1.875C18 0.839 17.16 0 16.125 0H15.375ZM6.75 6.375C6.75 5.339 7.59 4.5 8.625 4.5H9.375C10.411 4.5 11.25 5.34 11.25 6.375V17.625C11.25 18.66 10.41 19.5 9.375 19.5H8.625C8.12772 19.5 7.6508 19.3025 7.29917 18.9508C6.94754 18.5992 6.75 18.1223 6.75 17.625V6.375ZM0 10.875C0 9.839 0.84 9 1.875 9H2.625C3.661 9 4.5 9.84 4.5 10.875V17.625C4.5 18.66 3.66 19.5 2.625 19.5H1.875C1.37772 19.5 0.900805 19.3025 0.549175 18.9508C0.197544 18.5992 0 18.1223 0 17.625V10.875Z"
+        fill={color}
       />
     </svg>
   );
@@ -45,9 +70,20 @@ export function PredictionsIcon({ className = "w-6 h-6", active = false }: IconP
 export function HistoryIcon({ className = "w-6 h-6", active = false }: IconProps) {
   const color = active ? "#a78bfa" : "#1e1b4b";
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="9" stroke={color} strokeWidth="2" fill="none" />
-      <path d="M12 7V12L15 15" stroke={color} strokeWidth="2" strokeLinecap="round" />
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M12 2.25C6.615 2.25 2.25 6.615 2.25 12C2.25 17.385 6.615 21.75 12 21.75C17.385 21.75 21.75 17.385 21.75 12C21.75 6.615 17.385 2.25 12 2.25ZM12.75 6C12.75 5.80109 12.671 5.61032 12.5303 5.46967C12.3897 5.32902 12.1989 5.25 12 5.25C11.8011 5.25 11.6103 5.32902 11.4697 5.46967C11.329 5.61032 11.25 5.80109 11.25 6V12C11.25 12.414 11.586 12.75 12 12.75H16.5C16.6989 12.75 16.8897 12.671 17.0303 12.5303C17.171 12.3897 17.25 12.1989 17.25 12C17.25 11.8011 17.171 11.6103 17.0303 11.4697C16.8897 11.329 16.6989 11.25 16.5 11.25H12.75V6Z"
+        fill={color}
+      />
     </svg>
   );
 }
@@ -55,13 +91,17 @@ export function HistoryIcon({ className = "w-6 h-6", active = false }: IconProps
 export function ProfileIcon({ className = "w-6 h-6", active = false }: IconProps) {
   const color = active ? "#a78bfa" : "#1e1b4b";
   return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="8" r="4" fill={color} />
+    <svg
+      className={className}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
-        d="M4 20C4 16.6863 7.58172 14 12 14C16.4183 14 20 16.6863 20 20"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
+        d="M6.5 7.5C6.5 6.04131 7.07946 4.64236 8.11091 3.61091C9.14236 2.57946 10.5413 2 12 2C13.4587 2 14.8576 2.57946 15.8891 3.61091C16.9205 4.64236 17.5 6.04131 17.5 7.5C17.5 8.95869 16.9205 10.3576 15.8891 11.3891C14.8576 12.4205 13.4587 13 12 13C10.5413 13 9.14236 12.4205 8.11091 11.3891C7.07946 10.3576 6.5 8.95869 6.5 7.5ZM3 19C3 17.6739 3.52678 16.4021 4.46447 15.4645C5.40215 14.5268 6.67392 14 8 14H16C17.3261 14 18.5979 14.5268 19.5355 15.4645C20.4732 16.4021 21 17.6739 21 19V22H3V19Z"
+        fill={color}
       />
     </svg>
   );
