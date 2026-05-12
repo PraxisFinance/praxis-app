@@ -38,6 +38,34 @@ model Admin {
   createdAt     DateTime @default(now())
 }
 
+model RydContract {
+  id          String   @id
+  address     String   @unique
+  name        String
+  description String?
+  vault       String
+  numWinners  Int
+  minDeposit  String
+  endTime     DateTime
+  txHash      String?
+  createdAt   DateTime @default(now())
+}
+
+model TwoPoolContract {
+  id          String   @id
+  address     String   @unique
+  name        String
+  description String?
+  vault       String
+  yt          String?
+  curve       String
+  targetRate  String
+  startTime   DateTime
+  endTime     DateTime
+  txHash      String?
+  createdAt   DateTime @default(now())
+}
+
 enum EventStatus {
   open
   resolved

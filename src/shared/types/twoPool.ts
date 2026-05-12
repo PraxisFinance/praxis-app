@@ -29,6 +29,8 @@ export type TwoPool = {
   elevatedEntranceFeePercent: number;
   /** Raw `actualRate` from indexer, or "Not defined" if absent */
   actualRateRaw: string;
+  /** Off-chain description from TwoPoolContract postgres row, or null if not seeded */
+  description: string | null;
   /** What the indexer row could not supply or only approximated */
   indexerGaps: readonly string[];
 };
