@@ -3,6 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "./ui/icons/NavIcons";
+import Image from "next/image";
 
 interface HeaderProps {
   username: string;
@@ -29,7 +30,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
       <div className="flex items-center gap-2.5">
         <Badge variant="neutral" className="text-sm leading-4">
           {points.toLocaleString()}
-          <div className="w-4 h-4 rounded-full bg-violet-400" />
+          <Image src="/icons/w-usdc.png" alt="wUSDC" width={20} height={20} className="shrink-0" />
         </Badge>
 
         <Button variant="iconPill" size="icon">
