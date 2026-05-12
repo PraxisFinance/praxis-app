@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { DEFAULT_BALANCES, getBalanceValueByIconUrl } from "@/shared/constants/balances";
+import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
 import { useRYDStore } from "@/stores/rydStore";
 import {
   rydDataToRandomPool,
@@ -65,7 +66,10 @@ export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
         <RandomPoolLiveDetails
           amount={amount}
           onAmountChange={setAmount}
-          walletBalance={getBalanceValueByIconUrl(DEFAULT_BALANCES, pool.iconUrl)}
+          walletBalance={getBalanceValueByIconUrl(
+            DEFAULT_BALANCES,
+            isInlineHintIconUrl(pool.iconUrl) ? "/icons/yt-token.png" : pool.iconUrl
+          )}
           participants={participants}
         />
       )}

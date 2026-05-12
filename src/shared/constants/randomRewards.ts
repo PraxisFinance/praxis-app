@@ -1,4 +1,5 @@
 import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
+import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 
 export const RANDOM_REWARDS_FILTERS = [
   { id: "all", label: "All" },
@@ -26,7 +27,7 @@ export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = "/icons/w-usdc.png";
 export const MOCK_USERS_IN_POOL: RandomPoolUserInPool[] = [
   { username: "Mizori", amount: "$1000", avatarUrl: "/icons/usdc.png" },
   { username: "Kisara", amount: "$1500" },
-  { username: "Tazumi", amount: "$800", avatarUrl: "/icons/question.png" },
+  { username: "Tazumi", amount: "$800", avatarUrl: INLINE_HINT_ICON_URL },
   { username: "Rinara", amount: "$2200", currencyIconUrl: "/icons/yt-token.png" },
   { username: "Yoshiko", amount: "$500" },
 ];
@@ -43,7 +44,7 @@ export const RANDOM_POOL_MOCKS: RandomPool[] = [
   {
     id: "pool-live-1",
     title: "Random pool #1",
-    iconUrl: "/icons/question.png",
+    iconUrl: INLINE_HINT_ICON_URL,
     status: "live",
     tvl: "10.000$",
     expectedYield: "$1000",

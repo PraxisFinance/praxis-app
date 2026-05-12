@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { HintIcon } from "@/components/icons/base/hintIcon";
+import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
 
 export type RandomPoolIconVariant = "list" | "details";
 
@@ -12,10 +14,16 @@ export interface RandomPoolIconProps {
 }
 
 export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
+  const showHint = isInlineHintIconUrl(iconUrl);
+
   if (variant === "list") {
     return (
       <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-amber-100/80">
-        {iconUrl ? (
+        {showHint ? (
+          <div className="text-main-darkPurple flex h-full w-full items-center justify-center">
+            <HintIcon className="h-6 w-6" aria-hidden />
+          </div>
+        ) : iconUrl ? (
           <Image
             src={iconUrl}
             alt={alt}
@@ -32,7 +40,9 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
 
   return (
     <div className="bg-main-lightGray ring-main-grayPurple/40 flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-sm ring-1 ring-inset">
-      {iconUrl ? (
+      {showHint ? (
+        <HintIcon className="text-main-darkPurple h-9 w-9" aria-hidden />
+      ) : iconUrl ? (
         <Image src={iconUrl} alt="" width={36} height={36} className="h-9 w-9 object-contain" />
       ) : (
         <div className="flex h-9 w-9 items-center justify-center text-xl leading-none">🪙</div>

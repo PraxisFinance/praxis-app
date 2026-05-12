@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { HintIcon } from "@/components/icons/base/hintIcon";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
@@ -18,8 +19,8 @@ export function Balances() {
     <section>
       <div className="flex items-center mb-2">
         <SectionHeader>Balances</SectionHeader>
-        <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1">
-          <Image src="/icons/question.png" alt="About balances" width={14} height={14} />
+        <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1" aria-label="About balances">
+          <HintIcon className="text-main-darkPurple h-3.5 w-3.5" aria-hidden />
         </Button>
       </div>
 
