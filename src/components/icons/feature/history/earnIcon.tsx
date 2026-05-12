@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 
+/** Percent / earn indicator for history rows (not the bottom-nav Earn lightning). */
 export function EarnIcon({ className }: { className?: string }) {
   return (
     <svg

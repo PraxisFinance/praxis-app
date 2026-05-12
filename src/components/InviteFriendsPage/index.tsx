@@ -7,13 +7,13 @@ import { AlertCircle, Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { ArrowIcon } from "@/components/ui";
 import {
   INVITE_FRIENDS_MOCK_FRIENDS,
   INVITE_FRIENDS_MOCK_REFERRAL_CODE,
 } from "@/shared/constants/inviteFriends";
 import { formatScore } from "@/stores";
-import { PraxisBtnIcon } from "./assets/praxis-btn-icon";
+import { PraxisBtnIcon } from "@/components/icons/brand/praxisBtnIcon";
 
 export function InviteFriendsPage() {
   const router = useRouter();

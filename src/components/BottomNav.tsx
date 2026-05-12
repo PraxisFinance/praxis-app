@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isPredictionsSectionPath, isProfileSectionPath } from "@/lib/routes";
-import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "./ui/icons/NavIcons";
+import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "@/components/icons/navigation";
 
 interface NavItem {
   id: string;

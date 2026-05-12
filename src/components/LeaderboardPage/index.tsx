@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
-import { PraxisBtnIcon } from "@/components/InviteFriendsPage/assets/praxis-btn-icon";
+import { ArrowIcon } from "@/components/ui";
+import { PraxisBtnIcon } from "@/components/icons/brand/praxisBtnIcon";
 import {
   LEADERBOARD_TOP_USERS,
   LEADERBOARD_YOUR_PLACE,

@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SettingsIcon, NotificationIcon } from "./ui/icons/NavIcons";
+import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
 import Image from "next/image";
 
 interface HeaderProps {

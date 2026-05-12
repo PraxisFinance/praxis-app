@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import type { HistoryEventType } from "@/shared/types/history";
-import { DepositIcon } from "./assets/deposit-icon";
-import { EarnIcon } from "./assets/earn-icon";
-import { PredictionIcon } from "./assets/prediction-icon";
-import { PredictionWinningIcon } from "./assets/prediction-winning-icon";
-import { WithdrawIcon } from "./assets/withdraw-icon";
+import { DepositIcon } from "@/components/icons/feature/history/depositIcon";
+import { WithdrawIcon } from "@/components/icons/feature/history/withdrawIcon";
+import { EarnIcon } from "@/components/icons/feature/history/earnIcon";
+import { PredictionIcon } from "@/components/icons/feature/history/predictionIcon";
+import { PredictionWinningIcon } from "@/components/icons/feature/history/predictionWinningIcon";
 
 export function HistoryEventTypeIcon({
   type,

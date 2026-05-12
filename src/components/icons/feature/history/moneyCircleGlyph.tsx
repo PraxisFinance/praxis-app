@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 
-export function DepositIcon({ className }: { className?: string }) {
+/** Shared SVG for deposit / withdraw history rows (same shape). */
+export function MoneyCircleGlyph({ className }: { className?: string }) {
   return (
     <svg
       className={cn("shrink-0", className)}

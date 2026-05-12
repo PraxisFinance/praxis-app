@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { ArrowIcon } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import {
   HOW_IT_WORKS_ABOUT_INTRO,
@@ -11,10 +11,11 @@ import {
   HOW_IT_WORKS_NUMBERED_POINTS,
   HOW_IT_WORKS_TWITTER_URL,
 } from "@/shared/constants/howItWorks";
-import { CupIcon } from "./assets/cup-icon";
-import { DollarIcon } from "./assets/dollar-icon";
-import { LevelingIcon } from "./assets/leveling-icon";
-import { LightningIcon } from "./assets/lightning-icon";
+import { XLogo } from "@/components/icons/brand/xLogo";
+import { CupIcon } from "@/components/icons/feature/how-it-works/cupIcon";
+import { DollarIcon } from "@/components/icons/feature/how-it-works/dollarIcon";
+import { LevelingIcon } from "@/components/icons/feature/how-it-works/levelingIcon";
+import { LightningIcon } from "@/components/icons/feature/how-it-works/lightningIcon";
 
 type GuideStepId = (typeof HOW_IT_WORKS_GUIDE_STEPS)[number]["id"];
 
@@ -35,14 +36,6 @@ function GuideStepIcon({ id }: { id: GuideStepId }) {
       return _exhaustive;
     }
   }
-}
-
-function XLogo({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
 }
 
 export function HowItWorksPage() {
