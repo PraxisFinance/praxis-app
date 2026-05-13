@@ -35,15 +35,15 @@ export function EarnMyPositionsCard({ item, onWithdraw, onClaim }: EarnMyPositio
               {item.yourDeposit}
               {isUsdcIconUrl(item.depositCurrencyIconUrl) ? (
                 <span className="inline-flex shrink-0" aria-hidden>
-                  <UsdcTokenIcon className="h-4 w-4 rounded-full" />
+                  <UsdcTokenIcon size={16} className="rounded-full" />
                 </span>
               ) : isWUsdcIconUrl(item.depositCurrencyIconUrl) ? (
                 <span className="inline-flex shrink-0" aria-hidden>
-                  <WUsdcTokenIcon className="h-4 w-4 rounded-full" />
+                  <WUsdcTokenIcon size={16} className="rounded-full" />
                 </span>
               ) : isYtIconUrl(item.depositCurrencyIconUrl) ? (
                 <span className="inline-flex shrink-0" aria-hidden>
-                  <YtTokenIcon className="h-4 w-4 rounded-full" />
+                  <YtTokenIcon size={16} className="rounded-full" />
                 </span>
               ) : (
                 <Image

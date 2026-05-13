@@ -20,15 +20,15 @@ export function PoolHeader({ iconUrl, name, subtitle, emphasized }: PoolHeaderPr
       <div className="flex items-center gap-2.5">
         {isUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <UsdcTokenIcon className="h-9 w-9 rounded-full" />
+            <UsdcTokenIcon size={32} className="rounded-full" />
           </span>
         ) : isWUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon className="h-9 w-9 rounded-full" />
+            <WUsdcTokenIcon size={32} className="rounded-full" />
           </span>
         ) : isYtIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <YtTokenIcon className="h-9 w-9 rounded-full" />
+            <YtTokenIcon size={32} className="rounded-full" />
           </span>
         ) : (
           <Image

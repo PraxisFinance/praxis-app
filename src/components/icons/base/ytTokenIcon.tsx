@@ -1,16 +1,24 @@
+import { cn } from "@/lib/utils";
+
+import { DEFAULT_TOKEN_ICON_SIZE, type TokenIconSize } from "./tokenIconSizes";
+
 interface YtTokenIconProps {
   className?: string;
+  size?: TokenIconSize;
 }
 
-export function YtTokenIcon({ className = "w-4 h-4" }: YtTokenIconProps) {
+export function YtTokenIcon({
+  className,
+  size = DEFAULT_TOKEN_ICON_SIZE,
+}: YtTokenIconProps) {
   return (
     <svg
-      className={className}
-      width="32"
-      height="32"
+      width={size}
+      height={size}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={cn("shrink-0", className)}
     >
       <circle cx="16" cy="16" r="16" fill="#9787F4" />
       <path

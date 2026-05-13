@@ -32,15 +32,15 @@ export function HistoryEventCard({ event }: { event: HistoryEvent }) {
         <div className="flex shrink-0 items-center gap-1.5 rounded-sm bg-main-grayPurple px-2 py-1">
           {isUsdcIconUrl(iconUrl) ? (
             <span className="inline-flex shrink-0" aria-hidden>
-              <UsdcTokenIcon className="size-3.5 rounded-full" />
+              <UsdcTokenIcon size={14} className="rounded-full" />
             </span>
           ) : isWUsdcIconUrl(iconUrl) ? (
             <span className="inline-flex shrink-0" aria-hidden>
-              <WUsdcTokenIcon className="size-3.5 rounded-full" />
+              <WUsdcTokenIcon size={14} className="rounded-full" />
             </span>
           ) : isYtIconUrl(iconUrl) ? (
             <span className="inline-flex shrink-0" aria-hidden>
-              <YtTokenIcon className="size-3.5 rounded-full" />
+              <YtTokenIcon size={14} className="rounded-full" />
             </span>
           ) : (
             <Image

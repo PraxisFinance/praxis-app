@@ -31,7 +31,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
         <Badge variant="neutral" className="text-sm leading-4">
           {points.toLocaleString()}
           <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon className="h-5 w-5" />
+            <WUsdcTokenIcon size={18} />
           </span>
         </Badge>
 

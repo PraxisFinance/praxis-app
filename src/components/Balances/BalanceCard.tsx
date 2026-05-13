@@ -18,15 +18,15 @@ export function BalanceCard({ label, value, iconUrl }: BalanceCardProps) {
       <div className="inline-flex justify-start items-center gap-[5px]">
         {isUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <UsdcTokenIcon className="h-4 w-4" />
+            <UsdcTokenIcon size={16} />
           </span>
         ) : isWUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon className="h-4 w-4" />
+            <WUsdcTokenIcon size={16} />
           </span>
         ) : isYtIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <YtTokenIcon className="h-4 w-4" />
+            <YtTokenIcon size={16} />
           </span>
         ) : (
           <Image src={iconUrl} alt={label} width={16} height={16} className="w-4 h-4" />

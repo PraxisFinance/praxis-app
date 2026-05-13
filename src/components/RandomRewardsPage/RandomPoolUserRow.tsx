@@ -28,15 +28,15 @@ export function RandomPoolUserRow({ user: u }: RandomPoolUserRowProps) {
             </div>
           ) : isUsdcIconUrl(u.avatarUrl) ? (
             <span className="flex h-full w-full items-center justify-center" aria-hidden>
-              <UsdcTokenIcon className="h-full w-full" />
+              <UsdcTokenIcon size={32} />
             </span>
           ) : isWUsdcIconUrl(u.avatarUrl) ? (
             <span className="flex h-full w-full items-center justify-center" aria-hidden>
-              <WUsdcTokenIcon className="h-full w-full" />
+              <WUsdcTokenIcon size={32} />
             </span>
           ) : isYtIconUrl(u.avatarUrl) ? (
             <span className="flex h-full w-full items-center justify-center" aria-hidden>
-              <YtTokenIcon className="h-full w-full" />
+              <YtTokenIcon size={32} />
             </span>
           ) : u.avatarUrl ? (
             <Image
@@ -57,15 +57,15 @@ export function RandomPoolUserRow({ user: u }: RandomPoolUserRowProps) {
       <div className="text-main-darkPurple flex shrink-0 items-center gap-1.5 text-sm font-medium tabular-nums">
         {isUsdcIconUrl(currencyUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <UsdcTokenIcon className="size-4" />
+            <UsdcTokenIcon size={16} />
           </span>
         ) : isWUsdcIconUrl(currencyUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon className="size-4" />
+            <WUsdcTokenIcon size={16} />
           </span>
         ) : isYtIconUrl(currencyUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
-            <YtTokenIcon className="size-4" />
+            <YtTokenIcon size={16} />
           </span>
         ) : (
           <Image

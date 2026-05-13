@@ -1,16 +1,25 @@
+import { cn } from "@/lib/utils";
+
+import { DEFAULT_TOKEN_ICON_SIZE, type TokenIconSize } from "./tokenIconSizes";
+
 interface WUsdcTokenIconProps {
   className?: string;
+  size?: TokenIconSize;
 }
 
-export function WUsdcTokenIcon({ className = "w-4 h-4" }: WUsdcTokenIconProps) {
+export function WUsdcTokenIcon({
+  className,
+  size = DEFAULT_TOKEN_ICON_SIZE,
+}: WUsdcTokenIconProps) {
   return (
     <svg
-      width="32"
-      height="32"
+      width={size}
+      height={size}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      className={cn("shrink-0", className)}
     >
       <rect width="32" height="32" fill="url(#pattern0_367_13436)" />
       <defs>

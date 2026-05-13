@@ -7,7 +7,7 @@ export function CurrencyStatCard({ stat }: { stat: CurrencyStat }) {
       <span className="text-xs font-normal text-main-darkPurple/60 leading-4">{stat.label}</span>
       <div className="flex items-center gap-2">
         <span className="inline-flex shrink-0" aria-hidden>
-          <WUsdcTokenIcon className="h-5 w-5" />
+          <WUsdcTokenIcon size={18} />
         </span>
         <span className="text-main-darkPurple text-md tabular-nums leading-6">
           {stat.amount.toLocaleString()}&nbsp;

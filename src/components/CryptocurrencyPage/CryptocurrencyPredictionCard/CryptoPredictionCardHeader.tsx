@@ -48,15 +48,15 @@ export function CryptoPredictionCardHeader({
         {iconUrl ? (
           isUsdcIconUrl(iconUrl) ? (
             <span className="inline-flex" aria-hidden>
-              <UsdcTokenIcon className="h-9 w-9" />
+              <UsdcTokenIcon size={32} />
             </span>
           ) : isWUsdcIconUrl(iconUrl) ? (
             <span className="inline-flex" aria-hidden>
-              <WUsdcTokenIcon className="h-9 w-9" />
+              <WUsdcTokenIcon size={32} />
             </span>
           ) : isYtIconUrl(iconUrl) ? (
             <span className="inline-flex" aria-hidden>
-              <YtTokenIcon className="h-9 w-9" />
+              <YtTokenIcon size={32} />
             </span>
           ) : (
             <Image src={iconUrl} alt="" width={36} height={36} className="object-contain" />

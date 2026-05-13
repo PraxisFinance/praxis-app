@@ -29,15 +29,15 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
           </div>
         ) : isUsdcIconUrl(iconUrl) ? (
           <span className="flex h-full w-full items-center justify-center" aria-hidden>
-            <UsdcTokenIcon className="h-full w-full" />
+            <UsdcTokenIcon size={32} />
           </span>
         ) : isWUsdcIconUrl(iconUrl) ? (
           <span className="flex h-full w-full items-center justify-center" aria-hidden>
-            <WUsdcTokenIcon className="h-full w-full" />
+            <WUsdcTokenIcon size={32} />
           </span>
         ) : isYtIconUrl(iconUrl) ? (
           <span className="flex h-full w-full items-center justify-center" aria-hidden>
-            <YtTokenIcon className="h-full w-full" />
+            <YtTokenIcon size={32} />
           </span>
         ) : iconUrl ? (
           <Image
@@ -60,15 +60,15 @@ export function RandomPoolIcon({ iconUrl, alt, variant }: RandomPoolIconProps) {
         <HintIcon className="text-main-darkPurple h-9 w-9" aria-hidden />
       ) : isUsdcIconUrl(iconUrl) ? (
         <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
-          <UsdcTokenIcon className="h-9 w-9" />
+          <UsdcTokenIcon size={32} />
         </span>
       ) : isWUsdcIconUrl(iconUrl) ? (
         <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
-          <WUsdcTokenIcon className="h-9 w-9" />
+          <WUsdcTokenIcon size={32} />
         </span>
       ) : isYtIconUrl(iconUrl) ? (
         <span className="flex h-9 w-9 items-center justify-center" aria-hidden>
-          <YtTokenIcon className="h-9 w-9" />
+          <YtTokenIcon size={32} />
         </span>
       ) : iconUrl ? (
         <Image src={iconUrl} alt="" width={36} height={36} className="h-9 w-9 object-contain" />

@@ -1,16 +1,25 @@
+import { cn } from "@/lib/utils";
+
+import { DEFAULT_TOKEN_ICON_SIZE, type TokenIconSize } from "./tokenIconSizes";
+
 interface UsdtTokenIconProps {
   className?: string;
+  size?: TokenIconSize;
 }
 
-export function UsdtTokenIcon({ className = "w-4 h-4" }: UsdtTokenIconProps) {
+export function UsdtTokenIcon({
+  className,
+  size = DEFAULT_TOKEN_ICON_SIZE,
+}: UsdtTokenIconProps) {
   return (
     <svg
-      width="25"
-      height="25"
+      width={size}
+      height={size}
       viewBox="0 0 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      className={cn("shrink-0", className)}
     >
       <rect width="25" height="25" fill="url(#pattern0_367_13441)" />
       <defs>

@@ -102,15 +102,15 @@ function CryptoPredictionDrawerBody({
             {iconUrl ? (
               isUsdcIconUrl(iconUrl) ? (
                 <span className="inline-flex" aria-hidden>
-                  <UsdcTokenIcon className="h-6 w-6" />
+                  <UsdcTokenIcon />
                 </span>
               ) : isWUsdcIconUrl(iconUrl) ? (
                 <span className="inline-flex" aria-hidden>
-                  <WUsdcTokenIcon className="h-6 w-6" />
+                  <WUsdcTokenIcon />
                 </span>
               ) : isYtIconUrl(iconUrl) ? (
                 <span className="inline-flex" aria-hidden>
-                  <YtTokenIcon className="h-6 w-6" />
+                  <YtTokenIcon />
                 </span>
               ) : (
                 <Image src={iconUrl} alt="" width={24} height={24} className="object-contain" />

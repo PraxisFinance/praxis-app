@@ -1,16 +1,26 @@
+import { cn } from "@/lib/utils";
+
+import { DEFAULT_TOKEN_ICON_SIZE, type TokenIconSize } from "./tokenIconSizes";
+
 interface UsdcTokenIconProps {
   className?: string;
+  /** Renders at this many CSS pixels; `viewBox` scales the artwork. */
+  size?: TokenIconSize;
 }
 
-export function UsdcTokenIcon({ className = "w-4 h-4" }: UsdcTokenIconProps) {
+export function UsdcTokenIcon({
+  className,
+  size = DEFAULT_TOKEN_ICON_SIZE,
+}: UsdcTokenIconProps) {
   return (
     <svg
-      width="32"
-      height="32"
+      width={size}
+      height={size}
       viewBox="0 0 32 32"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      className={cn("shrink-0", className)}
     >
       <rect width="32" height="32" fill="url(#pattern0_367_13430)" />
       <defs>

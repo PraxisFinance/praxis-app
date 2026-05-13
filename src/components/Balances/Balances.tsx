@@ -48,15 +48,15 @@ export function Balances() {
               <div className="flex items-center gap-2">
                 {isUsdcIconUrl(item.iconUrl) ? (
                   <span className="inline-flex shrink-0" aria-hidden>
-                    <UsdcTokenIcon className="h-6 w-6" />
+                    <UsdcTokenIcon />
                   </span>
                 ) : isWUsdcIconUrl(item.iconUrl) ? (
                   <span className="inline-flex shrink-0" aria-hidden>
-                    <WUsdcTokenIcon className="h-6 w-6" />
+                    <WUsdcTokenIcon />
                   </span>
                 ) : isYtIconUrl(item.iconUrl) ? (
                   <span className="inline-flex shrink-0" aria-hidden>
-                    <YtTokenIcon className="h-6 w-6" />
+                    <YtTokenIcon />
                   </span>
                 ) : (
                   <Image src={item.iconUrl} alt={item.label} width={24} height={24} />
