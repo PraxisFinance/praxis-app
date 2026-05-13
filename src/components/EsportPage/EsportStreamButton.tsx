@@ -1,12 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
-const STREAM_LINK_ICON = "/icons/online-link.png";
-
-function StreamIcon() {
-  return <Image src={STREAM_LINK_ICON} alt="" width={20} height={20} className="object-contain" />;
-}
+import { StreamActiveIcon } from "@/components/icons/feature/esports/streamActiveIcon";
+import { StreamDisabledIcon } from "@/components/icons/feature/esports/streamDisabledIcon";
 
 interface EsportStreamButtonProps {
   streamUrl?: string;
@@ -22,7 +17,7 @@ export function EsportStreamButton({ streamUrl }: EsportStreamButtonProps) {
         className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-main-grayPurple transition-opacity hover:opacity-90"
         aria-label="Open stream"
       >
-        <StreamIcon />
+        <StreamActiveIcon />
       </a>
     );
   }
@@ -34,7 +29,7 @@ export function EsportStreamButton({ streamUrl }: EsportStreamButtonProps) {
       aria-label="Stream not available"
       className="flex h-8 w-8 shrink-0 cursor-not-allowed items-center justify-center rounded-lg bg-main-grayPurple opacity-50"
     >
-      <StreamIcon />
+      <StreamDisabledIcon />
     </button>
   );
 }
