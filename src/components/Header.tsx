@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
@@ -12,6 +14,8 @@ interface HeaderProps {
 }
 
 export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="flex justify-between items-center">
       <div className="flex items-center gap-[5px]">
@@ -39,7 +43,13 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
           <NotificationIcon className="w-4 h-4" />
         </Button>
 
-        <Button variant="iconPill" size="icon">
+        <Button
+          variant="iconPill"
+          size="icon"
+          type="button"
+          aria-label="Open settings"
+          onClick={() => router.push("/profile/settings")}
+        >
           <SettingsIcon className="w-4 h-4" />
         </Button>
       </div>
