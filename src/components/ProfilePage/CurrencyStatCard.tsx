@@ -1,4 +1,4 @@
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base";
 import type { CurrencyStat } from "@/shared/types/profile";
 
 export function CurrencyStatCard({ stat }: { stat: CurrencyStat }) {

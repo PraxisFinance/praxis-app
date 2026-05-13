@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { HintIcon } from "@/components/icons/base/hintIcon";
-import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
-import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
+import { HintIcon, UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";

@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
-import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
-import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { DEFAULT_BALANCES } from "@/shared/constants/balances";
 import { YT_ICON_URL, isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type {

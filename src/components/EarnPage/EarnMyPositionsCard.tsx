@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
-import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InfoRow } from "@/components/ui/InfoRow";

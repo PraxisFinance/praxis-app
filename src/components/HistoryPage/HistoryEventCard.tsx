@@ -1,7 +1,5 @@
 import Image from "next/image";
-import { UsdcTokenIcon } from "@/components/icons/base/usdcTokenIcon";
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
-import { YtTokenIcon } from "@/components/icons/base/ytTokenIcon";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { BALANCE_CURRENCY_META } from "@/shared/constants/balances";
 import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { HISTORY_EVENT_TYPE_LABELS } from "@/shared/constants/history";

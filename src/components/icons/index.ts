@@ -1,6 +1,15 @@
 /** Shared SVG icon components. Feature-specific glyphs live under `feature/`. */
-export { ArrowIcon } from "./base/arrowIcon";
-export { HintIcon } from "./base/hintIcon";
+export {
+  ArrowIcon,
+  DEFAULT_TOKEN_ICON_SIZE,
+  HintIcon,
+  TOKEN_ICON_SIZES,
+  UsdcTokenIcon,
+  UsdtTokenIcon,
+  WUsdcTokenIcon,
+  YtTokenIcon,
+  type TokenIconSize,
+} from "./base";
 export * from "./navigation";
 export { PraxisBtnIcon } from "./brand/praxisBtnIcon";
 export { XLogo } from "./brand/xLogo";

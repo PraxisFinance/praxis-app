@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useAccount } from "wagmi";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
-import { HintIcon } from "@/components/icons/base/hintIcon";
+import { HintIcon } from "@/components/icons/base";
 import {
   RANDOM_POOLS_HINT,
   RANDOM_REWARDS_FILTERS,

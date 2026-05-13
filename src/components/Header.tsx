@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
-import { WUsdcTokenIcon } from "@/components/icons/base/wUsdcTokenIcon";
+import { WUsdcTokenIcon } from "@/components/icons/base";
 
 interface HeaderProps {
   username: string;
