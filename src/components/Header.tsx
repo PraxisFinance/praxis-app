@@ -39,7 +39,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
           </span>
         </Badge>
 
-        <Button variant="iconPill" size="icon">
+        <Button variant="iconPill" size="icon" onClick={() => router.push("/history")}>
           <NotificationIcon className="w-4 h-4" />
         </Button>
 
