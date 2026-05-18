@@ -125,6 +125,7 @@ function isTradingOpenFromState(state: string, resolvedAt: bigint): boolean {
  *   no dedicated “maturity” field on `TwoPoolState`).
  */
 export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
+  console.log("raw", raw);
   const stableTvl = toBigInt(raw.sideTVLStable);
   const elevatedTvl = toBigInt(raw.sideTVLElevated);
   const { stable: stablePoolPercent, elevated: elevatedPoolPercent } = tvlSplitPercents(
@@ -158,7 +159,8 @@ export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
     id: raw.id,
     title: TWO_POOL_NOT_DEFINED_STR,
     assetSymbol: TWO_POOL_NOT_DEFINED_STR,
-    iconUrl: TWO_POOL_NOT_DEFINED_STR,
+    iconUrl: "/not-defined.png",
+    description: null,
     status,
     endsAt,
     isTradingOpen,

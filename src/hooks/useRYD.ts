@@ -6,7 +6,8 @@ import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
 import { config } from "@/config/wagmi";
-import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
+import { TOKEN_DECIMALS } from "@/config/tokens";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { praxisRYDAbi } from "@/config/contracts";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
 
@@ -25,6 +26,7 @@ export function useRYDDeposit(
   const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<RYDDepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { yt } = useActiveVault();
 
   const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.YT);
   const insufficientBalance = amount > BigInt(0) && amount > ytBalance;
@@ -56,7 +58,7 @@ export function useRYDDeposit(
       await switchChainAsync({ chainId: baseSepolia.id });
 
       const allowance = await readContract(config, {
-        address: TOKEN_ADDRESSES.YT,
+        address: yt,
         abi: erc20Abi,
         functionName: "allowance",
         args: [address, rydAddress],
@@ -67,7 +69,7 @@ export function useRYDDeposit(
         setStatus("approving");
 
         const approveTx = await writeContractAsync({
-          address: TOKEN_ADDRESSES.YT,
+          address: yt,
           abi: erc20Abi,
           functionName: "approve",
           args: [rydAddress, amount],
@@ -94,7 +96,7 @@ export function useRYDDeposit(
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, rydAddress, amount, ytBalance, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, amount, ytBalance, writeContractAsync, yt]);
 
   const reset = useCallback(() => {
     setStatus("idle");

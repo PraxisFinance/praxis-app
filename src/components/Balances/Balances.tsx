@@ -9,10 +9,20 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
 import { BALANCE_INFO } from "@/shared/constants/balances";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
 
 export function Balances() {
   const [open, setOpen] = useState(false);
-  const { balances } = useWalletBalances();
+  const { balances, raw, isLoading, refetch, isConnected } = useWalletBalances();
+
+  const allZero =
+    !isLoading &&
+    isConnected &&
+    raw.usdc === BigInt(0) &&
+    raw.pt === BigInt(0) &&
+    raw.yt === BigInt(0);
+
+  const { mint, isPending } = useMintTestnetUsdc(refetch);
 
   return (
     <section>
@@ -33,6 +43,18 @@ export function Balances() {
           />
         ))}
       </div>
+
+      {allZero && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="mt-2"
+          onClick={mint}
+          disabled={isPending}
+        >
+          {isPending ? "Topping up…" : "Top up testnet balance"}
+        </Button>
+      )}
 
       <DrawerShell open={open} onOpenChange={setOpen}>
         <AppDrawerHeading title="About balance" />

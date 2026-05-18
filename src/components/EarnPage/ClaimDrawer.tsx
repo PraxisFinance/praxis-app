@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import type { EarnPosition } from "@/shared/types/earn";
-import { useVaultRedeemYield } from "@/hooks/useVault";
+import { useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface ClaimDrawerProps {
@@ -18,10 +18,10 @@ interface ClaimDrawerProps {
 
 export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   const { refetch: refetchBalances } = useWalletBalances();
-  const ytAmount = item?.yieldGenerated ?? "0";
-  const { redeemYield, status, errorMessage, reset, isPending } = useVaultRedeemYield(
+  const claimAmount = item?.yourDeposit ?? "";
+  const { withdraw, status, errorMessage, reset, isPending } = useVaultWithdraw(
     item?.vaultAddress ?? "0x0",
-    ytAmount,
+    claimAmount,
   );
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   if (!item) return null;
 
   function handleClaim() {
-    redeemYield();
+    withdraw();
   }
 
   function handleClose() {
@@ -48,7 +48,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   }
 
   const buttonLabel =
-    status === "redeeming"
+    status === "withdrawing"
       ? "Claiming…"
       : status === "success"
         ? "Done"
@@ -94,7 +94,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
           variant="primary"
           size="action"
           onClick={handleClaim}
-          disabled={isPending}
+          disabled={isPending || !claimAmount || Number(claimAmount) <= 0}
         >
           {buttonLabel}
         </Button>

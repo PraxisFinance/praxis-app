@@ -1,3 +1,39 @@
+export const CPF_ADDRESS = (process.env.NEXT_PUBLIC_CPF_ADDRESS ?? "") as `0x${string}`;
+
+export const testnetMintAbi = [
+  {
+    type: "function",
+    name: "mint",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const praxisCPFAbi = [
+  {
+    type: "function",
+    name: "depositBet",
+    inputs: [
+      { name: "poolId", type: "uint256" },
+      { name: "amount", type: "uint256" },
+      { name: "inFavor", type: "bool" },
+    ],
+    outputs: [{ name: "balance", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  { type: "error", name: "PraxisCPF_InsufficientAmount", inputs: [] },
+  {
+    type: "error",
+    name: "PraxisCPF_PoolNotOpen",
+    inputs: [{ name: "state", type: "uint8" }],
+  },
+  { type: "error", name: "PraxisCPF_PositionAlreadyClaimed", inputs: [] },
+] as const;
+
 export const praxisVaultAbi = [
   // ── View functions ──────────────────────────────────────────────────
   {
@@ -103,6 +139,7 @@ export const twoPoolAbi = [
     inputs: [
       { name: "side", type: "uint8" },
       { name: "amount", type: "uint256" },
+      { name: "minNet", type: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",

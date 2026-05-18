@@ -5,10 +5,12 @@ import type {
   CryptoPredictionTimeFilterId,
   CryptoPredictionTypeFilterId,
 } from "@/shared/constants/cryptocurrencyPredictions";
-import { CRYPTO_PREDICTION_MOCKS } from "@/shared/constants/cryptoPredictionMocks";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import { mapCPFPoolsToCryptoPredictions } from "@/shared/utils/cpfPoolMapper";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
+import { useEventsStore } from "@/stores/eventsStore";
 import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CryptocurrencyFilters } from "./CryptocurrencyFilters";
 import { CryptoPredictionDrawer } from "./CryptoPredictionDrawer";
@@ -24,9 +26,13 @@ function endsAtMs(item: FeedItem): number {
   return new Date(item.kind === "crypto" ? item.prediction.endsAt : item.pool.endsAt).getTime();
 }
 
-function buildMergedFeed(twoPools: TwoPool[], twoPoolsFirst: boolean): FeedItem[] {
+function buildMergedFeed(
+  predictions: CryptoPrediction[],
+  twoPools: TwoPool[],
+  twoPoolsFirst: boolean
+): FeedItem[] {
   const items: FeedItem[] = [
-    ...CRYPTO_PREDICTION_MOCKS.map((prediction) => ({ kind: "crypto" as const, prediction })),
+    ...predictions.map((prediction) => ({ kind: "crypto" as const, prediction })),
     ...twoPools.map((pool) => ({ kind: "twoPool" as const, pool })),
   ];
   items.sort((a, b) => {
@@ -46,21 +52,74 @@ function matchesTypeFilter(item: FeedItem, typeId: CryptoPredictionTypeFilterId)
   return item.prediction.predictionType === typeId;
 }
 
+const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
+  all: null,
+  live: null, // handled separately
+  "1h": 60 * 60_000,
+  "6h": 6 * 60 * 60_000,
+  "12h": 12 * 60 * 60_000,
+  "1d": 24 * 60 * 60_000,
+  "2d": 2 * 24 * 60 * 60_000,
+  "1w": 7 * 24 * 60 * 60_000,
+};
+
+function matchesTimeFilter(
+  item: FeedItem,
+  timeId: CryptoPredictionTimeFilterId,
+  nowMs: number
+): boolean {
+  if (timeId === "all") return true;
+  const end = endsAtMs(item);
+  if (timeId === "live") return end > nowMs;
+  const windowMs = TIME_FILTER_MS[timeId];
+  if (windowMs === null) return true;
+  return end > nowMs && end <= nowMs + windowMs;
+}
+
 export interface PredictionsFeedProps {
   sectionTitle: string;
   /** When true (Cryptocurrencies tab), Two-Pool cards are listed before other prediction cards. */
   twoPoolsFirst?: boolean;
 }
 
-export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: PredictionsFeedProps) {
+export function PredictionsFeed({ sectionTitle, twoPoolsFirst = true }: PredictionsFeedProps) {
+  const { vaultId, yt } = useActiveVault();
+  const cpfPools = useEventsStore((s) => s.pools);
+  const cpfLoading = useEventsStore((s) => s.loading);
+  const cpfError = useEventsStore((s) => s.error);
+  const fetchAllPoolStates = useEventsStore((s) => s.fetchAllPoolStates);
+  const offchainByContractId = useEventsStore((s) => s.offchainByContractId);
+
   const twoPools = useTwoPoolsStore((s) => s.pools);
   const twoPoolsLoading = useTwoPoolsStore((s) => s.loading);
   const twoPoolsError = useTwoPoolsStore((s) => s.error);
   const fetchTwoPools = useTwoPoolsStore((s) => s.fetchPools);
 
   useEffect(() => {
+    if (!vaultId) return;
+    void fetchAllPoolStates(vaultId, yt);
     void fetchTwoPools();
-  }, [fetchTwoPools]);
+  }, [fetchAllPoolStates, fetchTwoPools, vaultId, yt]);
+
+  const poolStates = useMemo(
+    () =>
+      Object.values(cpfPools)
+        .map((p) => p.state)
+        .filter((s) => s !== null),
+    [cpfPools]
+  );
+
+  /** Wall clock for time-based status (memo cannot call `Date.now()`; state updates on an interval). */
+  const [nowMs, setNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 10_000);
+    return () => clearInterval(id);
+  }, []);
+
+  const predictions = useMemo(
+    () => mapCPFPoolsToCryptoPredictions(poolStates, offchainByContractId, nowMs),
+    [poolStates, offchainByContractId, nowMs]
+  );
 
   const [timeFilter, setTimeFilter] = useState<CryptoPredictionTimeFilterId>("all");
   const [typeFilter, setTypeFilter] = useState<CryptoPredictionTypeFilterId>("all");
@@ -73,11 +132,18 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
   const [twoPoolDrawerPool, setTwoPoolDrawerPool] = useState<TwoPool | null>(null);
   const [twoPoolDrawerSide, setTwoPoolDrawerSide] = useState<TwoPoolSide | null>(null);
 
-  const merged = useMemo(() => buildMergedFeed(twoPools, twoPoolsFirst), [twoPools, twoPoolsFirst]);
-  // timeFilter is wired to the filter bar UI but not yet applied to list filtering
+  const merged = useMemo(
+    () => buildMergedFeed(predictions, twoPools, twoPoolsFirst),
+    [predictions, twoPools, twoPoolsFirst]
+  );
   const visible = useMemo(
-    () => merged.filter((item) => matchesTypeFilter(item, typeFilter)),
-    [merged, typeFilter]
+    () =>
+      merged.filter(
+        (item) =>
+          matchesTypeFilter(item, typeFilter) &&
+          matchesTimeFilter(item, timeFilter, nowMs)
+      ),
+    [merged, typeFilter, timeFilter, nowMs]
   );
 
   const handleCryptoDrawerOpenChange = (open: boolean) => {
@@ -117,10 +183,18 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
         typeId={typeFilter}
         onTypeChange={setTypeFilter}
       />
+      {cpfError ? (
+        <p className="text-main-red text-sm leading-snug" role="alert">
+          Predictions indexer: {cpfError}
+        </p>
+      ) : null}
       {twoPoolsError ? (
         <p className="text-main-red text-sm leading-snug" role="alert">
           Two-Pool indexer: {twoPoolsError}
         </p>
+      ) : null}
+      {cpfLoading && predictions.length === 0 ? (
+        <p className="text-main-darkPurple/70 text-sm">Loading predictions…</p>
       ) : null}
       {twoPoolsLoading && twoPools.length === 0 ? (
         <p className="text-main-darkPurple/70 text-sm">Loading two-pools…</p>
