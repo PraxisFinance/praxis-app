@@ -13,7 +13,8 @@ import type { EarnPosition } from "@/shared/types/earn";
 
 export function DepositsSubPage() {
   const { address } = useAccount();
-  const { vaults, loading, fetchAll, fetchUserDataForAllVaults, getUserPositions } = useDepositsStore();
+  //const { vaults, loading, fetchAll, fetchUserDataForAllVaults, getUserPositions } = useDepositsStore();
+  const { vaults, loading, fetchAll, getUserPositions } = useDepositsStore();
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
@@ -23,11 +24,11 @@ export function DepositsSubPage() {
   }, [address, fetchAll]);
 
   const vaultCount = Object.keys(vaults).length;
-  useEffect(() => {
-    if (address && vaultCount > 0) {
-      fetchUserDataForAllVaults(address);
-    }
-  }, [address, vaultCount, fetchUserDataForAllVaults]);
+  // useEffect(() => {
+  //   if (address && vaultCount > 0) {
+  //     fetchUserDataForAllVaults(address);
+  //   }
+  // }, [address, vaultCount, fetchUserDataForAllVaults]);
 
   const positions = useMemo(() => {
     return getUserPositions().map((pos) => {
