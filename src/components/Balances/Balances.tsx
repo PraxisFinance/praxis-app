@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { HintIcon, UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
 import { BALANCE_INFO } from "@/shared/constants/balances";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
 
@@ -28,8 +30,8 @@ export function Balances() {
     <section>
       <div className="flex items-center mb-2">
         <SectionHeader>Balances</SectionHeader>
-        <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1">
-          <Image src="/icons/question.png" alt="About balances" width={14} height={14} />
+        <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1" aria-label="About balances">
+          <HintIcon className="text-main-darkPurple h-3.5 w-3.5" aria-hidden />
         </Button>
       </div>
 
@@ -63,7 +65,21 @@ export function Balances() {
           {BALANCE_INFO.map((item) => (
             <div key={item.label} className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
-                <Image src={item.iconUrl} alt={item.label} width={24} height={24} />
+                {isUsdcIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <UsdcTokenIcon />
+                  </span>
+                ) : isWUsdcIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <WUsdcTokenIcon />
+                  </span>
+                ) : isYtIconUrl(item.iconUrl) ? (
+                  <span className="inline-flex shrink-0" aria-hidden>
+                    <YtTokenIcon />
+                  </span>
+                ) : (
+                  <Image src={item.iconUrl} alt={item.label} width={24} height={24} />
+                )}
                 <span className="text-main-darkPurple text-base font-semibold leading-5">
                   {item.label}
                 </span>

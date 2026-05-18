@@ -8,11 +8,12 @@ import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { formatTokenBalance } from "@/shared/utils/format";
 import type { Balance } from "@/shared/types/balances";
+import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 const BALANCE_LABELS = {
-  USDC: { label: "Wallet", iconUrl: "/icons/usdc.png" },
-  PT: { label: "Deposit", iconUrl: "/icons/w-usdc.png" },
-  YT: { label: "YT Token", iconUrl: "/icons/yt-token.png" },
+  USDC: { label: "Wallet", iconUrl: USDC_ICON_URL },
+  PT: { label: "Deposit", iconUrl: WUSDC_ICON_URL },
+  YT: { label: "YT Token", iconUrl: YT_ICON_URL },
 } as const;
 
 export function useWalletBalances() {

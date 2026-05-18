@@ -5,28 +5,29 @@ import type {
   BalancesChartInterval,
   BalancesChartDataPoint,
 } from "@/shared/types/balances";
+import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 export const DEFAULT_BALANCES: Balance[] = [
-  { label: "Wallet", value: "0", iconUrl: "/icons/usdc.png" },
-  { label: "Deposit", value: "0", iconUrl: "/icons/w-usdc.png" },
-  { label: "YT Token", value: "0", iconUrl: "/icons/yt-token.png" },
+  { label: "Wallet", value: "0", iconUrl: USDC_ICON_URL },
+  { label: "Deposit", value: "0", iconUrl: WUSDC_ICON_URL },
+  { label: "YT Token", value: "0", iconUrl: YT_ICON_URL },
 ];
 
 export const BALANCE_INFO: BalanceInfo[] = [
   {
     label: "Wallet balance",
     description: "Your full amount of principal on your connected wallet",
-    iconUrl: "/icons/usdc.png",
+    iconUrl: USDC_ICON_URL,
   },
   {
     label: "Deposited balance",
     description: "Your deposited in liquidity pools",
-    iconUrl: "/icons/w-usdc.png",
+    iconUrl: WUSDC_ICON_URL,
   },
   {
     label: "Yield Token",
     description: "Your full yield from staking and predictions",
-    iconUrl: "/icons/yt-token.png",
+    iconUrl: YT_ICON_URL,
   },
 ];
 
@@ -42,9 +43,9 @@ export const BALANCES_CHART_INTERVALS: { id: BalancesChartInterval; label: strin
 
 /** Visual metadata for each currency line on the balance chart. */
 export const BALANCE_CURRENCY_META: BalanceCurrencyMeta[] = [
-  { key: "wallet", label: "Wallet", color: "#9787f4", iconUrl: "/icons/usdc.png" },
-  { key: "deposit", label: "Deposit", color: "#34C53E", iconUrl: "/icons/w-usdc.png" },
-  { key: "ytToken", label: "YT Token", color: "#ff5858", iconUrl: "/icons/yt-token.png" },
+  { key: "wallet", label: "Wallet", color: "#9787f4", iconUrl: USDC_ICON_URL },
+  { key: "deposit", label: "Deposit", color: "#34C53E", iconUrl: WUSDC_ICON_URL },
+  { key: "ytToken", label: "YT Token", color: "#ff5858", iconUrl: YT_ICON_URL },
 ];
 
 // ── Mock data helpers ───────────────────────────────────────────────────────

@@ -8,6 +8,7 @@ import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InputWithMax } from "@/components/ui/InputWithMax";
 import { DEFAULT_BALANCES } from "@/shared/constants/balances";
 import { ESPORTS_GAMES } from "@/shared/constants/esports";
+import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { EsportsMatch, EsportsMatchTeam } from "@/shared/types/esportsMatch";
 import { formatEsportsOdds } from "@/shared/utils/esportsMatchFormat";
 import { getEsportsTeamInitials } from "@/shared/utils/esportsTeamDisplay";
@@ -40,7 +41,7 @@ function EsportDrawerTeamInline({ team }: { team: EsportsMatchTeam }) {
 }
 
 const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === "/icons/yt-token.png")?.value ??
+  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
   DEFAULT_BALANCES[0]?.value ??
   "0";
 

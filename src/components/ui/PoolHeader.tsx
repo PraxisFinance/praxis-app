@@ -1,6 +1,8 @@
 import Image from "next/image";
 
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { cn } from "@/lib/utils";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface PoolHeaderProps {
   iconUrl: string;
@@ -14,13 +16,27 @@ export function PoolHeader({ iconUrl, name, subtitle, emphasized }: PoolHeaderPr
   return (
     <div className="flex items-center justify-between gap-2">
       <div className="flex items-center gap-2.5">
-        <Image
-          src={iconUrl}
-          alt={name}
-          width={36}
-          height={36}
-          className="w-9 h-9 rounded-full shrink-0"
-        />
+        {isUsdcIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <UsdcTokenIcon size={32} className="rounded-full" />
+          </span>
+        ) : isWUsdcIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <WUsdcTokenIcon size={32} className="rounded-full" />
+          </span>
+        ) : isYtIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <YtTokenIcon size={32} className="rounded-full" />
+          </span>
+        ) : (
+          <Image
+            src={iconUrl}
+            alt={name}
+            width={36}
+            height={36}
+            className="w-9 h-9 rounded-full shrink-0"
+          />
+        )}
         <span
           className={cn("text-main-darkPurple text-base leading-5", emphasized && "font-semibold")}
         >

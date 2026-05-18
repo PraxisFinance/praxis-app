@@ -1,8 +1,10 @@
 import Image from "next/image";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { EarnPosition } from "@/shared/types/earn";
 
 interface EarnMyPositionsCardProps {
@@ -29,13 +31,27 @@ export function EarnMyPositionsCard({ item, onWithdraw, onClaim }: EarnMyPositio
           value={
             <div className="flex items-center gap-1">
               {item.yourDeposit}
-              <Image
-                src={item.depositCurrencyIconUrl}
-                alt={item.depositCurrency}
-                width={16}
-                height={16}
-                className="w-4 h-4 rounded-full"
-              />
+              {isUsdcIconUrl(item.depositCurrencyIconUrl) ? (
+                <span className="inline-flex shrink-0" aria-hidden>
+                  <UsdcTokenIcon size={16} className="rounded-full" />
+                </span>
+              ) : isWUsdcIconUrl(item.depositCurrencyIconUrl) ? (
+                <span className="inline-flex shrink-0" aria-hidden>
+                  <WUsdcTokenIcon size={16} className="rounded-full" />
+                </span>
+              ) : isYtIconUrl(item.depositCurrencyIconUrl) ? (
+                <span className="inline-flex shrink-0" aria-hidden>
+                  <YtTokenIcon size={16} className="rounded-full" />
+                </span>
+              ) : (
+                <Image
+                  src={item.depositCurrencyIconUrl}
+                  alt={item.depositCurrency}
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 rounded-full"
+                />
+              )}
             </div>
           }
         />

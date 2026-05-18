@@ -1,3 +1,14 @@
+/** Main menu (/) middle cards — canonical paths. */
+export const EARN_ROUTE = "/earn";
+
+export const PREDICTIONS_ALL_ROUTE = "/predictions/all";
+
+export const PREDICTIONS_RANDOM_REWARDS_ROUTE = "/predictions/random-rewards";
+
+export const PREDICTIONS_CRYPTOCURRENCY_ROUTE = "/predictions/cryptocurrency";
+
+export const PREDICTIONS_ESPORTS_ROUTE = "/predictions/esports";
+
 /** Any screen under the Predictions section (bottom nav + tab bar). */
 export function isPredictionsSectionPath(pathname: string): boolean {
   return pathname === "/predictions" || pathname.startsWith("/predictions/");

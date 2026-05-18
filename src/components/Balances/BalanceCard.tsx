@@ -1,5 +1,8 @@
 import Image from "next/image";
 
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+
 interface BalanceCardProps {
   label: string;
   value: string;
@@ -11,7 +14,21 @@ export function BalanceCard({ label, value, iconUrl }: BalanceCardProps) {
     <div className="px-2.5 py-[5px] bg-slate-200 rounded-[5px] inline-flex flex-col justify-start items-start gap-[5px]">
       <div className="text-indigo-950 text-sm font-normal leading-4">{label}</div>
       <div className="inline-flex justify-start items-center gap-[5px]">
-        <Image src={iconUrl} alt={label} width={16} height={16} className="w-4 h-4" />
+        {isUsdcIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <UsdcTokenIcon size={16} />
+          </span>
+        ) : isWUsdcIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <WUsdcTokenIcon size={16} />
+          </span>
+        ) : isYtIconUrl(iconUrl) ? (
+          <span className="inline-flex shrink-0" aria-hidden>
+            <YtTokenIcon size={16} />
+          </span>
+        ) : (
+          <Image src={iconUrl} alt={label} width={16} height={16} className="w-4 h-4" />
+        )}
         <div className="text-indigo-950 text-base font-medium leading-5">{value}</div>
       </div>
     </div>

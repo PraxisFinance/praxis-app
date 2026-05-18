@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { StatBadge } from "@/components/ui/StatBadge";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { cn } from "@/lib/utils";
 
 export interface CryptoPredictionCardHeaderProps {
@@ -42,7 +44,21 @@ export function CryptoPredictionCardHeader({
     <div className="flex items-center gap-3">
       <div className="relative h-9 w-9 shrink-0">
         {iconUrl ? (
-          <Image src={iconUrl} alt="" width={36} height={36} className="object-contain" />
+          isUsdcIconUrl(iconUrl) ? (
+            <span className="inline-flex" aria-hidden>
+              <UsdcTokenIcon size={32} />
+            </span>
+          ) : isWUsdcIconUrl(iconUrl) ? (
+            <span className="inline-flex" aria-hidden>
+              <WUsdcTokenIcon size={32} />
+            </span>
+          ) : isYtIconUrl(iconUrl) ? (
+            <span className="inline-flex" aria-hidden>
+              <YtTokenIcon size={32} />
+            </span>
+          ) : (
+            <Image src={iconUrl} alt="" width={36} height={36} className="object-contain" />
+          )
         ) : (
           <span className="bg-main-grayPurple block h-9 w-9 rounded-lg" aria-hidden />
         )}

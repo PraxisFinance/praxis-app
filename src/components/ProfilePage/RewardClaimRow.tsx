@@ -1,5 +1,7 @@
 import Image from "next/image";
+import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
+import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { RewardClaimItem } from "@/shared/types/profile";
 
 interface RewardClaimRowProps {
@@ -10,7 +12,21 @@ interface RewardClaimRowProps {
 export function RewardClaimRow({ item, onClaim }: RewardClaimRowProps) {
   return (
     <div className="flex items-center gap-3 bg-main-lightGray rounded-sm px-3.5 py-3">
-      <Image src={item.iconUrl} alt={item.name} width={24} height={24} className="shrink-0" />
+      {isUsdcIconUrl(item.iconUrl) ? (
+        <span className="inline-flex shrink-0" aria-hidden>
+          <UsdcTokenIcon />
+        </span>
+      ) : isWUsdcIconUrl(item.iconUrl) ? (
+        <span className="inline-flex shrink-0" aria-hidden>
+          <WUsdcTokenIcon />
+        </span>
+      ) : isYtIconUrl(item.iconUrl) ? (
+        <span className="inline-flex shrink-0" aria-hidden>
+          <YtTokenIcon />
+        </span>
+      ) : (
+        <Image src={item.iconUrl} alt={item.name} width={24} height={24} className="shrink-0" />
+      )}
 
       <span className="flex-1 text-main-darkPurple text-xs leading-5 min-w-0 truncate">
         {item.name}
