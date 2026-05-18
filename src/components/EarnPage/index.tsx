@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
-import { useAccount } from "wagmi";
+import { useState, useMemo } from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Balances } from "../Balances/Balances";
 import { EarnAvailableCard } from "./EarnAvailableCard";
@@ -17,15 +16,7 @@ import {
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function EarnPage() {
-  const { address } = useAccount();
-  const {
-    vaults,
-    loading,
-    fetchAll,
-    fetchUserDataForAllVaults,
-    getActiveVaults,
-    getUserPositions,
-  } = useDepositsStore();
+  const { vaults, loading, getActiveVaults, getUserPositions } = useDepositsStore();
 
   const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
     null,
@@ -35,17 +26,6 @@ export function EarnPage() {
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    fetchAll(address);
-  }, [address, fetchAll]);
-
-  const vaultCount = Object.keys(vaults).length;
-  useEffect(() => {
-    if (address && vaultCount > 0) {
-      fetchUserDataForAllVaults(address);
-    }
-  }, [address, vaultCount, fetchUserDataForAllVaults]);
 
   const availableItems = useMemo(
     () => getActiveVaults().map(vaultStateToAvailableItem),

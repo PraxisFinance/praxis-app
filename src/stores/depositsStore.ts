@@ -109,15 +109,11 @@ interface DepositsState {
   getMaturedVaults: () => VaultState[];
   getUserPositions: () => UserPosition[];
 
-  fetchAllVaultStates: () => Promise<void>;
+  fetchAll: (userAddress?: string) => Promise<void>;
   fetchUserPosition: (vaultId: string, address: string) => Promise<void>;
-  fetchDailySnapshots: (vaultId: string, limit?: number) => Promise<void>;
   fetchUserDeposits: (vaultId: string, address: string) => Promise<void>;
   fetchUserWithdrawals: (vaultId: string, address: string) => Promise<void>;
   fetchUserRedeems: (vaultId: string, address: string) => Promise<void>;
-  fetchAllForVault: (vaultId: string, userAddress?: string) => Promise<void>;
-  fetchAll: (userAddress?: string) => Promise<void>;
-  fetchUserDataForAllVaults: (userAddress: string) => Promise<void>;
 
   reset: () => void;
 }
@@ -131,8 +127,8 @@ const initialState = {
 
 // ── GraphQL queries ──────────────────────────────────────────────────
 
-const ALL_VAULT_STATES_QUERY = `
-  query AllVaultStates {
+const FULL_LOAD_QUERY = `
+  query FullLoad($address: String!) {
     VaultState {
       id
       maturity
@@ -147,6 +143,88 @@ const ALL_VAULT_STATES_QUERY = `
       isPaused
       owner
       lastUpdatedAt
+    }
+    VaultDailySnapshot(order_by: [{ vault_id: asc }, { timestamp: desc }]) {
+      id
+      vault_id
+      date
+      timestamp
+      totalBalance
+      totalDeposited
+      totalWithdrawn
+      totalYieldPaid
+      uniqueDepositors
+      dailyDeposits
+      dailyWithdrawals
+      dailyYield
+    }
+    UserPosition(where: { address: { _eq: $address } }) {
+      id
+      vault_id
+      address
+      totalDeposited
+      totalWithdrawn
+      currentBalance
+      totalBuyInCost
+      totalYieldClaimed
+      depositCount
+      firstDepositAt
+      lastActivityAt
+    }
+    PraxisVault_Deposit(where: { receiver: { _eq: $address } }) {
+      id
+      vault
+      principal
+      buyIn
+      receiver
+    }
+    PraxisVault_Withdraw(where: { receiver: { _eq: $address } }) {
+      id
+      vault
+      amount
+      yieldPayout
+      receiver
+    }
+    PraxisVault_RedeemYield(where: { receiver: { _eq: $address } }) {
+      id
+      vault
+      ytBurn
+      payout
+      receiver
+    }
+  }
+`;
+
+const BOOTSTRAP_QUERY = `
+  query Bootstrap {
+    VaultState {
+      id
+      maturity
+      pt
+      yt
+      totalDeposited
+      totalWithdrawn
+      totalBalance
+      totalBuyInCost
+      totalYieldPaid
+      uniqueDepositors
+      isPaused
+      owner
+      lastUpdatedAt
+    }
+    VaultDailySnapshot(order_by: [{ vault_id: asc }, { timestamp: desc }]) {
+      id
+      vault_id
+      date
+      timestamp
+      totalBalance
+      totalDeposited
+      totalWithdrawn
+      totalYieldPaid
+      uniqueDepositors
+      dailyDeposits
+      dailyWithdrawals
+      dailyYield
     }
   }
 `;
@@ -168,29 +246,6 @@ const USER_POSITION_QUERY = `
       depositCount
       firstDepositAt
       lastActivityAt
-    }
-  }
-`;
-
-const DAILY_SNAPSHOTS_QUERY = `
-  query VaultDailySnapshots($vault_id: String!, $limit: Int!) {
-    VaultDailySnapshot(
-      where: { vault_id: { _eq: $vault_id } }
-      order_by: { timestamp: desc }
-      limit: $limit
-    ) {
-      id
-      vault_id
-      date
-      timestamp
-      totalBalance
-      totalDeposited
-      totalWithdrawn
-      totalYieldPaid
-      uniqueDepositors
-      dailyDeposits
-      dailyWithdrawals
-      dailyYield
     }
   }
 `;
@@ -236,6 +291,22 @@ const USER_REDEEMS_QUERY = `
     }
   }
 `;
+
+// ── Batched response types ────────────────────────────────────────────
+
+interface FullLoadResponse {
+  VaultState: RawVaultState[];
+  VaultDailySnapshot: RawSnapshot[];
+  UserPosition: RawUserPosition[];
+  PraxisVault_Deposit: RawDeposit[];
+  PraxisVault_Withdraw: RawWithdraw[];
+  PraxisVault_RedeemYield: RawRedeem[];
+}
+
+interface BootstrapResponse {
+  VaultState: RawVaultState[];
+  VaultDailySnapshot: RawSnapshot[];
+}
 
 // ── Raw → typed mappers ──────────────────────────────────────────────
 
@@ -440,22 +511,82 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
       .filter((p): p is UserPosition => p !== null && p.currentBalance > BigInt(0));
   },
 
-  fetchAllVaultStates: async () => {
+  fetchAll: async (userAddress) => {
+    set({ loading: true, error: null });
     try {
-      set({ loading: true, error: null });
-      const data = await envioQuery<{ VaultState: RawVaultState[] }>(ALL_VAULT_STATES_QUERY);
-      const nextVaults = { ...get().vaults };
-      for (const raw of data.VaultState) {
-        const mapped = mapVaultState(raw);
-        const existing = nextVaults[mapped.id] ?? emptyVaultData();
-        nextVaults[mapped.id] = { ...existing, state: mapped };
+      const nextVaults: Record<string, VaultData> = {};
+
+      if (userAddress) {
+        const data = await envioQuery<FullLoadResponse>(FULL_LOAD_QUERY, {
+          address: userAddress.toLowerCase(),
+        });
+
+        for (const raw of data.VaultState) {
+          nextVaults[raw.id] = { ...emptyVaultData(), state: mapVaultState(raw) };
+        }
+
+        for (const raw of data.VaultDailySnapshot) {
+          const snap = mapSnapshot(raw);
+          const vault = nextVaults[snap.vault_id];
+          if (vault) vault.dailySnapshots.push(snap);
+        }
+        for (const vault of Object.values(nextVaults)) {
+          if (vault.dailySnapshots.length > 30) vault.dailySnapshots = vault.dailySnapshots.slice(0, 30);
+        }
+
+        for (const raw of data.UserPosition) {
+          const pos = mapUserPosition(raw);
+          const vault = nextVaults[pos.vault_id];
+          if (vault) vault.userPosition = pos;
+        }
+
+        for (const raw of data.PraxisVault_Deposit) {
+          const dep = mapDeposit(raw);
+          const vault = nextVaults[dep.vault];
+          if (vault) vault.deposits.push(dep);
+        }
+
+        for (const raw of data.PraxisVault_Withdraw) {
+          const wd = mapWithdraw(raw);
+          const vault = nextVaults[wd.vault];
+          if (vault) vault.withdrawals.push(wd);
+        }
+
+        for (const raw of data.PraxisVault_RedeemYield) {
+          const rd = mapRedeem(raw);
+          const vault = nextVaults[rd.vault];
+          if (vault) vault.redeems.push(rd);
+        }
+
+        const activeId = get().activeVaultId;
+        set({
+          vaults: nextVaults,
+          activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
+          loading: false,
+        });
+      } else {
+        const data = await envioQuery<BootstrapResponse>(BOOTSTRAP_QUERY);
+
+        for (const raw of data.VaultState) {
+          nextVaults[raw.id] = { ...emptyVaultData(), state: mapVaultState(raw) };
+        }
+
+        for (const raw of data.VaultDailySnapshot) {
+          const snap = mapSnapshot(raw);
+          const vault = nextVaults[snap.vault_id];
+          if (vault) vault.dailySnapshots.push(snap);
+        }
+        for (const vault of Object.values(nextVaults)) {
+          if (vault.dailySnapshots.length > 30) vault.dailySnapshots = vault.dailySnapshots.slice(0, 30);
+        }
+
+        const activeId = get().activeVaultId;
+        set({
+          vaults: nextVaults,
+          activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
+          loading: false,
+        });
       }
-      const activeId = get().activeVaultId;
-      set({
-        vaults: nextVaults,
-        activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
-        loading: false,
-      });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
@@ -463,7 +594,6 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
 
   fetchUserPosition: async (vaultId, address) => {
     try {
-      set({ loading: true, error: null });
       const data = await envioQuery<{ UserPosition: RawUserPosition[] }>(USER_POSITION_QUERY, {
         vault_id: vaultId.toLowerCase(),
         address: address.toLowerCase(),
@@ -473,28 +603,9 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
         vaults: patchVault(s.vaults, vaultId, {
           userPosition: raw ? mapUserPosition(raw) : null,
         }),
-        loading: false,
       }));
     } catch (err) {
-      set({ error: (err as Error).message, loading: false });
-    }
-  },
-
-  fetchDailySnapshots: async (vaultId, limit = 30) => {
-    try {
-      set({ loading: true, error: null });
-      const data = await envioQuery<{ VaultDailySnapshot: RawSnapshot[] }>(
-        DAILY_SNAPSHOTS_QUERY,
-        { vault_id: vaultId, limit }
-      );
-      set((s) => ({
-        vaults: patchVault(s.vaults, vaultId, {
-          dailySnapshots: data.VaultDailySnapshot.map(mapSnapshot),
-        }),
-        loading: false,
-      }));
-    } catch (err) {
-      set({ error: (err as Error).message, loading: false });
+      set({ error: (err as Error).message });
     }
   },
 
@@ -543,56 +654,6 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
       }));
     } catch (err) {
       set({ error: (err as Error).message });
-    }
-  },
-
-  fetchAllForVault: async (vaultId, userAddress) => {
-    try {
-      const promises: Promise<void>[] = [get().fetchDailySnapshots(vaultId)];
-      if (userAddress) {
-        promises.push(
-          get().fetchUserPosition(vaultId, userAddress),
-          get().fetchUserDeposits(vaultId, userAddress),
-          get().fetchUserWithdrawals(vaultId, userAddress),
-          get().fetchUserRedeems(vaultId, userAddress)
-        );
-      }
-      await Promise.all(promises);
-    } catch (err) {
-      set({ error: (err as Error).message });
-    }
-  },
-
-  fetchAll: async (userAddress) => {
-    set({ loading: true, error: null });
-    try {
-      await get().fetchAllVaultStates();
-      const vaultIds = Object.keys(get().vaults);
-      await Promise.all(vaultIds.map((id) => get().fetchAllForVault(id, userAddress)));
-      set({ loading: false });
-    } catch (err) {
-      set({ error: (err as Error).message, loading: false });
-    }
-  },
-
-  fetchUserDataForAllVaults: async (userAddress) => {
-    set({ loading: true, error: null });
-    try {
-      const vaultIds = Object.keys(get().vaults);
-      if (vaultIds.length === 0) return;
-      await Promise.all(
-        vaultIds.map((id) =>
-          Promise.all([
-            get().fetchUserPosition(id, userAddress),
-            get().fetchUserDeposits(id, userAddress),
-            get().fetchUserWithdrawals(id, userAddress),
-            get().fetchUserRedeems(id, userAddress),
-          ])
-        )
-      );
-      set({ loading: false });
-    } catch (err) {
-      set({ error: (err as Error).message, loading: false });
     }
   },
 

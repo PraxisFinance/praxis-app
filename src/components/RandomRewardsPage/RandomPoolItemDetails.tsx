@@ -21,12 +21,12 @@ interface RandomPoolItemDetailsProps {
 
 export function RandomPoolItemDetails({ poolId }: RandomPoolItemDetailsProps) {
   const { address } = useAccount();
-  const { getRYD, fetchAllForRYD, loading } = useRYDStore();
+  const { getRYD, fetchAll, loading } = useRYDStore();
   const [amount, setAmount] = useState("");
 
   useEffect(() => {
-    fetchAllForRYD(poolId, address);
-  }, [poolId, address, fetchAllForRYD]);
+    void fetchAll(address);
+  }, [address, fetchAll]);
 
   const rydData = getRYD(poolId);
   const pool = useMemo(() => (rydData ? rydDataToRandomPool(rydData) : null), [rydData]);

@@ -13,6 +13,7 @@ export type CryptoPredictionTimeFilterId = (typeof CRYPTO_PREDICTION_TIME_FILTER
 
 export const CRYPTO_PREDICTION_TYPE_FILTERS = [
   { id: "all", label: "All" },
+  { id: "two_pool", label: "Two-Pool" },
   { id: "up_down", label: "Up/Down" },
   { id: "above_below", label: "Above/Below" },
   { id: "price_range", label: "Price Range" },

@@ -29,8 +29,8 @@ export function useBaseName() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const displayName = baseName
-    ?? (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : undefined);
+  const displayName =
+    baseName ?? (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : undefined);
 
   return { baseName, displayName };
 }

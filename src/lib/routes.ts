@@ -47,7 +47,10 @@ export function isPredictionsSubTabActive(tabId: PredictionsTabId, pathname: str
     case "all":
       return pathname === "/predictions" || pathname === "/predictions/all";
     case "cryptocurrency":
-      return pathname === "/predictions/cryptocurrency";
+      return (
+        pathname === "/predictions/cryptocurrency" ||
+        pathname.startsWith("/predictions/cryptocurrency/")
+      );
     case "esports":
       return pathname === "/predictions/esports";
     case "random-rewards":
@@ -63,4 +66,9 @@ export function isPredictionsSubTabActive(tabId: PredictionsTabId, pathname: str
 /** Random pool details page: `/predictions/random-rewards/[id]` */
 export function isRandomRewardsPoolDetailPath(pathname: string): boolean {
   return /^\/predictions\/random-rewards\/[^/]+$/.test(pathname);
+}
+
+/** Two-Pool detail page: `/predictions/cryptocurrency/twopools/[id]` */
+export function isTwoPoolDetailPath(pathname: string): boolean {
+  return /^\/predictions\/cryptocurrency\/twopools\/[^/]+$/.test(pathname);
 }

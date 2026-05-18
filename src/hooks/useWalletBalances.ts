@@ -5,6 +5,7 @@ import { useAccount, useReadContracts } from "wagmi";
 import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { formatTokenBalance } from "@/shared/utils/format";
 import type { Balance } from "@/shared/types/balances";
 import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
@@ -17,6 +18,7 @@ const BALANCE_LABELS = {
 
 export function useWalletBalances() {
   const { address, isConnected } = useAccount();
+  const { pt, yt } = useActiveVault();
 
   const contracts = useMemo(() => {
     if (!address) return [];
@@ -29,21 +31,21 @@ export function useWalletBalances() {
         chainId: baseSepolia.id,
       },
       {
-        address: TOKEN_ADDRESSES.PT,
+        address: pt,
         abi: erc20Abi,
         functionName: "balanceOf" as const,
         args: [address] as const,
         chainId: baseSepolia.id,
       },
       {
-        address: TOKEN_ADDRESSES.YT,
+        address: yt,
         abi: erc20Abi,
         functionName: "balanceOf" as const,
         args: [address] as const,
         chainId: baseSepolia.id,
       },
     ];
-  }, [address]);
+  }, [address, pt, yt]);
 
   const { data, isLoading, error, refetch } = useReadContracts({
     contracts,

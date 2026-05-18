@@ -1,5 +1,5 @@
 import { format, isThisYear, isToday, isTomorrow } from "date-fns";
-import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import type { CryptoPrediction, CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -27,10 +27,11 @@ export function getCryptoDrawerInfoLines(
   const dateStr = formatCryptoDrawerEndDate(prediction.endsAt);
   const tail = stripLeadingAssetSymbol(prediction.title, prediction.assetSymbol);
   const topic = tail.length > 0 ? tail : prediction.title.trim();
-  const sym = `$${prediction.assetSymbol}`;
+  const symbol = prediction.assetSymbol.trim();
+  const symPrefix = symbol ? `$${symbol} ` : "";
   return {
-    primaryQuestion: `${sym} ${topic} at ${dateStr}?`,
-    secondaryMuted: `${sym} ${selectedOutcomeLabel} at ${dateStr}`,
+    primaryQuestion: `${symPrefix}${topic} at ${dateStr}?`,
+    secondaryMuted: `${symPrefix}${selectedOutcomeLabel} at ${dateStr}`,
   };
 }
 
@@ -59,12 +60,12 @@ export function getCryptoPredictionEndLine(endsAt: string): string {
 
 /**
  * Статус под прогресс-баром / в футере: live (с точкой), upcoming («Starts at…» или подпись), ended.
+ * Принимает `CryptoPredictionStatus` напрямую, чтобы переиспользоваться и для TwoPool-карточек.
  */
-export function getCryptoPredictionStatusFooter(prediction: CryptoPrediction): {
+export function getCryptoPredictionStatusFooter(status: CryptoPredictionStatus): {
   showLiveDot: boolean;
   text: string;
 } {
-  const { status } = prediction;
   switch (status.kind) {
     case "live":
       return { showLiveDot: true, text: status.label ?? "Live now" };
@@ -79,6 +80,17 @@ export function getCryptoPredictionStatusFooter(prediction: CryptoPrediction): {
       const label = status.label?.trim();
       if (label) return { showLiveDot: false, text: label };
       return { showLiveDot: false, text: "Upcoming" };
+    }
+    case "locked": {
+      const t = status.label?.trim();
+      return { showLiveDot: false, text: t && t.length > 0 ? t : "Locked" };
+    }
+    case "resolving": {
+      const t = status.label?.trim();
+      return {
+        showLiveDot: false,
+        text: t && t.length > 0 ? t : "Resolution in process",
+      };
     }
     case "ended": {
       const fromResolution = status.resolutionSummary?.trim();

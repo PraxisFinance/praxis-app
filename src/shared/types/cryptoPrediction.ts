@@ -16,6 +16,16 @@ export type CryptoPredictionStatus =
       startsAt?: string;
     }
   | {
+      /** Pool no longer accepting bets but resolution has not yet started (chain-Locked, or after vote deadline / before expiration). */
+      kind: "locked";
+      label?: string;
+    }
+  | {
+      /** Lock period ended on the calendar but the indexer still shows the pool Open — settlement in flight. */
+      kind: "resolving";
+      label?: string;
+    }
+  | {
       kind: "ended";
       label?: string;
       /** Кратко, что произошло (опционально): «Resolved Up», «Void», … */
@@ -51,15 +61,23 @@ type CryptoPredictionBase = {
   id: string;
   /** Заголовок карточки, напр. «AERO Up or Down» */
   title: string;
+  /** Human-readable description from the offchain database, if available. */
+  description?: string | null;
+  /** Taxonomy tags from the offchain database, if available. */
+  categories?: string[];
   assetSymbol: string;
   iconUrl: string;
   status: CryptoPredictionStatus;
   /** ISO 8601 — конец приёма ставок / окончание окна для подписи «End in: …» */
   endsAt: string;
-  /** Совпадает с вкладками фильтра типа прогноза (кроме «all») */
-  predictionType: Exclude<CryptoPredictionTypeFilterId, "all">;
+  /** Совпадает с вкладками фильтра типа прогноза (кроме «all» и Two-Pool) */
+  predictionType: Exclude<CryptoPredictionTypeFilterId, "all" | "two_pool">;
   /** Можно ли открыть ставку / предикт (закрыт рынок, технические причины) */
   isTradingOpen: boolean;
+  /** On-chain pool ID passed to `depositBet(poolId, ...)`. */
+  cpfPoolId: bigint;
+  /** CPF contract address for this pool — resolved from vault, not from env. */
+  cpfAddress: `0x${string}`;
 };
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */

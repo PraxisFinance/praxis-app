@@ -17,6 +17,7 @@ import type {
   CryptoPredictionUpDown,
 } from "@/shared/types/cryptoPrediction";
 import { getCryptoDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
+import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
 
 const PREDICTION_MAX_BALANCE =
   DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
@@ -80,6 +81,23 @@ function CryptoPredictionDrawerBody({
   );
   const iconUrl = prediction.iconUrl.trim();
 
+  const inFavor = selectedOutcome.id === prediction.outcomes[0].id;
+  const { placeBet, isPending, errorMessage, status } = useCPFDepositBet(
+    prediction.cpfAddress,
+    prediction.cpfPoolId,
+    amount,
+    inFavor
+  );
+
+  const buttonLabel =
+    status === "approving"
+      ? "Approving…"
+      : status === "depositing"
+        ? "Placing bet…"
+        : status === "success"
+          ? "Placed!"
+          : "Place prediction";
+
   return (
     <div className="flex flex-col gap-3">
       <AppDrawerHeading title="Make a prediction" />
@@ -132,12 +150,23 @@ function CryptoPredictionDrawerBody({
           onChange={setAmount}
           maxValue={PREDICTION_MAX_BALANCE}
           placeholder="Prediction amount"
-          disabled={!isAvailable}
+          disabled={!isAvailable || isPending}
         />
       </div>
 
-      <Button variant="primary" size="action" disabled={!isAvailable}>
-        Place prediction
+      {errorMessage && (
+        <p className="text-center text-xs leading-snug text-main-red" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      <Button
+        variant="primary"
+        size="action"
+        disabled={!isAvailable || isPending}
+        onClick={() => void placeBet()}
+      >
+        {buttonLabel}
       </Button>
     </div>
   );
