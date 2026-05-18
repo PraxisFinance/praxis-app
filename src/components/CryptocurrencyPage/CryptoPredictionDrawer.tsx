@@ -81,6 +81,7 @@ function CryptoPredictionDrawerBody({
 
   const inFavor = selectedOutcome.id === prediction.outcomes[0].id;
   const { placeBet, isPending, errorMessage, status } = useCPFDepositBet(
+    prediction.cpfAddress,
     prediction.cpfPoolId,
     amount,
     inFavor

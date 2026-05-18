@@ -1,5 +1,3 @@
-export const CPF_ADDRESS = (process.env.NEXT_PUBLIC_CPF_ADDRESS ?? "") as `0x${string}`;
-
 export const testnetMintAbi = [
   {
     type: "function",

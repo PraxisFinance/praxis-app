@@ -143,6 +143,7 @@ export function mapCPFPoolToCryptoPrediction(
   return {
     id: pool.id,
     cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     title: offchain?.title ?? `Pool #${pool.poolId}`,
     description: offchain?.description,
     categories: offchain?.categories,

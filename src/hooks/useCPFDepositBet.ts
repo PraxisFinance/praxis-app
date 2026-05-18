@@ -5,7 +5,7 @@ import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { config } from "@/config/wagmi";
-import { CPF_ADDRESS, praxisCPFAbi } from "@/config/contracts";
+import { praxisCPFAbi } from "@/config/contracts";
 import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
@@ -13,7 +13,7 @@ import { ensureAppChain } from "@/lib/ensureAppChain";
 
 export type CPFDepositBetStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
-export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor: boolean) {
+export function useCPFDepositBet(cpfAddress: `0x${string}`, cpfPoolId: bigint, amountInput: string, inFavor: boolean) {
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
@@ -36,7 +36,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       return;
     }
 
-    if (!CPF_ADDRESS) {
+    if (!cpfAddress) {
       setErrorMessage("Contract address not configured");
       setStatus("error");
       return;
@@ -51,7 +51,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
         address: yt,
         abi: erc20Abi,
         functionName: "allowance",
-        args: [address, CPF_ADDRESS],
+        args: [address, cpfAddress],
       });
 
       if (allowance < amount) {
@@ -60,7 +60,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
           address: yt,
           abi: erc20Abi,
           functionName: "approve",
-          args: [CPF_ADDRESS, amount],
+          args: [cpfAddress, amount],
         });
         await waitForTransactionReceipt(config, { hash: approveTx });
       }
@@ -68,7 +68,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       setStatus("depositing");
 
       const betTx = await writeContractAsync({
-        address: CPF_ADDRESS,
+        address: cpfAddress,
         abi: praxisCPFAbi,
         functionName: "depositBet",
         args: [cpfPoolId, amount, inFavor],
@@ -81,7 +81,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, cpfPoolId, amount, inFavor, switchChainAsync, writeContractAsync, yt]);
+  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, switchChainAsync, writeContractAsync, yt]);
 
   const reset = useCallback(() => {
     setStatus("idle");

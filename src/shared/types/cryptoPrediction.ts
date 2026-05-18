@@ -76,6 +76,8 @@ type CryptoPredictionBase = {
   isTradingOpen: boolean;
   /** On-chain pool ID passed to `depositBet(poolId, ...)`. */
   cpfPoolId: bigint;
+  /** CPF contract address for this pool — resolved from vault, not from env. */
+  cpfAddress: `0x${string}`;
 };
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */
