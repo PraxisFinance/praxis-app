@@ -6,7 +6,8 @@ import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { config } from "@/config/wagmi";
 import { CPF_ADDRESS, praxisCPFAbi } from "@/config/contracts";
-import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
+import { TOKEN_DECIMALS } from "@/config/tokens";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
 import { ensureAppChain } from "@/lib/ensureAppChain";
 
@@ -19,6 +20,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
   const [status, setStatus] = useState<CPFDepositBetStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const { yt } = useActiveVault();
   const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.YT);
 
   const placeBet = useCallback(async () => {
@@ -46,7 +48,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       await ensureAppChain(chainId, switchChainAsync);
 
       const allowance = await readContract(config, {
-        address: TOKEN_ADDRESSES.YT,
+        address: yt,
         abi: erc20Abi,
         functionName: "allowance",
         args: [address, CPF_ADDRESS],
@@ -55,7 +57,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       if (allowance < amount) {
         setStatus("approving");
         const approveTx = await writeContractAsync({
-          address: TOKEN_ADDRESSES.YT,
+          address: yt,
           abi: erc20Abi,
           functionName: "approve",
           args: [CPF_ADDRESS, amount],
@@ -79,7 +81,7 @@ export function useCPFDepositBet(cpfPoolId: bigint, amountInput: string, inFavor
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, cpfPoolId, amount, inFavor, switchChainAsync, writeContractAsync]);
+  }, [address, chainId, cpfPoolId, amount, inFavor, switchChainAsync, writeContractAsync, yt]);
 
   const reset = useCallback(() => {
     setStatus("idle");

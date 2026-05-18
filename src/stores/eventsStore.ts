@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
+import { trpcClient } from "@/lib/trpc/vanillaClient";
+import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -21,7 +23,7 @@ export interface CPFUserAvailableBalance {
 
 export interface CPFPoolState {
   id: string;
-  cpf_id: string;
+  cpfAddress: string;
   poolId: bigint;
   ctfAddress: string;
   conditionId: string;
@@ -40,7 +42,7 @@ export interface CPFPoolState {
 
 export interface CPFPoolPosition {
   id: string;
-  cpf_id: string;
+  cpfAddress: string;
   pool_id: string;
   address: string;
   balanceInFavor: bigint;
@@ -73,6 +75,13 @@ export interface CPFWithdrawEvent {
   amount: bigint;
 }
 
+export interface CPFDeploymentInfo {
+  /** The CPF contract address — used as cpfAddress on pool records. */
+  id: string;
+  stakingToken: string;
+  endTime: bigint;
+}
+
 // ── Per-pool data bundle ─────────────────────────────────────────────
 
 export interface CPFPoolData {
@@ -91,19 +100,21 @@ interface EventsState {
   globalState: CPFGlobalState | null;
   userBalance: CPFUserAvailableBalance | null;
   pools: Record<string, CPFPoolData>;
-  activePoolId: string | null;
+  /** Cached CPF contract address, keyed by the YT address it was resolved from. */
+  cpfAddressByYt: Record<string, string>;
   loading: boolean;
   error: string | null;
+  offchainByContractId: Record<string, OffchainEventData>;
 
-  setActivePool: (poolId: string) => void;
-  getActivePool: () => CPFPoolData | undefined;
   getPool: (poolId: string) => CPFPoolData | undefined;
   getOpenPools: () => CPFPoolState[];
   getResolvedPools: () => CPFPoolState[];
 
   fetchGlobalState: (cpfAddress: string) => Promise<void>;
   fetchUserBalance: (cpfAddress: string, userAddress: string) => Promise<void>;
-  fetchAllPoolStates: () => Promise<void>;
+  resolveCPFAddress: (ytAddress: string) => Promise<string | null>;
+  fetchAllPoolStates: (vaultId?: string, ytAddress?: string) => Promise<void>;
+  fetchOffchainMetadata: (vaultId?: string) => Promise<void>;
   fetchUserPosition: (poolId: string, userAddress: string) => Promise<void>;
   fetchUserBets: (poolId: string, userAddress: string) => Promise<void>;
   fetchAllForPool: (poolId: string, userAddress?: string) => Promise<void>;
@@ -116,12 +127,23 @@ const initialState = {
   globalState: null as CPFGlobalState | null,
   userBalance: null as CPFUserAvailableBalance | null,
   pools: {} as Record<string, CPFPoolData>,
-  activePoolId: null as string | null,
+  cpfAddressByYt: {} as Record<string, string>,
   loading: false,
   error: null as string | null,
+  offchainByContractId: {} as Record<string, OffchainEventData>,
 };
 
 // ── GraphQL queries ──────────────────────────────────────────────────
+
+const CPF_DEPLOYMENT_BY_YT_QUERY = `
+  query CPFDeploymentByYT($stakingToken: String!) {
+    CPFDeploymentInfo(where: { stakingToken: { _eq: $stakingToken } }, limit: 1) {
+      id
+      stakingToken
+      endTime
+    }
+  }
+`;
 
 const GLOBAL_STATE_QUERY = `
   query CPFGlobalState($id: String!) {
@@ -149,7 +171,33 @@ const ALL_POOL_STATES_QUERY = `
   query AllCPFPools {
     CPFPoolState(order_by: { createdAt: desc }) {
       id
-      cpf_id
+      cpfAddress
+      poolId
+      ctfAddress
+      conditionId
+      state
+      stakeInFavor
+      stakeAgainst
+      winningOutcome
+      totalWinningStake
+      totalLosingStake
+      createdAt
+      resolvedAt
+      lastUpdatedAt
+      betCount
+      uniqueBettors
+    }
+  }
+`;
+
+const POOL_STATES_BY_CPF_QUERY = `
+  query CPFPoolsByAddress($cpfAddress: String!) {
+    CPFPoolState(
+      where: { cpfAddress: { _eq: $cpfAddress } }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      cpfAddress
       poolId
       ctfAddress
       conditionId
@@ -175,7 +223,7 @@ const USER_POSITION_QUERY = `
       limit: 1
     ) {
       id
-      cpf_id
+      cpfAddress
       pool_id
       address
       balanceInFavor
@@ -202,6 +250,20 @@ const USER_BETS_QUERY = `
 `;
 
 // ── Raw → typed mappers ──────────────────────────────────────────────
+
+interface RawCPFDeploymentInfo {
+  id: string;
+  stakingToken: string;
+  endTime: string;
+}
+
+function mapDeploymentInfo(raw: RawCPFDeploymentInfo): CPFDeploymentInfo {
+  return {
+    id: raw.id,
+    stakingToken: raw.stakingToken,
+    endTime: toBigInt(raw.endTime),
+  };
+}
 
 interface RawCPFGlobalState {
   id: string;
@@ -237,7 +299,7 @@ function mapUserBalance(raw: RawUserBalance): CPFUserAvailableBalance {
 
 interface RawCPFPoolState {
   id: string;
-  cpf_id: string;
+  cpfAddress: string;
   poolId: string;
   ctfAddress: string;
   conditionId: string;
@@ -270,7 +332,7 @@ function normalizeIndexerPoolStatus(raw: string): CPFPoolStatus {
 function mapPoolState(raw: RawCPFPoolState): CPFPoolState {
   return {
     id: raw.id,
-    cpf_id: raw.cpf_id,
+    cpfAddress: raw.cpfAddress,
     poolId: toBigInt(raw.poolId),
     ctfAddress: raw.ctfAddress,
     conditionId: raw.conditionId,
@@ -290,7 +352,7 @@ function mapPoolState(raw: RawCPFPoolState): CPFPoolState {
 
 interface RawCPFPoolPosition {
   id: string;
-  cpf_id: string;
+  cpfAddress: string;
   pool_id: string;
   address: string;
   balanceInFavor: string;
@@ -302,7 +364,7 @@ interface RawCPFPoolPosition {
 function mapPoolPosition(raw: RawCPFPoolPosition): CPFPoolPosition {
   return {
     id: raw.id,
-    cpf_id: raw.cpf_id,
+    cpfAddress: raw.cpfAddress,
     pool_id: raw.pool_id,
     address: raw.address,
     balanceInFavor: toBigInt(raw.balanceInFavor),
@@ -348,13 +410,6 @@ function patchPool(
 export const useEventsStore = create<EventsState>((set, get) => ({
   ...initialState,
 
-  setActivePool: (poolId) => set({ activePoolId: poolId }),
-
-  getActivePool: () => {
-    const { pools, activePoolId } = get();
-    return activePoolId ? pools[activePoolId] : undefined;
-  },
-
   getPool: (poolId) => get().pools[poolId],
 
   getOpenPools: () =>
@@ -393,25 +448,88 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     }
   },
 
-  fetchAllPoolStates: async () => {
+  resolveCPFAddress: async (ytAddress: string): Promise<string | null> => {
+    const data = await envioQuery<{ CPFDeploymentInfo: RawCPFDeploymentInfo[] }>(
+      CPF_DEPLOYMENT_BY_YT_QUERY,
+      { stakingToken: ytAddress.toLowerCase() }
+    );
+    const raw = data.CPFDeploymentInfo[0];
+    return raw ? mapDeploymentInfo(raw).id : null;
+  },
+
+  fetchAllPoolStates: async (vaultId?: string, ytAddress?: string) => {
     try {
       set({ loading: true, error: null });
-      const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(ALL_POOL_STATES_QUERY);
+
+      let rawPools: RawCPFPoolState[];
+      if (ytAddress) {
+        const ytKey = ytAddress.toLowerCase();
+        let cpfAddr = get().cpfAddressByYt[ytKey];
+
+        if (!cpfAddr) {
+          cpfAddr = (await get().resolveCPFAddress(ytAddress)) ?? "";
+          if (!cpfAddr) {
+            set({ pools: {}, loading: false });
+            return;
+          }
+          set((s) => ({
+            cpfAddressByYt: { ...s.cpfAddressByYt, [ytKey]: cpfAddr },
+          }));
+        }
+
+        const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(
+          POOL_STATES_BY_CPF_QUERY,
+          { cpfAddress: cpfAddr }
+        );
+        rawPools = data.CPFPoolState;
+      } else {
+        const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(ALL_POOL_STATES_QUERY);
+        rawPools = data.CPFPoolState;
+      }
+
       const nextPools = { ...get().pools };
-      for (const raw of data.CPFPoolState) {
+      for (const raw of rawPools) {
         const mapped = mapPoolState(raw);
         const existing = nextPools[mapped.id] ?? emptyPoolData();
         nextPools[mapped.id] = { ...existing, state: mapped };
       }
-      const activeId = get().activePoolId;
-      set({
-        pools: nextPools,
-        activePoolId:
-          activeId && nextPools[activeId] ? activeId : (data.CPFPoolState[0]?.id ?? null),
-        loading: false,
-      });
+      set({ pools: nextPools, loading: false });
+      await get().fetchOffchainMetadata(vaultId);
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
+    }
+  },
+
+  fetchOffchainMetadata: async (vaultId?: string) => {
+    const poolStates = Object.values(get().pools)
+      .map((p) => p.state)
+      .filter((s): s is CPFPoolState => s !== null);
+
+    const ids = new Set<string>();
+    for (const p of poolStates) {
+      ids.add(String(p.poolId));
+    }
+
+    const idList = [...ids];
+    if (idList.length === 0) return;
+
+    try {
+      const rows = await trpcClient.offchainEvents.byContractIds.query({
+        ids: idList,
+        vault: vaultId,
+      });
+
+      const byId: Record<string, OffchainEventData> = {};
+      for (const e of rows) {
+        for (const raw of [e.contractEventId, e.conditionId]) {
+          if (!raw) continue;
+          byId[raw] = e;
+          if (raw.startsWith("0x")) byId[raw.toLowerCase()] = e;
+        }
+      }
+      set({ offchainByContractId: byId });
+    } catch (err) {
+      set({ error: (err as Error).message });
     }
   },
 

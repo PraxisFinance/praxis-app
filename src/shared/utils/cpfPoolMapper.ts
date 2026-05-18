@@ -147,7 +147,7 @@ export function mapCPFPoolToCryptoPrediction(
     description: offchain?.description,
     categories: offchain?.categories,
     assetSymbol: "",
-    iconUrl: "",
+    iconUrl: offchain?.logoPath ?? "",
     status: deriveStatus(pool, offchain, nowMs),
     endsAt: deriveEndsAt(pool, offchain),
     predictionType: "up_down",

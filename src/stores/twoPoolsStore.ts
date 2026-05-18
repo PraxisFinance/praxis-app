@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { fetchTwoPoolStates } from "@/shared/api/twoPoolEnvio";
 import { trpcClient } from "@/lib/trpc/vanillaClient";
+import { useActiveVaultStore } from "@/stores/activeVaultStore";
 import type { TwoPool } from "@/shared/types/twoPool";
 
 export interface TwoPoolsState {
@@ -25,14 +26,23 @@ export const useTwoPoolsStore = create<TwoPoolsState>((set, get) => ({
   fetchPools: async () => {
     set({ loading: true, error: null });
     try {
-      const pools = await fetchTwoPoolStates();
+      const activeVaultId = useActiveVaultStore.getState().activeVaultId;
+      if (!activeVaultId) {
+        set({ pools: [], loading: false });
+        return;
+      }
 
-      const addresses = pools.map((p) => p.id);
-      const contracts = await trpcClient.twoPoolContracts.byAddresses.query({ addresses });
+      const [pools, contracts] = await Promise.all([
+        fetchTwoPoolStates(),
+        trpcClient.twoPoolContracts.byVault.query({ vault: activeVaultId }),
+      ]);
+
+      const allowedAddresses = new Set(contracts.map((contract) => contract.address.toLowerCase()));
+      const scopedPools = pools.filter((pool) => allowedAddresses.has(pool.id.toLowerCase()));
 
       const contractsByAddress = new Map(contracts.map((c) => [c.address.toLowerCase(), c]));
 
-      const merged = pools.map((pool) => {
+      const merged = scopedPools.map((pool) => {
         const contract = contractsByAddress.get(pool.id.toLowerCase());
         if (!contract) return pool;
         return {
@@ -54,3 +64,12 @@ export const useTwoPoolsStore = create<TwoPoolsState>((set, get) => ({
 
   reset: () => set(initial),
 }));
+
+useActiveVaultStore.subscribe(
+  (state) => state.activeVaultId,
+  (next, prev) => {
+    if (next !== prev) {
+      void useTwoPoolsStore.getState().fetchPools();
+    }
+  }
+);

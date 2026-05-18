@@ -6,7 +6,8 @@ import { readContract, waitForTransactionReceipt } from "wagmi/actions";
 import { erc20Abi } from "viem";
 import { config } from "@/config/wagmi";
 import { twoPoolAbi } from "@/config/contracts";
-import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
+import { TOKEN_DECIMALS } from "@/config/tokens";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { ensureAppChain } from "@/lib/ensureAppChain";
@@ -24,6 +25,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
   const [status, setStatus] = useState<TwoPoolDepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const { yt } = useActiveVault();
   const poolAddress = pool.id as `0x${string}`;
   const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.USDC);
 
@@ -46,7 +48,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       await ensureAppChain(chainId, switchChainAsync);
 
       const allowance = await readContract(config, {
-        address: TOKEN_ADDRESSES.YT,
+        address: yt,
         abi: erc20Abi,
         functionName: "allowance",
         args: [address, poolAddress],
@@ -55,7 +57,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       if (allowance < amount) {
         setStatus("approving");
         const approveTx = await writeContractAsync({
-          address: TOKEN_ADDRESSES.YT,
+          address: yt,
           abi: erc20Abi,
           functionName: "approve",
           args: [poolAddress, amount],
@@ -69,7 +71,8 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
         address: poolAddress,
         abi: twoPoolAbi,
         functionName: "deposit",
-        args: [sideToUint8(side), amount],
+        // TODO: Add minNet
+        args: [sideToUint8(side), amount, BigInt(0)],
       });
 
       await waitForTransactionReceipt(config, { hash: depositTx });
@@ -79,7 +82,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, amount, chainId, poolAddress, side, switchChainAsync, writeContractAsync]);
+  }, [address, amount, chainId, poolAddress, side, switchChainAsync, writeContractAsync, yt]);
 
   const reset = useCallback(() => {
     setStatus("idle");

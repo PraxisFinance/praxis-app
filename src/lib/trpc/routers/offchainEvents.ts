@@ -15,21 +15,26 @@ export interface OffchainEventData {
   expirationTimestamp: number | null;
   /** Matches `RESOLUTION_TUPLES[].value` when set — drives outcome button copy. */
   resolutionTypeTuple: string | null;
+  /** Full URL to the event logo stored on R2 (e.g. https://media.praxis.cc/market-logos/…). */
+  logoPath: string | null;
 }
 
 export const offchainEventsRouter = router({
   byContractIds: publicProcedure
-    .input(z.object({ ids: z.array(z.string()), conditionIds: z.array(z.string()) }))
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+        vault: z.string().optional(),
+      })
+    )
     .query(async ({ ctx, input }): Promise<OffchainEventData[]> => {
-      if (input.ids.length === 0 && input.conditionIds.length === 0) return [];
-
-      const orClauses = [
-        ...(input.ids.length > 0 ? [{ contractEventId: { in: input.ids } }] : []),
-        ...(input.conditionIds.length > 0 ? [{ conditionId: { in: input.conditionIds } }] : []),
-      ];
+      if (input.ids.length === 0) return [];
 
       return ctx.db.event.findMany({
-        where: { OR: orClauses },
+        where: {
+          contractEventId: { in: input.ids },
+          ...(input.vault ? { vault: input.vault } : {}),
+        },
         select: {
           contractEventId: true,
           conditionId: true,
@@ -39,6 +44,7 @@ export const offchainEventsRouter = router({
           votingDeadlineTs: true,
           expirationTimestamp: true,
           resolutionTypeTuple: true,
+          logoPath: true,
         },
       });
     }),

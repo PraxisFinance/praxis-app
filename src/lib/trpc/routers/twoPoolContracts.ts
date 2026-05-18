@@ -21,4 +21,16 @@ export const twoPoolContractsRouter = router({
         },
       });
     }),
+  byVault: publicProcedure
+    .input(z.object({ vault: z.string() }))
+    .query(async ({ ctx, input }): Promise<TwoPoolContractOffchainData[]> => {
+      return ctx.db.twoPoolContract.findMany({
+        where: { vault: input.vault },
+        select: {
+          address: true,
+          name: true,
+          description: true,
+        },
+      });
+    }),
 });

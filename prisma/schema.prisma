@@ -29,6 +29,8 @@ model Event {
   tags                String[]    @default([])
   resolutionTypeTuple String?
   votingDeadlineTs    Float?
+  vault               String?
+  logoPath            String?
 }
 
 model Admin {
@@ -64,6 +66,13 @@ model TwoPoolContract {
   endTime     DateTime
   txHash      String?
   createdAt   DateTime @default(now())
+}
+
+model MarketCache {
+  key        String   @id
+  markets    Json
+  totalCount Int
+  updatedAt  DateTime
 }
 
 enum EventStatus {

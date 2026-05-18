@@ -1,5 +1,18 @@
 export const CPF_ADDRESS = (process.env.NEXT_PUBLIC_CPF_ADDRESS ?? "") as `0x${string}`;
 
+export const testnetMintAbi = [
+  {
+    type: "function",
+    name: "mint",
+    inputs: [
+      { name: "to", type: "address" },
+      { name: "amount", type: "uint256" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
 export const praxisCPFAbi = [
   {
     type: "function",
@@ -126,6 +139,7 @@ export const twoPoolAbi = [
     inputs: [
       { name: "side", type: "uint8" },
       { name: "amount", type: "uint256" },
+      { name: "minNet", type: "uint256" },
     ],
     outputs: [],
     stateMutability: "nonpayable",

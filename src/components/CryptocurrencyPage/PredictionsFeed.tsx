@@ -10,8 +10,7 @@ import { mapCPFPoolsToCryptoPredictions } from "@/shared/utils/cpfPoolMapper";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { useEventsStore } from "@/stores/eventsStore";
 import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
-import { trpc } from "@/lib/trpc/client";
-import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
+import { useActiveVault } from "@/stores/activeVaultStore";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { CryptocurrencyFilters } from "./CryptocurrencyFilters";
 import { CryptoPredictionDrawer } from "./CryptoPredictionDrawer";
@@ -53,17 +52,43 @@ function matchesTypeFilter(item: FeedItem, typeId: CryptoPredictionTypeFilterId)
   return item.prediction.predictionType === typeId;
 }
 
+const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
+  all: null,
+  live: null, // handled separately
+  "1h": 60 * 60_000,
+  "6h": 6 * 60 * 60_000,
+  "12h": 12 * 60 * 60_000,
+  "1d": 24 * 60 * 60_000,
+  "2d": 2 * 24 * 60 * 60_000,
+  "1w": 7 * 24 * 60 * 60_000,
+};
+
+function matchesTimeFilter(
+  item: FeedItem,
+  timeId: CryptoPredictionTimeFilterId,
+  nowMs: number
+): boolean {
+  if (timeId === "all") return true;
+  const end = endsAtMs(item);
+  if (timeId === "live") return end > nowMs;
+  const windowMs = TIME_FILTER_MS[timeId];
+  if (windowMs === null) return true;
+  return end > nowMs && end <= nowMs + windowMs;
+}
+
 export interface PredictionsFeedProps {
   sectionTitle: string;
   /** When true (Cryptocurrencies tab), Two-Pool cards are listed before other prediction cards. */
   twoPoolsFirst?: boolean;
 }
 
-export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: PredictionsFeedProps) {
+export function PredictionsFeed({ sectionTitle, twoPoolsFirst = true }: PredictionsFeedProps) {
+  const { vaultId, yt } = useActiveVault();
   const cpfPools = useEventsStore((s) => s.pools);
   const cpfLoading = useEventsStore((s) => s.loading);
   const cpfError = useEventsStore((s) => s.error);
   const fetchAllPoolStates = useEventsStore((s) => s.fetchAllPoolStates);
+  const offchainByContractId = useEventsStore((s) => s.offchainByContractId);
 
   const twoPools = useTwoPoolsStore((s) => s.pools);
   const twoPoolsLoading = useTwoPoolsStore((s) => s.loading);
@@ -71,9 +96,10 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
   const fetchTwoPools = useTwoPoolsStore((s) => s.fetchPools);
 
   useEffect(() => {
-    void fetchAllPoolStates();
+    if (!vaultId) return;
+    void fetchAllPoolStates(vaultId, yt);
     void fetchTwoPools();
-  }, [fetchAllPoolStates, fetchTwoPools]);
+  }, [fetchAllPoolStates, fetchTwoPools, vaultId, yt]);
 
   const poolStates = useMemo(
     () =>
@@ -82,38 +108,6 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
         .filter((s) => s !== null),
     [cpfPools]
   );
-
-  const { ids: offchainIds, conditionIds: offchainConditionIds } = useMemo(() => {
-    const ids = new Set<string>();
-    const conditionIds = new Set<string>();
-    for (const p of poolStates) {
-      ids.add(String(p.poolId));
-      if (p.conditionId) {
-        conditionIds.add(p.conditionId);
-        if (p.conditionId.startsWith("0x")) conditionIds.add(p.conditionId.toLowerCase());
-      }
-    }
-    return { ids: [...ids], conditionIds: [...conditionIds] };
-  }, [poolStates]);
-
-  const { data: offchainRows } = trpc.offchainEvents.byContractIds.useQuery(
-    { ids: offchainIds, conditionIds: offchainConditionIds },
-    { enabled: offchainIds.length > 0 || offchainConditionIds.length > 0, staleTime: 60_000 }
-  );
-
-  const offchainByContractId = useMemo(() => {
-    if (!offchainRows) return {};
-    const m: Record<string, OffchainEventData> = {};
-    for (const e of offchainRows) {
-      // Index by every non-null key the DB row provides, case-insensitively for hex strings.
-      for (const raw of [e.contractEventId, e.conditionId]) {
-        if (!raw) continue;
-        m[raw] = e;
-        if (raw.startsWith("0x")) m[raw.toLowerCase()] = e;
-      }
-    }
-    return m;
-  }, [offchainRows]);
 
   /** Wall clock for time-based status (memo cannot call `Date.now()`; state updates on an interval). */
   const [nowMs, setNowMs] = useState(() => Date.now());
@@ -142,10 +136,14 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = false }: Predict
     () => buildMergedFeed(predictions, twoPools, twoPoolsFirst),
     [predictions, twoPools, twoPoolsFirst]
   );
-  // timeFilter is wired to the filter bar UI but not yet applied to list filtering
   const visible = useMemo(
-    () => merged.filter((item) => matchesTypeFilter(item, typeFilter)),
-    [merged, typeFilter]
+    () =>
+      merged.filter(
+        (item) =>
+          matchesTypeFilter(item, typeFilter) &&
+          matchesTimeFilter(item, timeFilter, nowMs)
+      ),
+    [merged, typeFilter, timeFilter, nowMs]
   );
 
   const handleCryptoDrawerOpenChange = (open: boolean) => {

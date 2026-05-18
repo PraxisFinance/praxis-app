@@ -73,3 +73,8 @@ export {
 } from "./statisticsStore";
 
 export { useTwoPoolsStore, type TwoPoolsState } from "./twoPoolsStore";
+
+export {
+  useActiveVaultStore,
+  useActiveVault,
+} from "./activeVaultStore";
