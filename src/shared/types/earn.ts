@@ -14,6 +14,8 @@ export interface EarnPosition {
   yieldGenerated: string;
   stakeTime: string;
   stakeDate: string;
+  /** Drawer display, e.g. "19:00 21 Sept 2026" */
+  depositTime: string;
   status: EarnPositionStatus;
 }
 

@@ -36,6 +36,20 @@ function formatStakeDate(date: Date): string {
   return `${dd}/${mm}/${yy}`;
 }
 
+function formatDepositTime(date: Date): string {
+  const time = date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  const day = date.toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return `${time} ${day}`;
+}
+
 export function vaultStateToAvailableItem(vault: VaultState): EarnAvailableItem {
   return {
     vaultAddress: vault.id as `0x${string}`,
@@ -81,6 +95,7 @@ export function userPositionToEarnPosition(
       hour12: false,
     }),
     stakeDate: formatStakeDate(depositDate),
+    depositTime: formatDepositTime(depositDate),
     status: isMatured ? "ended" : "active",
   };
 }

@@ -1,15 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { HintIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
-import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
+import { WITHDRAW_PRINCIPAL_NOTE } from "@/shared/constants/earn";
 import type { EarnPosition } from "@/shared/types/earn";
 import { useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
+import { AlertIcon } from "../icons/base/alertIcon";
 
 interface WithdrawDrawerProps {
   item: EarnPosition | null;
@@ -17,17 +19,20 @@ interface WithdrawDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function formatPoolLifetimeDisplay(lifetime: string): string {
+  return lifetime.replace(/ \d+s$/, "");
+}
+
 export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps) {
-  const [amount, setAmount] = useState("");
+  const withdrawAmount = item?.yourDeposit ?? "";
   const { refetch: refetchBalances } = useWalletBalances();
   const { withdraw, status, errorMessage, reset, isPending } = useVaultWithdraw(
     item?.vaultAddress ?? "0x0",
-    amount,
+    withdrawAmount
   );
 
   useEffect(() => {
     if (!open) {
-      setAmount("");
       reset();
     }
   }, [open, reset]);
@@ -40,86 +45,82 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
 
   if (!item) return null;
 
-  const availableAmount = item.yourDeposit;
-
   function handleWithdraw() {
     withdraw();
   }
 
   function handleClose() {
-    setAmount("");
     reset();
     onOpenChange(false);
   }
 
   const buttonLabel =
-    status === "withdrawing"
-      ? "Withdrawing…"
-      : status === "success"
-        ? "Done"
-        : "Withdraw";
+    status === "withdrawing" ? "Withdrawing…" : status === "success" ? "Done" : "Withdraw";
+
+  const currencySuffix = ` ${item.depositCurrency}`;
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
       <AppDrawerHeading
         variant="plain"
-        title="Withdraw your deposit"
+        title="Claim your deposit from ended vault"
         description="Withdraw your cryptocurrency from pool vault."
       />
 
       <div className="flex flex-col gap-3">
-        <span className="text-main-darkPurple text-lg leading-6">Pool Information</span>
-
-        <div className="flex flex-col gap-2.5">
-          <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} />
-
-          <div className="flex flex-col gap-1.5">
-            <InfoRow label="Your deposit:" value={`${item.yourDeposit} ${item.depositCurrency}`} />
-            <InfoRow label="Yield APY:" value={`${item.yieldApyPercent}%`} />
-            <InfoRow
-              label="Yield generated:"
-              value={`${item.yieldGenerated} ${item.depositCurrency}`}
-            />
-            <InfoRow label="Stake date:" value={`${item.stakeTime} ${item.stakeDate}`} />
-            <InfoRow label="Pool lifetime:" value={item.poolLifetime} />
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="text-main-darkPurple text-lg leading-6">Amount</span>
-
-        <InputWithMax
-          value={amount}
-          onChange={setAmount}
-          maxValue={availableAmount}
-          disabled={isPending}
+        <InfoRow
+          variant="inline"
+          label="Pool Information:"
+          value={
+            <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
+          }
         />
 
-        <div className="flex items-center justify-between px-1">
-          <span className="text-main-darkPurple text-xs font-normal leading-4">
-            Available: {availableAmount} ${item.depositCurrency}
-          </span>
-          <span className="text-main-darkPurple text-xs font-normal leading-4">
-            Yield generated: {item.yieldGenerated} {item.depositCurrency}
-          </span>
+        <div className="flex flex-col gap-1.5">
+          <InfoRow
+            variant="inline"
+            label="Your deposit(PT):"
+            value={`${item.yourDeposit}${currencySuffix}`}
+          />
+          <InfoRow
+            variant="inline"
+            label="Yield generated(YT):"
+            value={`${item.yieldGenerated}${currencySuffix}`}
+          />
+          <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
+          <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
+          <InfoRow
+            variant="inline"
+            label="Pool lifetime:"
+            value={formatPoolLifetimeDisplay(item.poolLifetime)}
+          />
         </div>
       </div>
 
-      {errorMessage && (
-        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
-      )}
+      <div className="flex items-start gap-2">
+        <span
+          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple text-main-darkPurple"
+          aria-hidden
+        >
+          <AlertIcon className="h-3 w-3" />
+        </span>
+        <p className="text-main-darkPurple/70 text-xs font-normal leading-4">
+          {WITHDRAW_PRINCIPAL_NOTE}
+        </p>
+      </div>
+
+      {errorMessage && <p className="text-red-500 text-xs px-1">{errorMessage}</p>}
 
       {status === "success" ? (
-        <Button variant="destructiveMuted" size="action" onClick={handleClose}>
+        <Button variant="destructiveBrand" size="action" onClick={handleClose}>
           {buttonLabel}
         </Button>
       ) : (
         <Button
-          variant="destructiveMuted"
+          variant="destructiveBrand"
           size="action"
           onClick={handleWithdraw}
-          disabled={isPending || !amount || Number(amount) <= 0}
+          disabled={isPending || !withdrawAmount || Number(withdrawAmount) <= 0}
         >
           {buttonLabel}
         </Button>
