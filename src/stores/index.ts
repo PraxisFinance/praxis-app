@@ -19,6 +19,7 @@ export { useClaimsStore, loadMockClaims, formatIncome, type Claim } from "./clai
 
 export {
   useDepositsStore,
+  loadMockDeposits,
   formatUSDC,
   formatTimestamp,
   getTimeSince,

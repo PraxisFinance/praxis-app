@@ -7,6 +7,8 @@ export interface EarnPosition {
   depositCurrency: string;
   depositCurrencyIcon: string;
   depositCurrencyIconUrl: string;
+  liquidityAmount: string;
+  depositsAmount: string;
   yourDeposit: string;
   yieldApyPercent: string;
   yieldGenerated: string;

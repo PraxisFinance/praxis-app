@@ -25,7 +25,15 @@ function formatTimeLeft(maturitySec: bigint): string {
   const d = Math.floor(diff / (86_400_000));
   const h = Math.floor((diff % 86_400_000) / 3_600_000);
   const m = Math.floor((diff % 3_600_000) / 60_000);
-  return `${d}d ${h}h ${m}m`;
+  const s = Math.floor((diff % 60_000) / 1000);
+  return `${d}d ${h}h ${m}m ${s}s`;
+}
+
+function formatStakeDate(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yy = String(date.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
 }
 
 export function vaultStateToAvailableItem(vault: VaultState): EarnAvailableItem {
@@ -62,6 +70,8 @@ export function userPositionToEarnPosition(
     depositCurrency: "USDC",
     depositCurrencyIcon: "usdc",
     depositCurrencyIconUrl: USDC_ICON_URL,
+    liquidityAmount: vault ? formatCompactUSDC(vault.totalBalance) : "—",
+    depositsAmount: vault ? formatCompactUSDC(vault.totalDeposited) : "—",
     yourDeposit: formatTokenBalance(pos.currentBalance, USDC_DECIMALS),
     yieldApyPercent: "—",
     yieldGenerated: formatTokenBalance(pos.totalYieldClaimed, USDC_DECIMALS),
@@ -70,11 +80,22 @@ export function userPositionToEarnPosition(
       minute: "2-digit",
       hour12: false,
     }),
-    stakeDate: depositDate.toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+    stakeDate: formatStakeDate(depositDate),
     status: isMatured ? "ended" : "active",
+  };
+}
+
+export function earnPositionToAvailableItem(pos: EarnPosition): EarnAvailableItem {
+  return {
+    vaultAddress: pos.vaultAddress,
+    queueName: pos.queueName,
+    poolLifetime: pos.poolLifetime,
+    depositCurrency: pos.depositCurrency,
+    depositCurrencyIcon: pos.depositCurrencyIcon,
+    depositCurrencyIconUrl: pos.depositCurrencyIconUrl,
+    depositsAmount: pos.depositsAmount,
+    liquidityAmount: pos.liquidityAmount,
+    yieldApyPercent: pos.yieldApyPercent,
+    ytPayoutTime: "—",
   };
 }

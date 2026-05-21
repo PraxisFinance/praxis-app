@@ -12,6 +12,7 @@ import { useDepositsStore } from "@/stores/depositsStore";
 import {
   vaultStateToAvailableItem,
   userPositionToEarnPosition,
+  earnPositionToAvailableItem,
 } from "@/shared/utils/earnMappers";
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
@@ -54,6 +55,16 @@ export function EarnPage() {
     setClaimDrawerOpen(true);
   }
 
+  function handleDepositFromPosition(item: EarnPosition) {
+    setSelectedAvailableItem(earnPositionToAvailableItem(item));
+    setDepositDrawerOpen(true);
+  }
+
+  function handleRestake(item: EarnPosition) {
+    setSelectedAvailableItem(earnPositionToAvailableItem(item));
+    setDepositDrawerOpen(true);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <Balances />
@@ -71,8 +82,10 @@ export function EarnPage() {
             <EarnMyPositionsCard
               key={`${item.vaultAddress}-${item.stakeDate}`}
               item={item}
+              onDeposit={handleDepositFromPosition}
               onWithdraw={handleWithdraw}
               onClaim={handleClaim}
+              onRestake={handleRestake}
             />
           ))}
         </div>

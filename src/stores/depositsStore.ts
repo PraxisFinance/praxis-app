@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
+import { buildMockVaultsRecord } from "@/shared/constants/earnMocks";
 
 // ── Envio-derived types ──────────────────────────────────────────────
 
@@ -659,6 +660,20 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
 
   reset: () => set(initialState),
 }));
+
+export function loadMockDeposits(): void {
+  const vaults = buildMockVaultsRecord();
+  const now = nowSeconds();
+  const firstActiveId =
+    Object.values(vaults).find((v) => v.state && v.state.maturity > now)?.state?.id ?? null;
+
+  useDepositsStore.setState({
+    vaults,
+    activeVaultId: firstActiveId,
+    loading: false,
+    error: null,
+  });
+}
 
 // ── Formatting helpers ───────────────────────────────────────────────
 
