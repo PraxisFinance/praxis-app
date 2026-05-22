@@ -2,8 +2,8 @@ import Image from "next/image";
 import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
+import { cn } from "@/lib/utils";
 import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { EarnPosition } from "@/shared/types/earn";
 
@@ -38,13 +38,26 @@ function DepositCurrencyIcon({ iconUrl, currency }: { iconUrl: string; currency:
     );
   }
   return (
-    <Image
-      src={iconUrl}
-      alt={currency}
-      width={16}
-      height={16}
-      className="h-4 w-4 rounded-full"
-    />
+    <Image src={iconUrl} alt={currency} width={16} height={16} className="h-4 w-4 rounded-full" />
+  );
+}
+
+function StatBlock({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("flex min-w-0 flex-col gap-1", className)}>
+      <span className="text-2xs font-normal uppercase tracking-wide text-main-darkPurple">
+        {label}
+      </span>
+      <div className="text-sm font-semibold text-main-darkPurple">{children}</div>
+    </div>
   );
 }
 
@@ -65,43 +78,55 @@ export function EarnMyPositionsCard({
         subtitle={`Pool lifetime: ${item.poolLifetime}`}
       />
 
-      <div className="flex gap-6">
-        <div className="flex flex-col gap-3">
-          <InfoRow
-            variant="stacked"
-            label="Liquidity"
-            value={`${item.liquidityAmount} ${item.depositCurrency}`}
-          />
-          <InfoRow
-            variant="stacked"
-            label="Deposits"
-            value={`${item.depositsAmount} ${item.depositCurrency}`}
-          />
+      <div className="flex w-full items-start gap-3">
+        <div className="flex min-w-0 flex-[2] flex-col gap-2">
+          <p className="min-w-0 leading-4">
+            <span className="text-2xs font-normal uppercase tracking-wide text-main-darkPurple">
+              Liquidity:{" "}
+            </span>
+            <span className="text-2xs text-main-darkPurple break-words">
+              {item.liquidityAmount} {item.depositCurrency}
+            </span>
+          </p>
+          <p className="min-w-0 leading-4">
+            <span className="text-2xs font-normal uppercase tracking-wide text-main-darkPurple">
+              Deposits:{" "}
+            </span>
+            <span className="text-2xs text-main-darkPurple break-words">
+              {item.depositsAmount} {item.depositCurrency}
+            </span>
+          </p>
         </div>
-        <InfoRow
-          variant="stacked"
-          label="Your deposite"
-          value={
-            <div className="flex items-center gap-1">
-              {item.yourDeposit}
-              <DepositCurrencyIcon
-                iconUrl={item.depositCurrencyIconUrl}
-                currency={item.depositCurrency}
-              />
-            </div>
-          }
-        />
-        <div className="flex flex-col gap-3">
-          <InfoRow variant="stacked" label="Yield APY" value={`${item.yieldApyPercent}%`} />
-          <InfoRow variant="stacked" label="Stake date" value={item.stakeDate} />
-        </div>
+
+        <StatBlock label="Your deposite" className="min-w-0 flex-1 shrink">
+          <span className="inline-flex items-center gap-1">
+            {item.yourDeposit}
+            <DepositCurrencyIcon
+              iconUrl={item.depositCurrencyIconUrl}
+              currency={item.depositCurrency}
+            />
+          </span>
+        </StatBlock>
+
+        <StatBlock label="Yield APY" className="min-w-0 flex-1 shrink">
+          {item.yieldApyPercent}%
+        </StatBlock>
+
+        <StatBlock label="Stake date" className="min-w-0 flex-1 shrink">
+          {item.stakeDate}
+        </StatBlock>
       </div>
 
       <div className="flex w-full gap-3">
         {isEnded ? (
           <>
             <div className="min-w-0 flex-1">
-              <Button variant="success" size="action" className="w-full" onClick={() => onClaim(item)}>
+              <Button
+                variant="success"
+                size="action"
+                className="w-full"
+                onClick={() => onClaim(item)}
+              >
                 Claim
               </Button>
             </div>
