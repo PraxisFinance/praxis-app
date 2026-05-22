@@ -8,6 +8,7 @@ import { EarnMyPositionsCard } from "./EarnMyPositionsCard";
 import { DepositDrawer } from "./DepositDrawer";
 import { WithdrawDrawer } from "./WithdrawDrawer";
 import { ClaimDrawer } from "./ClaimDrawer";
+import { RestakeDrawer } from "./RestakeDrawer";
 import { useDepositsStore } from "@/stores/depositsStore";
 import {
   vaultStateToAvailableItem,
@@ -27,6 +28,8 @@ export function EarnPage() {
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
+  const [selectedRestakePosition, setSelectedRestakePosition] = useState<EarnPosition | null>(null);
+  const [restakeDrawerOpen, setRestakeDrawerOpen] = useState(false);
 
   const availableItems = useMemo(
     () => getActiveVaults().map(vaultStateToAvailableItem),
@@ -61,8 +64,8 @@ export function EarnPage() {
   }
 
   function handleRestake(item: EarnPosition) {
-    setSelectedAvailableItem(earnPositionToAvailableItem(item));
-    setDepositDrawerOpen(true);
+    setSelectedRestakePosition(item);
+    setRestakeDrawerOpen(true);
   }
 
   return (
@@ -120,6 +123,11 @@ export function EarnPage() {
         item={selectedPosition}
         open={claimDrawerOpen}
         onOpenChange={setClaimDrawerOpen}
+      />
+      <RestakeDrawer
+        item={selectedRestakePosition}
+        open={restakeDrawerOpen}
+        onOpenChange={setRestakeDrawerOpen}
       />
     </div>
   );

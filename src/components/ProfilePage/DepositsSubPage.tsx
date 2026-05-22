@@ -8,6 +8,7 @@ import { EarnMyPositionsCard } from "../EarnPage/EarnMyPositionsCard";
 import { DepositDrawer } from "../EarnPage/DepositDrawer";
 import { WithdrawDrawer } from "../EarnPage/WithdrawDrawer";
 import { ClaimDrawer } from "../EarnPage/ClaimDrawer";
+import { RestakeDrawer } from "../EarnPage/RestakeDrawer";
 import { useDepositsStore } from "@/stores/depositsStore";
 import {
   userPositionToEarnPosition,
@@ -26,6 +27,8 @@ export function DepositsSubPage() {
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
+  const [selectedRestakePosition, setSelectedRestakePosition] = useState<EarnPosition | null>(null);
+  const [restakeDrawerOpen, setRestakeDrawerOpen] = useState(false);
 
   useEffect(() => {
     fetchAll(address);
@@ -61,8 +64,8 @@ export function DepositsSubPage() {
   }
 
   function handleRestake(item: EarnPosition) {
-    setSelectedAvailableItem(earnPositionToAvailableItem(item));
-    setDepositDrawerOpen(true);
+    setSelectedRestakePosition(item);
+    setRestakeDrawerOpen(true);
   }
 
   return (
@@ -106,6 +109,11 @@ export function DepositsSubPage() {
         item={selectedPosition}
         open={claimDrawerOpen}
         onOpenChange={setClaimDrawerOpen}
+      />
+      <RestakeDrawer
+        item={selectedRestakePosition}
+        open={restakeDrawerOpen}
+        onOpenChange={setRestakeDrawerOpen}
       />
     </div>
   );

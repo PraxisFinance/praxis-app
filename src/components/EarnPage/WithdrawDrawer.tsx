@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect } from "react";
-import { HintIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
-import { WITHDRAW_PRINCIPAL_NOTE } from "@/shared/constants/earn";
+
 import type { EarnPosition } from "@/shared/types/earn";
 import { useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { AlertIcon } from "../icons/base/alertIcon";
+import { WITHDRAW_PRINCIPAL_NOTE } from "@/shared/constants/earn";
 
 interface WithdrawDrawerProps {
   item: EarnPosition | null;
