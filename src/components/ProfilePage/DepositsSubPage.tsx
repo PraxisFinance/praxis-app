@@ -5,19 +5,30 @@ import { useAccount } from "wagmi";
 import { Balances } from "../Balances/Balances";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { EarnMyPositionsCard } from "../EarnPage/EarnMyPositionsCard";
+import { DepositDrawer } from "../EarnPage/DepositDrawer";
 import { WithdrawDrawer } from "../EarnPage/WithdrawDrawer";
 import { ClaimDrawer } from "../EarnPage/ClaimDrawer";
+import { RestakeDrawer } from "../EarnPage/RestakeDrawer";
 import { useDepositsStore } from "@/stores/depositsStore";
-import { userPositionToEarnPosition } from "@/shared/utils/earnMappers";
-import type { EarnPosition } from "@/shared/types/earn";
+import {
+  userPositionToEarnPosition,
+  earnPositionToAvailableItem,
+} from "@/shared/utils/earnMappers";
+import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function DepositsSubPage() {
   const { address } = useAccount();
   //const { vaults, loading, fetchAll, fetchUserDataForAllVaults, getUserPositions } = useDepositsStore();
   const { vaults, loading, fetchAll, getUserPositions } = useDepositsStore();
+  const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
+    null,
+  );
+  const [depositDrawerOpen, setDepositDrawerOpen] = useState(false);
   const [selectedPosition, setSelectedPosition] = useState<EarnPosition | null>(null);
   const [withdrawDrawerOpen, setWithdrawDrawerOpen] = useState(false);
   const [claimDrawerOpen, setClaimDrawerOpen] = useState(false);
+  const [selectedRestakePosition, setSelectedRestakePosition] = useState<EarnPosition | null>(null);
+  const [restakeDrawerOpen, setRestakeDrawerOpen] = useState(false);
 
   useEffect(() => {
     fetchAll(address);
@@ -47,6 +58,16 @@ export function DepositsSubPage() {
     setClaimDrawerOpen(true);
   }
 
+  function handleDepositFromPosition(item: EarnPosition) {
+    setSelectedAvailableItem(earnPositionToAvailableItem(item));
+    setDepositDrawerOpen(true);
+  }
+
+  function handleRestake(item: EarnPosition) {
+    setSelectedRestakePosition(item);
+    setRestakeDrawerOpen(true);
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <Balances />
@@ -65,13 +86,20 @@ export function DepositsSubPage() {
             <EarnMyPositionsCard
               key={`${item.queueName}-${item.stakeDate}`}
               item={item}
+              onDeposit={handleDepositFromPosition}
               onWithdraw={handleWithdraw}
               onClaim={handleClaim}
+              onRestake={handleRestake}
             />
           ))}
         </div>
       </section>
 
+      <DepositDrawer
+        item={selectedAvailableItem}
+        open={depositDrawerOpen}
+        onOpenChange={setDepositDrawerOpen}
+      />
       <WithdrawDrawer
         item={selectedPosition}
         open={withdrawDrawerOpen}
@@ -81,6 +109,11 @@ export function DepositsSubPage() {
         item={selectedPosition}
         open={claimDrawerOpen}
         onOpenChange={setClaimDrawerOpen}
+      />
+      <RestakeDrawer
+        item={selectedRestakePosition}
+        open={restakeDrawerOpen}
+        onOpenChange={setRestakeDrawerOpen}
       />
     </div>
   );

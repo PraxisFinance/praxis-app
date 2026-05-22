@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AlertIcon } from "@/components/icons/base/alertIcon";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
+import { Switch } from "@/components/ui/Switch";
+import { CLAIM_PT_YT_NOTE } from "@/shared/constants/earn";
 import type { EarnPosition } from "@/shared/types/earn";
-import { useVaultWithdraw } from "@/hooks/useVault";
+import { useVaultRedeemYield, useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface ClaimDrawerProps {
@@ -16,41 +19,89 @@ interface ClaimDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
+function formatPoolLifetimeDisplay(lifetime: string): string {
+  if (lifetime === "Ended") return lifetime;
+  return lifetime.replace(/ \d+s$/, "");
+}
+
 export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
+  const [withdrawPrincipal, setWithdrawPrincipal] = useState(true);
+  const [withdrawYield, setWithdrawYield] = useState(true);
+
+  const vaultAddress = item?.vaultAddress ?? "0x0";
+  const principalAmount = item?.yourDeposit ?? "";
+  const yieldAmount = item?.yieldGenerated ?? "";
+
   const { refetch: refetchBalances } = useWalletBalances();
-  const claimAmount = item?.yourDeposit ?? "";
-  const { withdraw, status, errorMessage, reset, isPending } = useVaultWithdraw(
-    item?.vaultAddress ?? "0x0",
-    claimAmount,
-  );
+  const {
+    withdraw,
+    status: withdrawStatus,
+    errorMessage: withdrawError,
+    reset: resetWithdraw,
+    isPending: isWithdrawing,
+  } = useVaultWithdraw(vaultAddress, principalAmount);
+  const {
+    redeemYield,
+    status: redeemStatus,
+    errorMessage: redeemError,
+    reset: resetRedeem,
+    isPending: isRedeeming,
+  } = useVaultRedeemYield(vaultAddress, yieldAmount);
 
   useEffect(() => {
     if (!open) {
-      reset();
+      setWithdrawPrincipal(true);
+      setWithdrawYield(true);
+      resetWithdraw();
+      resetRedeem();
     }
-  }, [open, reset]);
+  }, [open, resetWithdraw, resetRedeem]);
 
   useEffect(() => {
-    if (status === "success") {
+    if (withdrawStatus === "success" || redeemStatus === "success") {
       refetchBalances();
     }
-  }, [status, refetchBalances]);
+  }, [withdrawStatus, redeemStatus, refetchBalances]);
 
   if (!item) return null;
 
-  function handleClaim() {
-    withdraw();
-  }
+  const currencySuffix = ` ${item.depositCurrency}`;
+  const isPending = isWithdrawing || isRedeeming;
+  const isSuccess = withdrawStatus === "success" || redeemStatus === "success";
+  const errorMessage = withdrawError ?? redeemError;
+
+  const canClaimPrincipal =
+    withdrawPrincipal && principalAmount && Number(principalAmount) > 0;
+  const canClaimYield = withdrawYield && yieldAmount && Number(yieldAmount) > 0;
+  const hasSelection = withdrawPrincipal || withdrawYield;
+  const canSubmit =
+    hasSelection &&
+    (!withdrawPrincipal || canClaimPrincipal) &&
+    (!withdrawYield || canClaimYield);
 
   function handleClose() {
-    reset();
+    resetWithdraw();
+    resetRedeem();
     onOpenChange(false);
   }
 
-  const buttonLabel =
-    status === "withdrawing"
+  async function handleClaim() {
+    if (!canSubmit) return;
+
+    if (withdrawPrincipal && canClaimPrincipal) {
+      await withdraw();
+    }
+
+    if (withdrawYield && canClaimYield) {
+      await redeemYield();
+    }
+  }
+
+  const buttonLabel = isWithdrawing
+    ? "Claiming…"
+    : isRedeeming
       ? "Claiming…"
-      : status === "success"
+      : isSuccess
         ? "Done"
         : "Claim Funds";
 
@@ -59,42 +110,76 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
       <AppDrawerHeading
         variant="plain"
         title="Claim your deposit from ended vault"
-        description="Withdraw your cryptocurrency from ended pool vault."
+        description="Withdraw your cryptocurrency from ended pool."
       />
 
       <div className="flex flex-col gap-3">
-        <span className="text-main-darkPurple text-lg leading-6">Pool Information</span>
+        <InfoRow
+          variant="inline"
+          label="Pool Information:"
+          value={
+            <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
+          }
+        />
 
-        <div className="flex flex-col gap-2.5">
-          <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} />
-
-          <div className="flex flex-col gap-1.5">
-            <InfoRow label="Your deposit:" value={`${item.yourDeposit} ${item.depositCurrency}`} />
-            <InfoRow label="Yield APY:" value={`${item.yieldApyPercent}%`} />
-            <InfoRow
-              label="Yield generated:"
-              value={`${item.yieldGenerated} ${item.depositCurrency}`}
-            />
-            <InfoRow label="Stake date:" value={`${item.stakeTime} ${item.stakeDate}`} />
-            <InfoRow label="Pool lifetime:" value={item.poolLifetime} />
-          </div>
+        <div className="flex flex-col gap-1.5">
+          <InfoRow
+            variant="inline"
+            label="Your deposit(PT):"
+            value={`${item.yourDeposit}${currencySuffix}`}
+          />
+          <InfoRow
+            variant="inline"
+            label="Yield generated(YT):"
+            value={`${item.yieldGenerated}${currencySuffix}`}
+          />
+          <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
+          <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
+          <InfoRow
+            variant="inline"
+            label="Pool lifetime:"
+            value={formatPoolLifetimeDisplay(item.poolLifetime)}
+          />
         </div>
       </div>
 
-      {errorMessage && (
-        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
-      )}
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-main-darkPurple text-sm font-normal leading-5">
+            Withdraw principal(PT)
+          </span>
+          <Switch checked={withdrawPrincipal} onCheckedChange={setWithdrawPrincipal} />
+        </div>
+        <div className="flex items-center justify-between gap-4">
+          <span className="text-main-darkPurple text-sm font-normal leading-5">
+            Withdraw yield(YT)
+          </span>
+          <Switch checked={withdrawYield} onCheckedChange={setWithdrawYield} />
+        </div>
 
-      {status === "success" ? (
-        <Button variant="primary" size="action" onClick={handleClose}>
+        <div className="flex items-start gap-2">
+          <span
+            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple"
+            aria-hidden
+          >
+            <AlertIcon className="h-3 w-3" />
+          </span>
+          <p className="text-main-darkPurple/70 text-xs font-normal leading-4">{CLAIM_PT_YT_NOTE}</p>
+        </div>
+      </div>
+
+      {errorMessage && <p className="text-red-500 text-xs px-1">{errorMessage}</p>}
+
+      {isSuccess ? (
+        <Button variant="success" size="action" onClick={handleClose}>
           {buttonLabel}
         </Button>
       ) : (
         <Button
-          variant="primary"
+          variant="success"
           size="action"
-          onClick={handleClaim}
-          disabled={isPending || !claimAmount || Number(claimAmount) <= 0}
+          onClick={() => void handleClaim()}
+          disabled={isPending || !canSubmit}
         >
           {buttonLabel}
         </Button>
