@@ -7,6 +7,7 @@ import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
 import { PoolHeader } from "@/components/ui/PoolHeader";
+import { RequestResultForm, type RequestResultStatus } from "@/components/ui/RequestResultForm";
 import { Switch } from "@/components/ui/Switch";
 import {
   RESTAKE_YIELD_IN_PRINCIPAL_NOTE,
@@ -25,12 +26,32 @@ function formatPoolLifetimeDisplay(lifetime: string): string {
   return lifetime.replace(/ \d+s$/, "");
 }
 
+function pickRandomResult(): RequestResultStatus {
+  return Math.random() < 0.5 ? "success" : "failed";
+}
+
+const RESTAKE_RESULT_COPY: Record<
+  RequestResultStatus,
+  { title: string; description: string }
+> = {
+  success: {
+    title: "Restake complete",
+    description: "Your deposit has been restaked in the new pool.",
+  },
+  failed: {
+    title: "Restake failed",
+    description: "Something went wrong. Please try again later.",
+  },
+};
+
 export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) {
   const [withdrawYield, setWithdrawYield] = useState(false);
+  const [outcome, setOutcome] = useState<RequestResultStatus | null>(null);
 
   useEffect(() => {
     if (!open) {
       setWithdrawYield(false);
+      setOutcome(null);
     }
   }, [open]);
 
@@ -40,12 +61,29 @@ export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) 
   const currencySuffix = ` ${item.depositCurrency}`;
 
   function handleClose() {
+    setOutcome(null);
     onOpenChange(false);
   }
 
   function handleRestake() {
-    // TODO: wire on-chain restake (withdrawYield flag)
-    handleClose();
+    setOutcome(pickRandomResult());
+  }
+
+  if (outcome) {
+    const copy = RESTAKE_RESULT_COPY[outcome];
+
+    return (
+      <DrawerShell open={open} onOpenChange={onOpenChange}>
+        <RequestResultForm
+          title={copy.title}
+          status={outcome}
+          description={copy.description}
+        />
+        <Button variant="primary" size="action" onClick={handleClose}>
+          Done
+        </Button>
+      </DrawerShell>
+    );
   }
 
   return (
