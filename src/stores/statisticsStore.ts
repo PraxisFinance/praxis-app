@@ -5,22 +5,17 @@ export interface BalanceChartPoint {
   balance: bigint;
 }
 
-export interface PredictionChartPoint {
-  date: number;
-  netResult: number; // won - lost count
-}
-
 export interface PredictionHistoryItem {
   id: string;
   date: number;
-  eventId: string;
+  /** Human-readable market/event label (from ActivityItem.title). */
+  label: string;
   status: "won" | "lost" | "pending";
   amount: bigint;
 }
 
 interface StatisticsState {
   balanceChart: BalanceChartPoint[];
-  predictionChart: PredictionChartPoint[];
   predictionHistory: PredictionHistoryItem[];
 
   wonMatches: number;
@@ -29,11 +24,14 @@ interface StatisticsState {
   wonCurrency: bigint;
   lostCurrency: bigint;
 
+  /** True once the first successful history fetch has populated all fields. */
+  historyLoaded: boolean;
+
   setBalanceChart: (data: BalanceChartPoint[]) => void;
-  setPredictionChart: (data: PredictionChartPoint[]) => void;
   setPredictionHistory: (history: PredictionHistoryItem[]) => void;
   setMatchStats: (won: number, lost: number, pending: number) => void;
   setCurrencyStats: (won: bigint, lost: bigint) => void;
+  setHistoryLoaded: (loaded: boolean) => void;
 
   getWinRate: () => number;
   getNetProfit: () => bigint;
@@ -56,88 +54,74 @@ const generateMockBalanceChart = (): BalanceChartPoint[] => {
   return points;
 };
 
-const generateMockPredictionChart = (): PredictionChartPoint[] => {
-  const points: PredictionChartPoint[] = [];
-  let cumulative = 0;
-
-  for (let i = 30; i >= 0; i--) {
-    const date = Date.now() - i * 24 * 60 * 60 * 1000;
-    const dailyResult = Math.random() > 0.45 ? 1 : -1;
-    cumulative += dailyResult;
-    points.push({ date, netResult: cumulative });
-  }
-
-  return points;
-};
-
 const MOCK_PREDICTION_HISTORY: PredictionHistoryItem[] = [
   {
     id: "pred-1",
     date: Date.now() - 1 * 24 * 60 * 60 * 1000,
-    eventId: "sport-1",
+    label: "Placed bet on BTC/USDC",
     status: "won",
-    amount: BigInt("150000000"), // 150 USDC
+    amount: BigInt("150000000"),
   },
   {
     id: "pred-2",
     date: Date.now() - 2 * 24 * 60 * 60 * 1000,
-    eventId: "econ-1",
+    label: "Placed bet on ETH/USDC",
     status: "lost",
-    amount: BigInt("-200000000"), // -200 USDC
+    amount: BigInt("200000000"),
   },
   {
     id: "pred-3",
     date: Date.now() - 3 * 24 * 60 * 60 * 1000,
-    eventId: "sport-2",
+    label: "Placed bet on SOL/USDC",
     status: "won",
-    amount: BigInt("320000000"), // 320 USDC
+    amount: BigInt("320000000"),
   },
   {
     id: "pred-4",
     date: Date.now() - 4 * 24 * 60 * 60 * 1000,
-    eventId: "random-1",
+    label: "Placed bet on BTC/USDC",
     status: "pending",
-    amount: BigInt("0"),
+    amount: BigInt("50000000"),
   },
   {
     id: "pred-5",
     date: Date.now() - 5 * 24 * 60 * 60 * 1000,
-    eventId: "econ-2",
+    label: "Placed bet on ETH/USDC",
     status: "pending",
-    amount: BigInt("0"),
+    amount: BigInt("75000000"),
   },
   {
     id: "pred-6",
     date: Date.now() - 6 * 24 * 60 * 60 * 1000,
-    eventId: "sport-3",
+    label: "Placed bet on SOL/USDC",
     status: "won",
-    amount: BigInt("180000000"), // 180 USDC
+    amount: BigInt("180000000"),
   },
   {
     id: "pred-7",
     date: Date.now() - 7 * 24 * 60 * 60 * 1000,
-    eventId: "econ-3",
+    label: "Placed bet on BTC/USDC",
     status: "lost",
-    amount: BigInt("-100000000"), // -100 USDC
+    amount: BigInt("100000000"),
   },
   {
     id: "pred-8",
     date: Date.now() - 10 * 24 * 60 * 60 * 1000,
-    eventId: "sport-1",
+    label: "Placed bet on ETH/USDC",
     status: "lost",
-    amount: BigInt("-250000000"), // -250 USDC
+    amount: BigInt("250000000"),
   },
 ];
 
 const initialState = {
   balanceChart: [] as BalanceChartPoint[],
-  predictionChart: [] as PredictionChartPoint[],
   predictionHistory: [] as PredictionHistoryItem[],
   wonMatches: 0,
   lostMatches: 0,
   pendingMatches: 0,
   wonCurrency: BigInt(0),
   lostCurrency: BigInt(0),
+  historyLoaded: false,
 };
 
 export const useStatisticsStore = create<StatisticsState>((set, get) => ({
@@ -145,14 +129,14 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
 
   setBalanceChart: (balanceChart) => set({ balanceChart }),
 
-  setPredictionChart: (predictionChart) => set({ predictionChart }),
-
   setPredictionHistory: (predictionHistory) => set({ predictionHistory }),
 
   setMatchStats: (wonMatches, lostMatches, pendingMatches) =>
     set({ wonMatches, lostMatches, pendingMatches }),
 
   setCurrencyStats: (wonCurrency, lostCurrency) => set({ wonCurrency, lostCurrency }),
+
+  setHistoryLoaded: (historyLoaded) => set({ historyLoaded }),
 
   getWinRate: () => {
     const { wonMatches, lostMatches } = get();
@@ -172,7 +156,6 @@ export const useStatisticsStore = create<StatisticsState>((set, get) => ({
 export const loadMockStatistics = () => {
   const store = useStatisticsStore.getState();
   store.setBalanceChart(generateMockBalanceChart());
-  store.setPredictionChart(generateMockPredictionChart());
   store.setPredictionHistory(MOCK_PREDICTION_HISTORY);
   store.setMatchStats(12, 8, 2);
   store.setCurrencyStats(
