@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { id: "all", label: "All", href: "/predictions/all" },
-  { id: "cryptocurrency", label: "Cryptocurrency", href: "/predictions/cryptocurrency" },
+  { id: "cryptocurrency", label: "Crypto", href: "/predictions/cryptocurrency" },
   { id: "esports", label: "Esports", href: "/predictions/esports" },
   { id: "random-rewards", label: "Random Rewards", href: "/predictions/random-rewards" },
 ] as const;

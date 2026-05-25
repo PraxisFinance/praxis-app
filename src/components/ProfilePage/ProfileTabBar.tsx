@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { isProfileSubTabActive, type ProfileTabId } from "@/lib/routes";
 import { cn } from "@/lib/utils";
-import { BalancesIcon } from "./assets/balances-icon";
-import { RewardsIcon } from "./assets/rewards-icon";
-import { DepositsIcon } from "./assets/deposits-icon";
-import { PredictionsIcon } from "./assets/predictions-icon";
-import { SettingsIcon } from "./assets/settings-icon";
+import { BalancesIcon } from "@/components/icons/feature/profile/balancesIcon";
+import { RewardsIcon } from "@/components/icons/feature/profile/rewardsIcon";
+import { DepositsIcon } from "@/components/icons/feature/profile/depositsIcon";
+import { PredictionsIcon } from "@/components/icons/feature/profile/predictionsIcon";
+import { SettingsIcon } from "@/components/icons/feature/profile/settingsIcon";
 
 const TABS = [
   { id: "balances", label: "Balances", href: "/profile/balances", icon: BalancesIcon },

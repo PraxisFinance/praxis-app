@@ -1,8 +1,11 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SettingsIcon, NotificationIcon } from "./ui/icons/NavIcons";
+import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
+import { WUsdcTokenIcon } from "@/components/icons/base";
 
 interface HeaderProps {
   username: string;
@@ -11,6 +14,8 @@ interface HeaderProps {
 }
 
 export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
+  const router = useRouter();
+
   return (
     <header className="flex justify-between items-center">
       <div className="flex items-center gap-[5px]">
@@ -29,14 +34,22 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
       <div className="flex items-center gap-2.5">
         <Badge variant="neutral" className="text-sm leading-4">
           {points.toLocaleString()}
-          <div className="w-4 h-4 rounded-full bg-violet-400" />
+          <span className="inline-flex shrink-0" aria-hidden>
+            <WUsdcTokenIcon size={18} />
+          </span>
         </Badge>
 
-        <Button variant="iconPill" size="icon">
+        <Button variant="iconPill" size="icon" onClick={() => router.push("/history")}>
           <NotificationIcon className="w-4 h-4" />
         </Button>
 
-        <Button variant="iconPill" size="icon">
+        <Button
+          variant="iconPill"
+          size="icon"
+          type="button"
+          aria-label="Open settings"
+          onClick={() => router.push("/profile/settings")}
+        >
           <SettingsIcon className="w-4 h-4" />
         </Button>
       </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { Badge } from "@/components/ui/badge";
-import { ArrowIcon } from "@/components/ui/icons/ArrowIcon";
+import { ArrowIcon } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
 const menuCardVariants = cva(

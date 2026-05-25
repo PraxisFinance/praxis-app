@@ -1,4 +1,6 @@
 import type {
+  FaqItem,
+  NotificationSetting,
   PredictionHistoryItem,
   PredictionsHistoryInterval,
   PredictionsOverallStatsData,
@@ -6,7 +8,11 @@ import type {
   PredictionsStatsInterval,
   PredictionsStatsLineMeta,
   RewardClaimItem,
+  ProfilePredictionItem,
+  ProfilePredictionStatusFilter,
+  ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
+import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 // ── Predictions stats chart ────────────────────────────────────────────────
 
@@ -228,8 +234,132 @@ export const PREDICTIONS_HISTORY_MOCK_DATA: Record<
 // ── Rewards claims ─────────────────────────────────────────────────────────
 
 export const REWARDS_CLAIMS_MOCK: RewardClaimItem[] = [
-  { id: "1", name: "Steakhouse USDT", iconUrl: "/icons/usdc.png", income: 500, incomeCurrency: "ytPraxis" },
-  { id: "2", name: "Match: AVULUS", iconUrl: "/icons/w-usdc.png", income: 5, incomeCurrency: "ytPraxis" },
-  { id: "3", name: "Random pool #1", iconUrl: "/icons/yt-token.png", income: 35, incomeCurrency: "ytPraxis" },
-  { id: "4", name: "AERO Up or Down: Up", iconUrl: "/icons/w-usdc.png", income: 15, incomeCurrency: "ytPraxis" },
+  { id: "1", name: "Steakhouse USDT", iconUrl: USDC_ICON_URL, income: 500, incomeCurrency: "ytPraxis" },
+  { id: "2", name: "Match: AVULUS", iconUrl: WUSDC_ICON_URL, income: 5, incomeCurrency: "ytPraxis" },
+  { id: "3", name: "Random pool #1", iconUrl: YT_ICON_URL, income: 35, incomeCurrency: "ytPraxis" },
+  { id: "4", name: "AERO Up or Down: Up", iconUrl: WUSDC_ICON_URL, income: 15, incomeCurrency: "ytPraxis" },
+];
+
+// ── Profile predictions ────────────────────────────────────────────────────
+
+export const PROFILE_PREDICTION_STATUS_FILTERS: {
+  id: ProfilePredictionStatusFilter;
+  label: string;
+}[] = [
+  { id: "all", label: "All" },
+  { id: "complete", label: "Complete" },
+  { id: "in_progress", label: "In Progress" },
+];
+
+export const PROFILE_PREDICTION_TIME_INTERVALS: {
+  id: ProfilePredictionTimeInterval;
+  label: string;
+}[] = [
+  { id: "1D", label: "24h" },
+  { id: "3D", label: "3 days" },
+  { id: "7D", label: "7 days" },
+  { id: "1M", label: "1 month" },
+  { id: "1Y", label: "1 year" },
+];
+
+export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
+  {
+    id: "pp1",
+    kind: "pool",
+    name: "Random pool #3",
+    iconUrl: YT_ICON_URL,
+    ended: true,
+    userWon: false,
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    progressPercent: 100,
+  },
+  {
+    id: "pp2",
+    kind: "pool",
+    name: "Random pool #4",
+    iconUrl: YT_ICON_URL,
+    ended: true,
+    userWon: true,
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    progressPercent: 100,
+  },
+  {
+    id: "pp3",
+    kind: "match",
+    name: "Match outcome: AVULUS",
+    iconUrl: WUSDC_ICON_URL,
+    ended: true,
+    userWon: true,
+    coeff: 3.4,
+    prediction: "$294 wUSDC",
+    earnings: "$1000 wUSDC",
+  },
+  {
+    id: "pp4",
+    kind: "pool",
+    name: "Random pool #5",
+    iconUrl: YT_ICON_URL,
+    ended: false,
+    userWon: false,
+    tvl: "54.500$",
+    earnings: "$320",
+    usersWon: 0,
+    progressPercent: 62,
+  },
+  {
+    id: "pp5",
+    kind: "match",
+    name: "Match outcome: Chelsea",
+    iconUrl: WUSDC_ICON_URL,
+    ended: false,
+    userWon: false,
+    coeff: 2.1,
+    prediction: "$150 wUSDC",
+    earnings: "$315 wUSDC",
+  },
+];
+
+// ── Settings ───────────────────────────────────────────────────────────────
+
+export const NOTIFICATIONS_MOCK: NotificationSetting[] = [
+  { id: "new_predictions", label: "New Predictions", enabled: true },
+  { id: "yield_generation", label: "Yield generation", enabled: false },
+  { id: "pools_ends_lifetime", label: "Pools ends lifetime", enabled: false },
+];
+
+export const FAQ_ITEMS: FaqItem[] = [
+  {
+    id: "what_is_praxis",
+    question: "What is Praxis?",
+    answer:
+      "Praxis is a decentralized prediction market platform where you can earn yield by depositing assets and making predictions on crypto prices, match outcomes, and more.",
+  },
+  {
+    id: "top_up_balance",
+    question: "How top up Balance?",
+    answer:
+      "Connect your wallet and transfer USDC to the app. Your wallet balance will be reflected immediately in the Balances section.",
+  },
+  {
+    id: "predict_with",
+    question: "What do I predict with?",
+    answer:
+      "You predict using your deposited balance. Each prediction requires a stake, and if your prediction is correct you earn ytPraxis rewards.",
+  },
+  {
+    id: "financial_mechanisms",
+    question: "What financial mechanisms are used in the app?",
+    answer:
+      "Praxis uses automated market makers (AMMs) and yield-bearing vaults to generate returns. Deposited assets are put to work in liquidity pools while predictions create additional earning opportunities.",
+  },
+  {
+    id: "what_if_lose",
+    question: "What if i lose?",
+    answer:
+      "If your prediction is incorrect you lose the staked amount for that prediction. Your deposited principal in earn vaults is not affected by prediction outcomes.",
+  },
 ];

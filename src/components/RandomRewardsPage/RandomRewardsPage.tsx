@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { useAccount } from "wagmi";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
+import { HintIcon } from "@/components/icons/base";
 import {
   RANDOM_POOLS_HINT,
   RANDOM_REWARDS_FILTERS,
@@ -79,7 +79,7 @@ export function RandomRewardsPage() {
             className="p-1"
             aria-label="How random pools work"
           >
-            <Image src="/icons/question.png" alt="" width={14} height={14} />
+            <HintIcon className="text-main-darkPurple h-3.5 w-3.5" aria-hidden />
           </Button>
         </div>
         <div className="flex flex-col gap-3">

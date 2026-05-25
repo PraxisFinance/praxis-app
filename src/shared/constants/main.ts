@@ -1,4 +1,13 @@
 import type { MenuItem } from "@/shared/types/main";
+import {
+  EARN_ROUTE,
+  PREDICTIONS_CRYPTOCURRENCY_ROUTE,
+  PREDICTIONS_ESPORTS_ROUTE,
+  PREDICTIONS_RANDOM_REWARDS_ROUTE,
+} from "@/lib/routes";
+import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
+import { LEADERBOARD_ROUTE } from "@/shared/constants/leaderboard";
+import { HOW_IT_WORKS_ROUTE } from "@/shared/constants/howItWorks";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -7,49 +16,49 @@ export const MENU_ITEMS: MenuItem[] = [
     title: "Smart predictions",
     description: "Earning mechanism that combines yield and prediction market mechanics.",
     backgroundImage: "/main/smart-predictions.png",
-    redirectUrl: "/predictions/cryptocurrency",
+    redirectUrl: HOW_IT_WORKS_ROUTE,
     redirectLabel: "How it works",
   },
   {
     key: "yield",
     type: "middle",
     backgroundImage: "/main/yield.png",
-    redirectUrl: "/earn",
+    redirectUrl: EARN_ROUTE,
     redirectLabel: "Yield",
   },
   {
     key: "random-distribution",
     type: "middle",
     backgroundImage: "/main/random-distribution.png",
-    redirectUrl: "/predictions/random-rewards",
+    redirectUrl: PREDICTIONS_RANDOM_REWARDS_ROUTE,
     redirectLabel: "Random distribution",
   },
   {
     key: "financial-predictions",
     type: "middle",
     backgroundImage: "/main/financial-predictions.png",
-    redirectUrl: "/predictions/all",
+    redirectUrl: PREDICTIONS_CRYPTOCURRENCY_ROUTE,
     redirectLabel: "Financial predictions",
   },
   {
     key: "e-sports-predictions",
     type: "middle",
     backgroundImage: "/main/e-sports-predictions.png",
-    redirectUrl: "/predictions/esports",
+    redirectUrl: PREDICTIONS_ESPORTS_ROUTE,
     redirectLabel: "E-sport predictions",
   },
   {
     key: "invite-friends",
     type: "middle",
     backgroundImage: "/main/invite-friends.png",
-    redirectUrl: "/profile",
+    redirectUrl: INVITE_FRIENDS_ROUTE,
     redirectLabel: "Invite friends",
   },
   {
     key: "leaderboard",
     type: "middle",
     backgroundImage: "/main/leaderboard.png",
-    redirectUrl: "/profile/predictions",
+    redirectUrl: LEADERBOARD_ROUTE,
     redirectLabel: "Leaderboard",
   },
 ];

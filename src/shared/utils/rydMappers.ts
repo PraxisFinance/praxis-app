@@ -5,6 +5,7 @@ import type {
   RandomPoolRemainingTime,
   RandomPoolUserInPool,
 } from "@/shared/types/randomPool";
+import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 const YT_DECIMALS = 6;
 const ASSUMED_POOL_DURATION_SEC = 7 * 86_400;
@@ -43,7 +44,7 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
     return {
       id: state.id,
       title,
-      iconUrl: "/icons/yt-token.png",
+      iconUrl: YT_ICON_URL,
       status: "live",
       tvl,
       expectedYield: formatRYDAmount(totalPrize, YT_DECIMALS),
@@ -61,7 +62,7 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
   return {
     id: state.id,
     title,
-    iconUrl: "/icons/yt-token.png",
+    iconUrl: YT_ICON_URL,
     status: "ended",
     tvl,
     earnings: formatRYDAmount(totalPrize, YT_DECIMALS),
@@ -76,7 +77,7 @@ export function rydParticipantToPoolUser(p: RYDParticipant): RandomPoolUserInPoo
   return {
     username: shortenAddress(p.address),
     amount: formatRYDAmount(p.depositAmount, YT_DECIMALS),
-    currencyIconUrl: "/icons/yt-token.png",
+    currencyIconUrl: YT_ICON_URL,
   };
 }
 
@@ -84,7 +85,7 @@ export function rydWinnerToPoolUser(w: RYDWinner): RandomPoolUserInPool {
   return {
     username: shortenAddress(w.address),
     amount: formatRYDAmount(w.prizeAmount, YT_DECIMALS),
-    currencyIconUrl: "/icons/yt-token.png",
+    currencyIconUrl: YT_ICON_URL,
   };
 }
 

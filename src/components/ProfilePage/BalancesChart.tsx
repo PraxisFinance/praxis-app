@@ -183,7 +183,6 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
           </AreaChart>
         </ChartContainer>
       </div>
-
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 px-1">
         {BALANCE_CURRENCY_META.map(({ key, label, color }) => (
