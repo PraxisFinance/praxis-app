@@ -1,17 +1,21 @@
 "use client";
 
+import { useMemo } from "react";
 import { Balances } from "../Balances/Balances";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { useClaimsStore } from "@/stores/claimsStore";
+import { claimToRewardClaimItem } from "./claimDisplayMapper";
 import { RewardClaimRow } from "./RewardClaimRow";
-import type { RewardClaimItem } from "@/shared/types/profile";
-import { REWARDS_CLAIMS_MOCK } from "@/shared/constants/profile";
 
-interface RewardsSubPageProps {
-  claims?: RewardClaimItem[];
-}
+export function RewardsSubPage() {
+  const claims = useClaimsStore((s) => s.claims);
 
-export function RewardsSubPage({ claims = REWARDS_CLAIMS_MOCK }: RewardsSubPageProps) {
+  const pendingRewards = useMemo(
+    () => claims.filter((c) => c.status === "pending").map(claimToRewardClaimItem),
+    [claims]
+  );
+
   function handleClaim(id: string) {
     console.log("claim", id);
   }
@@ -28,14 +32,22 @@ export function RewardsSubPage({ claims = REWARDS_CLAIMS_MOCK }: RewardsSubPageP
         <SectionHeader>Claims</SectionHeader>
 
         <div className="flex flex-col gap-2">
-          {claims.map((item) => (
-            <RewardClaimRow key={item.id} item={item} onClaim={handleClaim} />
-          ))}
+          {pendingRewards.length > 0 ? (
+            pendingRewards.map((item) => (
+              <RewardClaimRow key={item.id} item={item} onClaim={handleClaim} />
+            ))
+          ) : (
+            <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
+              No unclaimed rewards.
+            </p>
+          )}
         </div>
 
-        <Button variant="primary" size="action" onClick={handleClaimAll} className="mt-1">
-          Claim all
-        </Button>
+        {pendingRewards.length > 0 ? (
+          <Button variant="primary" size="action" onClick={handleClaimAll} className="mt-1">
+            Claim all
+          </Button>
+        ) : null}
       </section>
     </div>
   );

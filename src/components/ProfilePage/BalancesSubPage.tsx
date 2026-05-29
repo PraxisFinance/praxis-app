@@ -2,15 +2,10 @@
 
 import { useMemo } from "react";
 import { useStatisticsStore } from "@/stores/statisticsStore";
-import type {
-  BalanceChartPoint,
-  PredictionHistoryItem as StorePredItem,
-} from "@/stores/statisticsStore";
+import type { BalanceChartPoint, PredictionHistoryItem as StorePredItem } from "@/stores/statisticsStore";
 import type { BalancesChartDataPoint, BalancesChartInterval } from "@/shared/types/balances";
 import type {
   PredictionsOverallStatsData,
-  PredictionHistoryItem,
-  PredictionsHistoryInterval,
   PredictionsStatsDataPoint,
   PredictionsStatsInterval,
 } from "@/shared/types/profile";
@@ -28,14 +23,6 @@ const HOUR_MS = 3_600_000;
 // Empty-interval sentinels — passed when historyLoaded=true but no data exists,
 // so components render an empty state rather than falling back to mock data.
 const EMPTY_PRED_STATS: Record<PredictionsStatsInterval, PredictionsStatsDataPoint[]> = {
-  "1D": [],
-  "3D": [],
-  "7D": [],
-  "1M": [],
-  "1Y": [],
-};
-
-const EMPTY_PRED_HISTORY: Record<PredictionsHistoryInterval, PredictionHistoryItem[]> = {
   "1D": [],
   "3D": [],
   "7D": [],
@@ -174,50 +161,6 @@ function buildPredStatsData(
   };
 }
 
-// ── Predictions history ─────────────────────────────────────────────────────
-
-function buildPredHistoryData(
-  items: StorePredItem[]
-): Record<PredictionsHistoryInterval, PredictionHistoryItem[]> {
-  const now = Date.now();
-  if (!items.length) return EMPTY_PRED_HISTORY;
-
-  const sorted = [...items].sort((a, b) => b.date - a.date);
-
-  const ddmmyy = (ms: number) => {
-    const d = new Date(ms);
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yy = String(d.getFullYear()).slice(2);
-    return `${dd}/${mm}/${yy}`;
-  };
-
-  function slice(days: number, fmt: (ms: number) => string): PredictionHistoryItem[] {
-    const cutoff = now - days * DAY_MS;
-    return sorted
-      .filter((i) => i.date >= cutoff)
-      .map((i) => ({
-        id: i.id,
-        result: i.status,
-        prediction: i.label,
-        date: fmt(i.date),
-        amount: Number(i.amount < 0n ? -i.amount : i.amount) / 1_000_000,
-        currency: "$wUSDC",
-      }));
-  }
-
-  const shortMonthYear = (ms: number) =>
-    new Date(ms).toLocaleDateString("en-US", { month: "short", year: "2-digit" });
-
-  return {
-    "1D": slice(1, ddmmyy),
-    "3D": slice(3, ddmmyy),
-    "7D": slice(7, ddmmyy),
-    "1M": slice(30, ddmmyy),
-    "1Y": slice(365, shortMonthYear),
-  };
-}
-
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function BalancesSubPage() {
@@ -246,13 +189,6 @@ export function BalancesSubPage() {
     () => (historyLoaded ? buildPredStatsData(predictionHistory) : undefined),
     [historyLoaded, predictionHistory]
   );
-  const predHistoryData = useMemo(
-    () => (historyLoaded ? buildPredHistoryData(predictionHistory) : undefined),
-    [historyLoaded, predictionHistory]
-  );
-
-  console.log("predictionHistory", predictionHistory);
-  console.log("predHistoryData", predHistoryData);
 
   return (
     <div className="flex flex-col gap-6">
@@ -260,7 +196,7 @@ export function BalancesSubPage() {
       <BalancesChart data={balancesData} />
       <PredictionsOverallStats data={overallStats} />
       <PredictionsStatsChart data={predStatsData} />
-      <PredictionsHistory data={predHistoryData} />
+      <PredictionsHistory />
     </div>
   );
 }

@@ -1,8 +1,10 @@
 import { useCallback, useEffect } from "react";
 import { trpc } from "@/lib/trpc/client";
+import { deriveClaimsFromHistory } from "@/shared/utils/userHistory/deriveClaimsFromHistory";
+import type { HistoryResponse, ActivityItem, CpfPosition } from "@/shared/types/history";
+import { useClaimsStore } from "@/stores/claimsStore";
 import { useHistoryStore } from "@/stores/historyStore";
 import { useStatisticsStore } from "@/stores/statisticsStore";
-import type { HistoryResponse, ActivityItem, CpfPosition } from "@/shared/types/history";
 
 // ─── Public hook ─────────────────────────────────────────────────────────────
 
@@ -16,6 +18,9 @@ export function useUserHistory(address: `0x${string}` | undefined) {
   const setCurrencyStats = useStatisticsStore((s) => s.setCurrencyStats);
   const setHistoryLoaded = useStatisticsStore((s) => s.setHistoryLoaded);
   const resetStatistics = useStatisticsStore((s) => s.reset);
+
+  const setClaims = useClaimsStore((s) => s.setClaims);
+  const resetClaims = useClaimsStore((s) => s.reset);
 
   const query = trpc.userHistory.get.useQuery(
     { address: (address ?? "") as `0x${string}` },
@@ -79,6 +84,8 @@ export function useUserHistory(address: `0x${string}` | undefined) {
       const lostCurrency = lost.reduce((acc, p) => acc + BigInt(p.amount), 0n);
       setCurrencyStats(wonCurrency, lostCurrency);
       setHistoryLoaded(true);
+
+      setClaims(deriveClaimsFromHistory(data));
     },
     [
       setHistory,
@@ -87,6 +94,7 @@ export function useUserHistory(address: `0x${string}` | undefined) {
       setMatchStats,
       setCurrencyStats,
       setHistoryLoaded,
+      setClaims,
     ]
   );
 
@@ -95,13 +103,14 @@ export function useUserHistory(address: `0x${string}` | undefined) {
     populateStores(query.data);
   }, [query.data, populateStores]);
 
-  // Clear both stores when the wallet disconnects
+  // Clear stores when the wallet disconnects
   useEffect(() => {
     if (!address) {
       resetHistory();
       resetStatistics();
+      resetClaims();
     }
-  }, [address, resetHistory, resetStatistics]);
+  }, [address, resetHistory, resetStatistics, resetClaims]);
 
   return query;
 }

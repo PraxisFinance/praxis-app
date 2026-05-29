@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { Balances } from "../Balances/Balances";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
@@ -8,29 +8,92 @@ import { ProfilePredictionCard } from "./ProfilePredictionCard";
 import {
   PROFILE_PREDICTION_STATUS_FILTERS,
   PROFILE_PREDICTION_TIME_INTERVALS,
-  PROFILE_PREDICTIONS_MOCK,
 } from "@/shared/constants/profile";
 import type {
   ProfilePredictionItem,
   ProfilePredictionStatusFilter,
   ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
+import { WUSDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { useStatisticsStore } from "@/stores/statisticsStore";
+import type { PredictionHistoryItem as StorePredictionHistoryItem } from "@/stores/statisticsStore";
 
-interface ProfilePredictionsSubPageProps {
-  predictions?: ProfilePredictionItem[];
+type DatedProfilePredictionItem = ProfilePredictionItem & {
+  date: number;
+};
+
+const DAY_MS = 86_400_000;
+const NOW_BUCKET_MS = 60_000;
+
+const TIME_INTERVAL_DAYS: Record<ProfilePredictionTimeInterval, number> = {
+  "1D": 1,
+  "3D": 3,
+  "7D": 7,
+  "1M": 30,
+  "1Y": 365,
+};
+
+function useProfilePredictionsNowMs(): number {
+  const bucket = useSyncExternalStore(
+    (onStoreChange) => {
+      const id = window.setInterval(onStoreChange, NOW_BUCKET_MS);
+      return () => window.clearInterval(id);
+    },
+    () => Math.floor(Date.now() / NOW_BUCKET_MS),
+    () => 0
+  );
+  return bucket * NOW_BUCKET_MS;
 }
 
-export function ProfilePredictionsSubPage({
-  predictions = PROFILE_PREDICTIONS_MOCK,
-}: ProfilePredictionsSubPageProps) {
+function formatWUsdcAmount(amount: bigint): string {
+  const value = Number(amount < 0n ? -amount : amount) / 1_000_000;
+  return `${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: value === 0 ? 0 : 2,
+  }).format(value)} wUSDC`;
+}
+
+function historyItemToProfilePrediction(
+  item: StorePredictionHistoryItem
+): DatedProfilePredictionItem {
+  const userWon = item.status === "won";
+  const ended = item.status !== "pending";
+  const amount = formatWUsdcAmount(item.amount);
+
+  return {
+    id: item.id,
+    kind: "match",
+    name: item.label,
+    iconUrl: WUSDC_ICON_URL,
+    ended,
+    userWon,
+    coeff: 1,
+    prediction: `$${amount}`,
+    earnings: userWon ? `$${amount}` : "$0 wUSDC",
+    date: item.date,
+  };
+}
+
+export function ProfilePredictionsSubPage() {
   const [statusFilter, setStatusFilter] = useState<ProfilePredictionStatusFilter>("all");
   const [timeInterval, setTimeInterval] = useState<ProfilePredictionTimeInterval>("1D");
+  const nowMs = useProfilePredictionsNowMs();
+  const predictionHistory = useStatisticsStore((s) => s.predictionHistory);
 
-  const filtered = predictions.filter((item) => {
-    if (statusFilter === "complete") return item.ended;
-    if (statusFilter === "in_progress") return !item.ended;
-    return true;
-  });
+  const predictions = useMemo(
+    () => predictionHistory.map(historyItemToProfilePrediction),
+    [predictionHistory]
+  );
+
+  const filtered = useMemo(() => {
+    const cutoff = nowMs - TIME_INTERVAL_DAYS[timeInterval] * DAY_MS;
+    return predictions.filter((item) => {
+      if (item.date < cutoff) return false;
+      if (statusFilter === "complete") return item.ended;
+      if (statusFilter === "in_progress") return !item.ended;
+      return true;
+    });
+  }, [nowMs, predictions, statusFilter, timeInterval]);
 
   function handleClaim(id: string) {
     console.log("claim prediction", id);
