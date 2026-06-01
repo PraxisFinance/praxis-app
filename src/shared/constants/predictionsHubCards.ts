@@ -3,6 +3,7 @@ import type { CryptoPredictionTimeFilterId } from "@/shared/constants/cryptocurr
 import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import {
   PREDICTIONS_HUB_ITEMS_BY_CATEGORY,
   type PredictionsHubItem,
@@ -218,6 +219,59 @@ export function toEsportsHubItems(matches: EsportsMatch[]): Extract<
   return matches.map((match) => ({ kind: "esports", match }));
 }
 
+/** Hub-only sport matches. */
+export const PREDICTIONS_HUB_SPORT_MATCH_MOCKS: SportHubMatch[] = [
+  {
+    id: "hub-sport-football-live-1",
+    disciplineId: "football",
+    streamUrl: "https://www.youtube.com/live",
+    isBettingAvailable: true,
+    status: { kind: "live", label: "Live now" },
+    team1: { name: "Arsenal", logoUrl: "", odds: 1.62, score: 1 },
+    team2: { name: "Chelsea", logoUrl: "", odds: 2.4, score: 1 },
+  },
+  {
+    id: "hub-sport-basketball-live-1",
+    disciplineId: "basketball",
+    streamUrl: "https://www.twitch.tv/example",
+    isBettingAvailable: true,
+    status: { kind: "live" },
+    team1: { name: "Lakers", logoUrl: "", odds: 1.85, score: 78 },
+    team2: { name: "Celtics", logoUrl: "", odds: 1.95, score: 82 },
+  },
+  {
+    id: "hub-sport-hockey-upcoming-1",
+    disciplineId: "hockey",
+    isBettingAvailable: true,
+    status: { kind: "upcoming", startsAt: isoInHours(4) },
+    team1: { name: "Rangers", logoUrl: "", odds: 2.1 },
+    team2: { name: "Bruins", logoUrl: "", odds: 1.72 },
+  },
+  {
+    id: "hub-sport-formula1-upcoming-1",
+    disciplineId: "formula1",
+    isBettingAvailable: true,
+    status: { kind: "upcoming", startsAt: isoInHours(18) },
+    team1: { name: "Verstappen", logoUrl: "", odds: 1.45 },
+    team2: { name: "Norris", logoUrl: "", odds: 3.2 },
+  },
+  {
+    id: "hub-sport-football-finished-1",
+    disciplineId: "football",
+    isBettingAvailable: false,
+    status: { kind: "finished", label: "Final" },
+    team1: { name: "Barcelona", logoUrl: "", odds: 1.7, score: 2 },
+    team2: { name: "Real Madrid", logoUrl: "", odds: 2.15, score: 1 },
+  },
+];
+
+export function toSportHubItems(matches: SportHubMatch[]): Extract<
+  PredictionsHubItem,
+  { kind: "sport" }
+>[] {
+  return matches.map((match) => ({ kind: "sport", match }));
+}
+
 export const PREDICTIONS_HUB_CRYPTO_CARD_MOCKS = toCryptoHubItems(
   PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS,
 );
@@ -226,9 +280,12 @@ export const PREDICTIONS_HUB_ESPORTS_CARD_MOCKS = toEsportsHubItems(
   PREDICTIONS_HUB_ESPORTS_MATCH_MOCKS,
 );
 
+export const PREDICTIONS_HUB_SPORT_CARD_MOCKS = toSportHubItems(PREDICTIONS_HUB_SPORT_MATCH_MOCKS);
+
 export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
   ...PREDICTIONS_HUB_CRYPTO_CARD_MOCKS,
   ...PREDICTIONS_HUB_ESPORTS_CARD_MOCKS,
+  ...PREDICTIONS_HUB_SPORT_CARD_MOCKS,
 ];
 
 const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
@@ -279,6 +336,15 @@ function matchesHubEsportsGameFilter(
   return item.match.gameId === filters.esportsGameId;
 }
 
+function matchesHubSportDisciplineFilter(
+  item: PredictionsHubItem,
+  filters: PredictionsHubFilterState,
+): boolean {
+  if (filters.sportDisciplineId == null) return true;
+  if (item.kind !== "sport") return true;
+  return item.match.disciplineId === filters.sportDisciplineId;
+}
+
 function isKindAllowedForCategory(
   kind: PredictionsHubItem["kind"],
   categoryId: PredictionsHubFilterState["categoryId"],
@@ -297,6 +363,7 @@ export function filterPredictionsHubCardMocks(
     .filter((item) => isKindAllowedForCategory(item.kind, filters.categoryId))
     .filter((item) => matchesHubMarketTypeFilter(item, filters))
     .filter((item) => matchesHubEsportsGameFilter(item, filters))
+    .filter((item) => matchesHubSportDisciplineFilter(item, filters))
     .filter((item) => matchesHubTimeFilter(item, filters.timeId, nowMs));
 }
 

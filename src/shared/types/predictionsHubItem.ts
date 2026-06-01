@@ -1,11 +1,11 @@
-import type {
-  PredictionsHubCategoryId,
-  PredictionsHubSportDisciplineId,
-} from "@/shared/constants/predictionsHubFilters";
+import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import type { RandomPool } from "@/shared/types/randomPool";
+import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import type { TwoPool } from "@/shared/types/twoPool";
+
+export type { SportHubMatch } from "@/shared/types/sportHubMatch";
 
 /** Discriminator for hub feed cards — one value per card component. */
 export type PredictionsHubItemKind =
@@ -16,15 +16,6 @@ export type PredictionsHubItemKind =
   | "politics"
   | "finance"
   | "tech";
-
-/** Placeholder domain types until category-specific APIs exist. */
-export type SportHubMatch = {
-  id: string;
-  disciplineId: PredictionsHubSportDisciplineId;
-  homeTeam: string;
-  awayTeam: string;
-  startsAt?: string;
-};
 
 export type PoliticsHubEvent = {
   id: string;
