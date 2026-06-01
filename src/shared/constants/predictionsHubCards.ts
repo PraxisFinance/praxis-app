@@ -32,6 +32,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(1),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$858.74K Vol.",
     outcomes: [
       { id: "up", label: "Up", odds: 1.72, poolPercent: 65 },
       { id: "down", label: "Down", odds: 2.05, poolPercent: 35 },
@@ -49,6 +50,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(2),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$412.10K Vol.",
     outcomes: [
       { id: "up", label: "Up", odds: 1.9, poolPercent: 52 },
       { id: "down", label: "Down", odds: 1.95, poolPercent: 48 },

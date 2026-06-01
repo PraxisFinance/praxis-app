@@ -78,6 +78,8 @@ type CryptoPredictionBase = {
   cpfPoolId: bigint;
   /** CPF contract address for this pool — resolved from vault, not from env. */
   cpfAddress: `0x${string}`;
+  /** Formatted trading volume for card header, e.g. "$858.74K Vol." */
+  volumeLabel?: string;
 };
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */
