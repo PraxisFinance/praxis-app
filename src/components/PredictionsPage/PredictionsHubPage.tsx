@@ -1,41 +1,36 @@
 "use client";
 
-import { MenuCard } from "@/components/ui/MenuCard";
+import { useMemo, useState } from "react";
+import { PredictionsHubItemsList } from "@/components/PredictionsPage/cards";
+import { PredictionsHubFilter } from "@/components/PredictionsPage/filter";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { PREDICTIONS_MENU_ITEMS } from "@/shared/constants/predictionsMenu";
+import {
+  DEFAULT_PREDICTIONS_HUB_FILTER_STATE,
+  PREDICTIONS_HUB_CATEGORY_FILTERS,
+  type PredictionsHubFilterState,
+} from "@/shared/constants/predictionsHubFilters";
+import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
 
 export function PredictionsHubPage() {
-  const largeItems = PREDICTIONS_MENU_ITEMS.filter((item) => item.type === "large");
-  const middleItems = PREDICTIONS_MENU_ITEMS.filter((item) => item.type === "middle");
+  const [filters, setFilters] = useState<PredictionsHubFilterState>(
+    DEFAULT_PREDICTIONS_HUB_FILTER_STATE,
+  );
+
+  /** Feed items for the active filters — populated when data layer is wired. */
+  const items: PredictionsHubItem[] = [];
+
+  const sectionTitle = useMemo(() => {
+    const activeCategory = PREDICTIONS_HUB_CATEGORY_FILTERS.find(
+      (category) => category.id === filters.categoryId
+    );
+    return activeCategory?.title;
+  }, [filters.categoryId]);
 
   return (
-    <section>
-      <SectionHeader className="mb-3">Predictions</SectionHeader>
-
-      <div className="flex flex-col gap-3">
-        {largeItems.map((item) => (
-          <MenuCard
-            key={item.key}
-            size="lg"
-            title={item.title}
-            description={item.description}
-            backgroundImage={item.backgroundImage}
-            redirectUrl={item.redirectUrl}
-            redirectLabel={item.redirectLabel}
-          />
-        ))}
-
-        <div className="grid grid-cols-2 gap-3">
-          {middleItems.map((item) => (
-            <MenuCard
-              key={item.key}
-              backgroundImage={item.backgroundImage}
-              redirectUrl={item.redirectUrl}
-              redirectLabel={item.redirectLabel}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
+    <div className="flex flex-col gap-6">
+      <PredictionsHubFilter value={filters} onChange={setFilters} />
+      {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null}
+      <PredictionsHubItemsList items={items} />
+    </div>
   );
 }

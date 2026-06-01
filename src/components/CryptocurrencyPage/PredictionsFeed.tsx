@@ -80,9 +80,19 @@ export interface PredictionsFeedProps {
   sectionTitle: string;
   /** When true (Cryptocurrencies tab), Two-Pool cards are listed before other prediction cards. */
   twoPoolsFirst?: boolean;
+  /** When false, filter chips are omitted (e.g. hub page provides its own). */
+  showFilters?: boolean;
+  timeFilter?: CryptoPredictionTimeFilterId;
+  typeFilter?: CryptoPredictionTypeFilterId;
 }
 
-export function PredictionsFeed({ sectionTitle, twoPoolsFirst = true }: PredictionsFeedProps) {
+export function PredictionsFeed({
+  sectionTitle,
+  twoPoolsFirst = true,
+  showFilters = true,
+  timeFilter: controlledTimeFilter,
+  typeFilter: controlledTypeFilter,
+}: PredictionsFeedProps) {
   const { vaultId, yt } = useActiveVault();
   const cpfPools = useEventsStore((s) => s.pools);
   const cpfLoading = useEventsStore((s) => s.loading);
@@ -121,8 +131,13 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = true }: Predicti
     [poolStates, offchainByContractId, nowMs]
   );
 
-  const [timeFilter, setTimeFilter] = useState<CryptoPredictionTimeFilterId>("all");
-  const [typeFilter, setTypeFilter] = useState<CryptoPredictionTypeFilterId>("all");
+  const [internalTimeFilter, setInternalTimeFilter] =
+    useState<CryptoPredictionTimeFilterId>("all");
+  const [internalTypeFilter, setInternalTypeFilter] =
+    useState<CryptoPredictionTypeFilterId>("all");
+
+  const timeFilter = controlledTimeFilter ?? internalTimeFilter;
+  const typeFilter = controlledTypeFilter ?? internalTypeFilter;
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerPrediction, setDrawerPrediction] = useState<CryptoPrediction | null>(null);
@@ -177,12 +192,14 @@ export function PredictionsFeed({ sectionTitle, twoPoolsFirst = true }: Predicti
 
   return (
     <div className="flex flex-col gap-4">
-      <CryptocurrencyFilters
-        timeId={timeFilter}
-        onTimeChange={setTimeFilter}
-        typeId={typeFilter}
-        onTypeChange={setTypeFilter}
-      />
+      {showFilters ? (
+        <CryptocurrencyFilters
+          timeId={timeFilter}
+          onTimeChange={setInternalTimeFilter}
+          typeId={typeFilter}
+          onTypeChange={setInternalTypeFilter}
+        />
+      ) : null}
       {cpfError ? (
         <p className="text-main-red text-sm leading-snug" role="alert">
           Predictions indexer: {cpfError}
