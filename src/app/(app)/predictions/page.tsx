@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { PredictionsHubPage } from "@/components/PredictionsPage";
 
 export default function PredictionsPage() {
-  redirect("/predictions/all");
+  return <PredictionsHubPage />;
 }

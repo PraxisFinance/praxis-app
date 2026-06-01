@@ -1,0 +1,1 @@
+export { PredictionsHubPage } from "./PredictionsHubPage";
