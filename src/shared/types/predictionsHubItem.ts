@@ -46,7 +46,6 @@ export type TechHubEvent = {
 
 export type PredictionsHubItem =
   | { kind: "crypto"; prediction: CryptoPrediction }
-  | { kind: "two-pool"; pool: TwoPool }
   | { kind: "esports"; match: EsportsMatch }
   | { kind: "random-reward"; pool: RandomPool }
   | { kind: "sport"; match: SportHubMatch }
@@ -73,8 +72,6 @@ export function getPredictionsHubItemKey(item: PredictionsHubItem): string {
   switch (item.kind) {
     case "crypto":
       return `crypto:${item.prediction.id}`;
-    case "two-pool":
-      return `two-pool:${item.pool.id}`;
     case "esports":
       return `esports:${item.match.id}`;
     case "random-reward":
