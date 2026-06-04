@@ -2,6 +2,7 @@ import type { PredictionsHubFilterState } from "@/shared/constants/predictionsHu
 import type { CryptoPredictionTimeFilterId } from "@/shared/constants/cryptocurrencyPredictions";
 import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import { buildCryptoAboveBelowHubTitle } from "@/shared/utils/cryptoHubFormat";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
@@ -61,36 +62,56 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     ],
   },
   {
-    id: "hub-sol-above-below",
-    title: "SOL above key levels",
-    assetSymbol: "SOL",
+    id: "hub-aero-above-below",
+    title: buildCryptoAboveBelowHubTitle("AERO", "2026-02-27T15:30:00.000Z"),
+    assetSymbol: "AERO",
     iconUrl: HUB_MOCK_ICON,
-    status: { kind: "live" },
-    endsAt: isoInHours(18),
+    status: { kind: "live", label: "Live now" },
+    endsAt: "2026-02-27T15:30:00.000Z",
     predictionType: "above_below",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(3),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
-    volumeLabel: "$312.45K Vol.",
     strikes: [
       {
         id: "s1",
-        targetLabel: "$142.50",
-        yes: { odds: 1.55, poolPercent: 58 },
-        no: { odds: 2.35, poolPercent: 42 },
+        targetLabel: "16",
+        yes: { odds: 1.01, poolPercent: 100 },
+        no: { odds: 50, poolPercent: 0 },
       },
       {
         id: "s2",
-        targetLabel: "$148.00",
-        yes: { odds: 2.1, poolPercent: 44 },
-        no: { odds: 1.68, poolPercent: 56 },
+        targetLabel: "25",
+        yes: { odds: 1.01, poolPercent: 100 },
+        no: { odds: 50, poolPercent: 0 },
+      },
+    ],
+  },
+  {
+    id: "hub-aero-price-ranges",
+    title: "AERO price on Feb 27?",
+    assetSymbol: "AERO",
+    iconUrl: HUB_MOCK_ICON,
+    status: { kind: "live", label: "Live now" },
+    endsAt: "2026-02-27T15:30:00.000Z",
+    predictionType: "above_below",
+    isTradingOpen: true,
+    cpfPoolId: hubMockCpfPoolId(7),
+    cpfAddress: HUB_MOCK_CPF_ADDRESS,
+    categories: ["crypto"],
+    strikes: [
+      {
+        id: "r1",
+        targetLabel: "<16",
+        yes: { odds: 12, poolPercent: 0.5 },
+        no: { odds: 1.02, poolPercent: 99.5 },
       },
       {
-        id: "s3",
-        targetLabel: "$155.20",
-        yes: { odds: 3.2, poolPercent: 31 },
-        no: { odds: 1.32, poolPercent: 69 },
+        id: "r2",
+        targetLabel: "16-25",
+        yes: { odds: 8, poolPercent: 0.8 },
+        no: { odds: 1.03, poolPercent: 99.2 },
       },
     ],
   },

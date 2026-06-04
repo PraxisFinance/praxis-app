@@ -1,43 +1,47 @@
 "use client";
 
 import type { CryptoStrikeBinary } from "@/shared/types/cryptoPrediction";
-import { formatEsportsOdds } from "@/shared/utils/esportsMatchFormat";
-import { cn } from "@/lib/utils";
+import { formatStrikeProbabilityLabel } from "@/shared/utils/cryptoHubFormat";
+import { Button } from "@/components/ui/button";
 
 export interface CryptoPredictionHubStrikeRowProps {
   strike: CryptoStrikeBinary;
   disabled: boolean;
 }
 
+const strikeButtonClassName =
+  "text-main-darkPurple h-8 min-w-[52px] shrink-0 px-2.5 text-2xs font-semibold";
+
 export function CryptoPredictionHubStrikeRow({
   strike,
   disabled,
 }: CryptoPredictionHubStrikeRowProps) {
+  const probabilityLabel = formatStrikeProbabilityLabel(strike.yes.poolPercent);
+
   return (
     <div className="flex items-center gap-2">
-      <span className="text-main-darkPurple min-w-0 flex-1 truncate text-xs font-medium">
+      <span className="text-main-darkPurple min-w-0 flex-1 text-xs font-medium">
         {strike.targetLabel}
       </span>
-      <button
+      <span className="text-main-darkPurple w-10 shrink-0 text-right text-2xs font-semibold tabular-nums">
+        {probabilityLabel}
+      </span>
+      <Button
         type="button"
+        variant="success"
         disabled={disabled}
-        className={cn(
-          "text-main-darkGreen shrink-0 rounded-md bg-main-lightGreen px-2.5 py-1.5 text-2xs font-semibold transition-opacity",
-          disabled ? "opacity-45" : "hover:opacity-90",
-        )}
+        className={strikeButtonClassName}
       >
-        Yes {formatEsportsOdds(strike.yes.odds)}
-      </button>
-      <button
+        Yes
+      </Button>
+      <Button
         type="button"
+        variant="destructiveMuted"
         disabled={disabled}
-        className={cn(
-          "text-main-red shrink-0 rounded-md bg-main-red/15 px-2.5 py-1.5 text-2xs font-semibold transition-opacity",
-          disabled ? "opacity-45" : "hover:opacity-90",
-        )}
+        className={strikeButtonClassName}
       >
-        No {formatEsportsOdds(strike.no.odds)}
-      </button>
+        No
+      </Button>
     </div>
   );
 }

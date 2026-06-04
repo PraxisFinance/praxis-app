@@ -1,7 +1,10 @@
 "use client";
 
 import type { CryptoPredictionAboveBelow } from "@/shared/types/cryptoPrediction";
-import { getCryptoPredictionEndLine } from "@/shared/utils/cryptoPredictionFormat";
+import {
+  buildCryptoAboveBelowHubTitle,
+  getCryptoHubCardEndLine,
+} from "@/shared/utils/cryptoHubFormat";
 import { CryptoPredictionHubCardHeader } from "./CryptoPredictionHubCardHeader";
 import { CryptoPredictionHubCardStatusFooter } from "./CryptoPredictionHubCardStatusFooter";
 import { CryptoPredictionHubStrikeRow } from "./CryptoPredictionHubStrikeRow";
@@ -14,15 +17,18 @@ export function CryptoPredictionAboveBelowHubCard({
   prediction,
 }: CryptoPredictionAboveBelowHubCardProps) {
   const disabled = !prediction.isTradingOpen;
-  const endLine = getCryptoPredictionEndLine(prediction.endsAt);
+  const endLine = getCryptoHubCardEndLine(prediction.endsAt);
+  const title =
+    prediction.title.includes("__") || prediction.title.includes("above")
+      ? prediction.title
+      : buildCryptoAboveBelowHubTitle(prediction.assetSymbol, prediction.endsAt);
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">
       <CryptoPredictionHubCardHeader
         iconUrl={prediction.iconUrl}
-        title={prediction.title}
+        title={title}
         endLine={endLine}
-        volumeLabel={prediction.volumeLabel}
       />
 
       <div className="flex flex-col gap-2.5">
@@ -31,7 +37,7 @@ export function CryptoPredictionAboveBelowHubCard({
         ))}
       </div>
 
-      <CryptoPredictionHubCardStatusFooter prediction={prediction} />
+      <CryptoPredictionHubCardStatusFooter prediction={prediction} align="start" />
     </article>
   );
 }

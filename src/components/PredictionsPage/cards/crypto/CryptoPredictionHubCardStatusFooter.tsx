@@ -5,15 +5,23 @@ import { getCryptoPredictionStatusFooter } from "@/shared/utils/cryptoPrediction
 
 export interface CryptoPredictionHubCardStatusFooterProps {
   prediction: CryptoPrediction;
+  align?: "center" | "start";
 }
 
 export function CryptoPredictionHubCardStatusFooter({
   prediction,
+  align = "center",
 }: CryptoPredictionHubCardStatusFooterProps) {
   const line = getCryptoPredictionStatusFooter(prediction.status);
 
   return (
-    <div className="flex items-center justify-center gap-1.5">
+    <div
+      className={
+        align === "start"
+          ? "flex items-center justify-start gap-1.5"
+          : "flex items-center justify-center gap-1.5"
+      }
+    >
       {line.showLiveDot ? (
         <span className="bg-main-red h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden />
       ) : null}
