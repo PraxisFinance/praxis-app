@@ -72,6 +72,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(3),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$312.45K Vol.",
     strikes: [
       {
         id: "s1",
@@ -105,6 +106,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(4),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$1.05M Vol.",
     lowerBoundLabel: "$92,000",
     upperBoundLabel: "$98,000",
     outcomes: [
@@ -124,6 +126,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(5),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$198.20K Vol.",
     targetPriceLabel: "$25.00",
     outcomes: [
       { id: "hit", label: "Hit", odds: 2.4, poolPercent: 38 },
@@ -146,6 +149,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     cpfPoolId: hubMockCpfPoolId(6),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
     categories: ["crypto"],
+    volumeLabel: "$76.30K Vol.",
     outcomes: [
       { id: "up", label: "Up", odds: 1.5, poolPercent: 40 },
       { id: "down", label: "Down", odds: 2.2, poolPercent: 60 },

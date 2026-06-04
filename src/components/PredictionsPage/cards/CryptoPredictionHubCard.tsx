@@ -1,7 +1,9 @@
 "use client";
 
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
-import { CryptoPredictionHubCardPlaceholder } from "./crypto/CryptoPredictionHubCardPlaceholder";
+import { CryptoPredictionAboveBelowHubCard } from "./crypto/CryptoPredictionAboveBelowHubCard";
+import { CryptoPredictionHitHubCard } from "./crypto/CryptoPredictionHitHubCard";
+import { CryptoPredictionPriceRangeHubCard } from "./crypto/CryptoPredictionPriceRangeHubCard";
 import { CryptoPredictionUpDownHubCard } from "./crypto/CryptoPredictionUpDownHubCard";
 
 interface CryptoPredictionHubCardProps {
@@ -16,9 +18,13 @@ export function CryptoPredictionHubCard({ prediction, onPickOutcome }: CryptoPre
         <CryptoPredictionUpDownHubCard prediction={prediction} onPickOutcome={onPickOutcome} />
       );
     case "above_below":
+      return <CryptoPredictionAboveBelowHubCard prediction={prediction} />;
     case "price_range":
+      return (
+        <CryptoPredictionPriceRangeHubCard prediction={prediction} onPickOutcome={onPickOutcome} />
+      );
     case "hit":
-      return <CryptoPredictionHubCardPlaceholder prediction={prediction} />;
+      return <CryptoPredictionHitHubCard prediction={prediction} onPickOutcome={onPickOutcome} />;
     default: {
       const _exhaustive: never = prediction;
       return _exhaustive;
