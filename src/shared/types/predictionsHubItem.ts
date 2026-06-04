@@ -76,6 +76,8 @@ export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): str
   switch (item.kind) {
     case "esports":
       return `Esports • ${getEsportsGameLabel(item.match.gameId)}`;
+    case "random-reward":
+      return "Random pools";
     default:
       return undefined;
   }

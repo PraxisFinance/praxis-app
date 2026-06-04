@@ -7,3 +7,4 @@ export type { PredictionsHubDetailNavProps } from "./PredictionsHubDetailNav";
 export { formatHubDetailPoolPercent } from "./hubDetailFormat";
 export { getPredictionCountdownParts, usePredictionCountdown } from "./usePredictionCountdown";
 export type { PredictionCountdownParts } from "./usePredictionCountdown";
+export { useRandomPoolRemainingCountdown } from "./useRandomPoolRemainingCountdown";

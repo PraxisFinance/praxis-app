@@ -6,7 +6,7 @@ import { buildCryptoAboveBelowHubTitle } from "@/shared/utils/cryptoHubFormat";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
-import type { RandomPool } from "@/shared/types/randomPool";
+import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 import {
@@ -474,6 +474,14 @@ export const PREDICTIONS_HUB_FINANCE_CARD_MOCKS = toFinanceHubItems(
   PREDICTIONS_HUB_FINANCE_EVENT_MOCKS,
 );
 
+const HUB_RANDOM_POOL_PARTICIPANT_MOCKS: RandomPoolUserInPool[] = [
+  { username: "Mizori", amount: "$1000", avatarUrl: USDC_ICON_URL },
+  { username: "Kisara", amount: "$1500" },
+  { username: "Tazumi", amount: "$2000", avatarUrl: INLINE_HINT_ICON_URL },
+  { username: "Rinara", amount: "$2500" },
+  { username: "Yoshiko", amount: "$3000" },
+];
+
 /** Hub-only random reward pools (not used by legacy RandomRewardsPage). */
 export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
   {
@@ -481,11 +489,15 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
     title: "Random pool #1",
     iconUrl: INLINE_HINT_ICON_URL,
     status: "live",
-    tvl: "10.000$",
+    tvl: "$100,00",
     expectedYield: "$1000",
-    usersIn: 25,
+    usersIn: 101,
     progressPercent: 45,
-    remainingTime: { days: 2, hours: 5, minutes: 12, seconds: 33 },
+    remainingTime: { days: 1, hours: 24, minutes: 54, seconds: 3 },
+    hubDetail: {
+      participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS,
+      walletBalance: "5000",
+    },
   },
   {
     id: "hub-pool-live-2",
@@ -496,6 +508,10 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
     usersIn: 120,
     progressPercent: 72,
     remainingTime: { days: 0, hours: 3, minutes: 45, seconds: 8 },
+    hubDetail: {
+      participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS.slice(0, 3),
+      walletBalance: "12000",
+    },
   },
   {
     id: "hub-pool-ended-neutral",
@@ -507,6 +523,14 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
     usersInPool: 101,
     progressPercent: 100,
     userWon: false,
+    hubDetail: {
+      participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS,
+      winners: [
+        { username: "Mizori", amount: "$333,33", avatarUrl: USDC_ICON_URL },
+        { username: "Kisara", amount: "$333,33" },
+        { username: "Tazumi", amount: "$333,34" },
+      ],
+    },
   },
   {
     id: "hub-pool-ended-won",
@@ -518,6 +542,14 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
     usersInPool: 54,
     progressPercent: 100,
     userWon: true,
+    hubDetail: {
+      participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS.slice(0, 4),
+      winners: [
+        { username: "Mizori", amount: "$333,33", avatarUrl: USDC_ICON_URL },
+        { username: "Kisara", amount: "$333,33" },
+        { username: "Tazumi", amount: "$333,34" },
+      ],
+    },
   },
 ];
 

@@ -38,13 +38,22 @@ export type RandomPoolEnded = {
   userWon: boolean;
 };
 
-export type RandomPool = RandomPoolLive | RandomPoolEnded;
-
-/** User row in “Users in pool” (details / API). */
+/** User row in "Users in pool" (details / API). */
 export type RandomPoolUserInPool = {
   username: string;
   amount: string;
   avatarUrl?: string;
   /** Falls back to wrapped USDC icon when omitted */
   currencyIconUrl?: string;
+};
+
+/** Hub detail screen extras (participants list, wallet mock, etc.). */
+export type RandomPoolHubDetail = {
+  participants?: RandomPoolUserInPool[];
+  winners?: RandomPoolUserInPool[];
+  walletBalance?: string;
+};
+
+export type RandomPool = (RandomPoolLive | RandomPoolEnded) & {
+  hubDetail?: RandomPoolHubDetail;
 };
