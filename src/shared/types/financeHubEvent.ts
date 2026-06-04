@@ -1,3 +1,10 @@
+import type { CryptoPredictionUpDownDetail } from "@/shared/types/cryptoPrediction";
+
+export type FinanceHubEventDetail = CryptoPredictionUpDownDetail & {
+  /** Optional third paragraph, e.g. official price feed source. */
+  resolutionSourceLabel?: string;
+};
+
 /** One side of a binary finance market (Up / Down). */
 export type FinanceHubBinaryOutcome = {
   id: string;
@@ -19,6 +26,7 @@ export type FinanceHubEvent = {
   volumeLabel?: string;
   isTradingOpen: boolean;
   outcomes: [FinanceHubBinaryOutcome, FinanceHubBinaryOutcome];
+  financeDetail?: FinanceHubEventDetail;
 };
 
 export function buildFinanceHubTitle(assetName: string, assetTicker: string): string {

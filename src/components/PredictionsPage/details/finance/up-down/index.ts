@@ -1,0 +1,1 @@
+export { FinanceEventHubDetail } from "./FinanceEventHubDetail";

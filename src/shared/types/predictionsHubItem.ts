@@ -83,6 +83,8 @@ export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): str
       return `Sports • ${getSportDisciplineLabel(item.match.disciplineId)}`;
     case "politics":
       return "Politics";
+    case "finance":
+      return "Finance";
     default:
       return undefined;
   }
