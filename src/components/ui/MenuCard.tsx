@@ -6,6 +6,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { Badge } from "@/components/ui/badge";
 import { ArrowIcon } from "@/components/ui";
+import { buildPredictionsHubRoute } from "@/lib/routes";
+import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
 import { cn } from "@/lib/utils";
 
 const menuCardVariants = cva(
@@ -41,6 +43,15 @@ interface MenuCardProps extends VariantProps<typeof menuCardVariants> {
   backgroundImage?: string;
   redirectUrl?: string;
   redirectLabel?: string;
+  hubCategoryId?: PredictionsHubCategoryId;
+}
+
+function resolveMenuCardHref(
+  redirectUrl: string | undefined,
+  hubCategoryId: PredictionsHubCategoryId | undefined,
+): string {
+  if (hubCategoryId != null) return buildPredictionsHubRoute(hubCategoryId);
+  return redirectUrl ?? "";
 }
 
 export function MenuCard({
@@ -49,10 +60,13 @@ export function MenuCard({
   backgroundImage,
   redirectUrl,
   redirectLabel,
+  hubCategoryId,
   size = "sm",
 }: MenuCardProps) {
+  const href = resolveMenuCardHref(redirectUrl, hubCategoryId);
+
   return (
-    <Link href={redirectUrl ?? ""} className={cn(menuCardVariants({ size }))}>
+    <Link href={href} className={cn(menuCardVariants({ size }))}>
       {backgroundImage && (
         <Image src={backgroundImage} alt={title ?? ""} fill className="object-cover" />
       )}

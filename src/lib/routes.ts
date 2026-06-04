@@ -3,6 +3,13 @@ export const EARN_ROUTE = "/earn";
 
 export const PREDICTIONS_ROUTE = "/predictions";
 
+/** Query key for hub category preset on `/predictions`. */
+export const PREDICTIONS_HUB_CATEGORY_QUERY = "category";
+
+export function buildPredictionsHubRoute(categoryId: string): string {
+  return `${PREDICTIONS_ROUTE}?${PREDICTIONS_HUB_CATEGORY_QUERY}=${encodeURIComponent(categoryId)}`;
+}
+
 export const PREDICTIONS_ALL_ROUTE = "/predictions/all";
 
 export const PREDICTIONS_RANDOM_REWARDS_ROUTE = "/predictions/random-rewards";
