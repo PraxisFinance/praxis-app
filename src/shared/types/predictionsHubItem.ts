@@ -2,10 +2,12 @@ import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHub
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import type { RandomPool } from "@/shared/types/randomPool";
+import type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import type { TwoPool } from "@/shared/types/twoPool";
 
+export type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 export type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 export type { SportHubMatch } from "@/shared/types/sportHubMatch";
 
@@ -18,12 +20,6 @@ export type PredictionsHubItemKind =
   | "politics"
   | "finance"
   | "tech";
-
-export type FinanceHubEvent = {
-  id: string;
-  title: string;
-  endsAt?: string;
-};
 
 export type TechHubEvent = {
   id: string;

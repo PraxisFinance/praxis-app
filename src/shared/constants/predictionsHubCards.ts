@@ -3,6 +3,7 @@ import type { CryptoPredictionTimeFilterId } from "@/shared/constants/cryptocurr
 import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import {
@@ -346,11 +347,83 @@ export const PREDICTIONS_HUB_POLITICS_CARD_MOCKS = toPoliticsHubItems(
   PREDICTIONS_HUB_POLITICS_EVENT_MOCKS,
 );
 
+/** Hub-only finance markets (binary Up / Down). */
+export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
+  {
+    id: "hub-finance-meta-updown",
+    assetName: "Meta",
+    assetTicker: "META",
+    logoUrl: "",
+    title: buildFinanceHubTitle("Meta", "META"),
+    endsAt: isoInHours(720),
+    volumeLabel: "$858.74K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "up", label: "Up", poolPercent: 90.2, odds: 1.12 },
+      { id: "down", label: "Down", poolPercent: 9.8, odds: 8.5 },
+    ],
+  },
+  {
+    id: "hub-finance-aapl-updown",
+    assetName: "Apple",
+    assetTicker: "AAPL",
+    logoUrl: "",
+    title: buildFinanceHubTitle("Apple", "AAPL"),
+    endsAt: isoInHours(336),
+    volumeLabel: "$1.24M Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "up", label: "Up", poolPercent: 54, odds: 1.75 },
+      { id: "down", label: "Down", poolPercent: 46, odds: 2.05 },
+    ],
+  },
+  {
+    id: "hub-finance-tsla-updown",
+    assetName: "Tesla",
+    assetTicker: "TSLA",
+    logoUrl: "",
+    title: buildFinanceHubTitle("Tesla", "TSLA"),
+    endsAt: isoInHours(120),
+    volumeLabel: "$642.10K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "up", label: "Up", poolPercent: 38.5, odds: 2.35 },
+      { id: "down", label: "Down", poolPercent: 61.5, odds: 1.48 },
+    ],
+  },
+  {
+    id: "hub-finance-nvda-updown",
+    assetName: "NVIDIA",
+    assetTicker: "NVDA",
+    logoUrl: "",
+    title: buildFinanceHubTitle("NVIDIA", "NVDA"),
+    endsAt: isoInHours(48),
+    volumeLabel: "$2.08M Vol.",
+    isTradingOpen: false,
+    outcomes: [
+      { id: "up", label: "Up", poolPercent: 72, odds: 1.32 },
+      { id: "down", label: "Down", poolPercent: 28, odds: 3.1 },
+    ],
+  },
+];
+
+export function toFinanceHubItems(events: FinanceHubEvent[]): Extract<
+  PredictionsHubItem,
+  { kind: "finance" }
+>[] {
+  return events.map((event) => ({ kind: "finance", event }));
+}
+
+export const PREDICTIONS_HUB_FINANCE_CARD_MOCKS = toFinanceHubItems(
+  PREDICTIONS_HUB_FINANCE_EVENT_MOCKS,
+);
+
 export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
   ...PREDICTIONS_HUB_CRYPTO_CARD_MOCKS,
   ...PREDICTIONS_HUB_ESPORTS_CARD_MOCKS,
   ...PREDICTIONS_HUB_SPORT_CARD_MOCKS,
   ...PREDICTIONS_HUB_POLITICS_CARD_MOCKS,
+  ...PREDICTIONS_HUB_FINANCE_CARD_MOCKS,
 ];
 
 const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
@@ -369,8 +442,8 @@ function hubItemEndsAtMs(item: PredictionsHubItem): number | null {
     case "crypto":
       return new Date(item.prediction.endsAt).getTime();
     case "politics":
-      return new Date(item.event.endsAt).getTime();
     case "finance":
+      return new Date(item.event.endsAt).getTime();
     case "tech":
       return item.event.endsAt ? new Date(item.event.endsAt).getTime() : null;
     default:
@@ -399,8 +472,13 @@ function matchesHubMarketTypeFilter(
   filters: PredictionsHubFilterState,
 ): boolean {
   if (filters.marketTypeId === "all") return true;
-  if (item.kind !== "crypto") return true;
-  return item.prediction.predictionType === filters.marketTypeId;
+  if (item.kind === "crypto") {
+    return item.prediction.predictionType === filters.marketTypeId;
+  }
+  if (item.kind === "finance") {
+    return filters.marketTypeId === "up_down";
+  }
+  return true;
 }
 
 function matchesHubEsportsGameFilter(
