@@ -85,6 +85,21 @@ export function applyPredictionsHubCategoryChange(
   };
 }
 
+/** Initial hub filter state with a preset category (resets category-specific sub-filters). */
+export function createPredictionsHubFilterState(
+  categoryId: PredictionsHubCategoryId = "all",
+): PredictionsHubFilterState {
+  return applyPredictionsHubCategoryChange(DEFAULT_PREDICTIONS_HUB_FILTER_STATE, categoryId);
+}
+
+const PREDICTIONS_HUB_CATEGORY_IDS = new Set<PredictionsHubCategoryId>(
+  PREDICTIONS_HUB_CATEGORY_FILTERS.map((category) => category.id),
+);
+
+export function isPredictionsHubCategoryId(value: string): value is PredictionsHubCategoryId {
+  return PREDICTIONS_HUB_CATEGORY_IDS.has(value as PredictionsHubCategoryId);
+}
+
 export function hubMarketTypeToFeedType(
   id: PredictionsHubMarketTypeId
 ): CryptoPredictionTypeFilterId {
