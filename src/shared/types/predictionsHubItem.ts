@@ -1,4 +1,5 @@
 import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
+import { getEsportsGameLabel } from "@/shared/constants/esports";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import type { RandomPool } from "@/shared/types/randomPool";
@@ -69,6 +70,15 @@ const PREDICTIONS_HUB_ITEM_KINDS = new Set<PredictionsHubItemKind>(
 
 export function isPredictionsHubItemKind(value: string): value is PredictionsHubItemKind {
   return PREDICTIONS_HUB_ITEM_KINDS.has(value as PredictionsHubItemKind);
+}
+
+export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): string | undefined {
+  switch (item.kind) {
+    case "esports":
+      return `Esports • ${getEsportsGameLabel(item.match.gameId)}`;
+    default:
+      return undefined;
+  }
 }
 
 export function getPredictionsHubItemEndsAt(item: PredictionsHubItem): string | undefined {

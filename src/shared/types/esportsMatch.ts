@@ -33,6 +33,22 @@ export type EsportsMatchStatus =
       label?: string;
     };
 
+/** One point on the hub esports detail probability chart (per team, 0–100). */
+export type EsportsMatchProbabilityChartPoint = {
+  timeLabel: string;
+  team1Percent: number;
+  team2Percent: number;
+};
+
+/** Extra fields for the hub esports detail screen (until API). */
+export type EsportsMatchHubDetail = {
+  displayTitle: string;
+  volumeLabel: string;
+  chartPoints: EsportsMatchProbabilityChartPoint[];
+  team1PoolPercent: number;
+  team2PoolPercent: number;
+};
+
 /**
  * Single match row for the esports list (card in the mock).
  * Game icon in the corner is resolved from `gameId` via `ESPORTS_GAMES`.
@@ -48,4 +64,5 @@ export type EsportsMatch = {
   team1: EsportsMatchTeam;
   team2: EsportsMatchTeam;
   status: EsportsMatchStatus;
+  esportsDetail?: EsportsMatchHubDetail;
 };

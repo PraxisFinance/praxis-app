@@ -212,6 +212,20 @@ export const PREDICTIONS_HUB_ESPORTS_MATCH_MOCKS: EsportsMatch[] = [
     status: { kind: "live", label: "Live now" },
     team1: { name: "Inner Circle", logoUrl: "", odds: 1.35, score: 1 },
     team2: { name: "AVULUS", logoUrl: "", odds: 3.4, score: 0 },
+    esportsDetail: {
+      displayTitle: "Team Inner Circle vs AVULUS Team",
+      volumeLabel: "$858.74K Vol.",
+      chartPoints: [
+        { timeLabel: "5:20pm", team1Percent: 52, team2Percent: 48 },
+        { timeLabel: "5:40pm", team1Percent: 48, team2Percent: 52 },
+        { timeLabel: "6:00pm", team1Percent: 55, team2Percent: 45 },
+        { timeLabel: "6:20pm", team1Percent: 44, team2Percent: 56 },
+        { timeLabel: "6:40pm", team1Percent: 38, team2Percent: 62 },
+        { timeLabel: "7:00pm", team1Percent: 41, team2Percent: 59 },
+      ],
+      team1PoolPercent: 41,
+      team2PoolPercent: 59,
+    },
   },
   {
     id: "hub-match-csgo-live-1",

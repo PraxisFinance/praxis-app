@@ -8,10 +8,16 @@ import { PredictionsHubDetailNav } from "./PredictionsHubDetailNav";
 export interface PredictionsHubDetailHeaderProps {
   categoryId: PredictionsHubCategoryId;
   endsAt?: string;
+  /** When set, shown instead of the category label (e.g. «Esports • Dota 2»). */
+  breadcrumb?: string;
 }
 
-export function PredictionsHubDetailHeader({ categoryId, endsAt }: PredictionsHubDetailHeaderProps) {
-  const categoryLabel = getPredictionsHubCategoryLabel(categoryId);
+export function PredictionsHubDetailHeader({
+  categoryId,
+  endsAt,
+  breadcrumb,
+}: PredictionsHubDetailHeaderProps) {
+  const subheading = breadcrumb ?? getPredictionsHubCategoryLabel(categoryId);
 
   return (
     <header className="flex flex-col gap-1">
@@ -19,7 +25,7 @@ export function PredictionsHubDetailHeader({ categoryId, endsAt }: PredictionsHu
         <PredictionsHubDetailNav categoryId={categoryId} />
         {endsAt ? <PredictionsHubDetailCountdown endsAt={endsAt} /> : null}
       </div>
-      <span className="text-main-darkPurple/55 text-2xs">{categoryLabel}</span>
+      <span className="text-main-darkPurple/55 text-2xs">{subheading}</span>
     </header>
   );
 }

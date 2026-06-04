@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  getPredictionsHubDetailBreadcrumb,
   getPredictionsHubItemEndsAt,
   PREDICTIONS_HUB_KIND_TO_CATEGORY,
   type PredictionsHubItem,
@@ -16,7 +17,11 @@ export function PredictionsHubDetailRoutePage({ item }: PredictionsHubDetailRout
   const categoryId = PREDICTIONS_HUB_KIND_TO_CATEGORY[item.kind];
 
   return (
-    <PredictionsHubDetailPage categoryId={categoryId} endsAt={getPredictionsHubItemEndsAt(item)}>
+    <PredictionsHubDetailPage
+      categoryId={categoryId}
+      endsAt={getPredictionsHubItemEndsAt(item)}
+      breadcrumb={getPredictionsHubDetailBreadcrumb(item)}
+    >
       <PredictionsHubDetail item={item} />
     </PredictionsHubDetailPage>
   );
