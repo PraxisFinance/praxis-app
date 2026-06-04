@@ -368,6 +368,21 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 9.8, odds: 8.5 },
       { id: "no", label: "No", poolPercent: 90.2, odds: 1.12 },
     ],
+    politicsDetail: {
+      chartPoints: [
+        { timeLabel: "5:20pm", yesPercent: 12 },
+        { timeLabel: "5:40pm", yesPercent: 8 },
+        { timeLabel: "6:00pm", yesPercent: 15 },
+        { timeLabel: "6:20pm", yesPercent: 7 },
+        { timeLabel: "6:40pm", yesPercent: 11 },
+        { timeLabel: "7:00pm", yesPercent: 9.8 },
+      ],
+      resolutionParagraphs: [
+        "This market will resolve to \"Yes\" if Donald J. Trump ceases to be President of the United States for any period of time between February 27, 2026 and December 31, 2026, 11:59 PM ET. Otherwise, this market will resolve to \"No\".",
+        "An announcement of Trump's resignation/removal, or a definitive consensus of credible reporting that he has resigned/been removed, will suffice — regardless of whether he has yet vacated the office.",
+        "The resolution source will be a consensus of credible reporting.",
+      ],
+    },
   },
   {
     id: "hub-politics-fed-rate-cut",

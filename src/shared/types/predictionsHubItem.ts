@@ -81,6 +81,8 @@ export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): str
       return "Random pools";
     case "sport":
       return `Sports • ${getSportDisciplineLabel(item.match.disciplineId)}`;
+    case "politics":
+      return "Politics";
     default:
       return undefined;
   }
