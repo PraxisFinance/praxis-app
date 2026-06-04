@@ -6,7 +6,9 @@ import { buildCryptoAboveBelowHubTitle } from "@/shared/utils/cryptoHubFormat";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
+import type { RandomPool } from "@/shared/types/randomPool";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
+import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 import {
   PREDICTIONS_HUB_ITEMS_BY_CATEGORY,
   type PredictionsHubItem,
@@ -443,12 +445,71 @@ export const PREDICTIONS_HUB_FINANCE_CARD_MOCKS = toFinanceHubItems(
   PREDICTIONS_HUB_FINANCE_EVENT_MOCKS,
 );
 
+/** Hub-only random reward pools (not used by legacy RandomRewardsPage). */
+export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
+  {
+    id: "hub-pool-live-1",
+    title: "Random pool #1",
+    iconUrl: INLINE_HINT_ICON_URL,
+    status: "live",
+    tvl: "10.000$",
+    expectedYield: "$1000",
+    usersIn: 25,
+    progressPercent: 45,
+    remainingTime: { days: 2, hours: 5, minutes: 12, seconds: 33 },
+  },
+  {
+    id: "hub-pool-live-2",
+    title: "Random pool #2",
+    status: "live",
+    tvl: "50.000$",
+    expectedYield: "$5000",
+    usersIn: 120,
+    progressPercent: 72,
+    remainingTime: { days: 0, hours: 3, minutes: 45, seconds: 8 },
+  },
+  {
+    id: "hub-pool-ended-neutral",
+    title: "Random pool #3",
+    status: "ended",
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    usersInPool: 101,
+    progressPercent: 100,
+    userWon: false,
+  },
+  {
+    id: "hub-pool-ended-won",
+    title: "Random pool #4",
+    status: "ended",
+    tvl: "100.000$",
+    earnings: "$1000",
+    usersWon: 3,
+    usersInPool: 54,
+    progressPercent: 100,
+    userWon: true,
+  },
+];
+
+export function toRandomRewardHubItems(pools: RandomPool[]): Extract<
+  PredictionsHubItem,
+  { kind: "random-reward" }
+>[] {
+  return pools.map((pool) => ({ kind: "random-reward", pool }));
+}
+
+export const PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS = toRandomRewardHubItems(
+  PREDICTIONS_HUB_RANDOM_POOL_MOCKS,
+);
+
 export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
   ...PREDICTIONS_HUB_CRYPTO_CARD_MOCKS,
   ...PREDICTIONS_HUB_ESPORTS_CARD_MOCKS,
   ...PREDICTIONS_HUB_SPORT_CARD_MOCKS,
   ...PREDICTIONS_HUB_POLITICS_CARD_MOCKS,
   ...PREDICTIONS_HUB_FINANCE_CARD_MOCKS,
+  ...PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS,
 ];
 
 const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
