@@ -1,5 +1,6 @@
 import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
 import { getEsportsGameLabel } from "@/shared/constants/esports";
+import { getSportDisciplineLabel } from "@/shared/constants/predictionsHubFilters";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import type { RandomPool } from "@/shared/types/randomPool";
@@ -78,6 +79,8 @@ export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): str
       return `Esports • ${getEsportsGameLabel(item.match.gameId)}`;
     case "random-reward":
       return "Random pools";
+    case "sport":
+      return `Sports • ${getSportDisciplineLabel(item.match.disciplineId)}`;
     default:
       return undefined;
   }

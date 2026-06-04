@@ -33,21 +33,13 @@ export type EsportsMatchStatus =
       label?: string;
     };
 
-/** One point on the hub esports detail probability chart (per team, 0–100). */
-export type EsportsMatchProbabilityChartPoint = {
-  timeLabel: string;
-  team1Percent: number;
-  team2Percent: number;
-};
+import type {
+  HubMatchHubDetail,
+  HubMatchProbabilityChartPoint,
+} from "@/shared/types/hubMatchDetail";
 
-/** Extra fields for the hub esports detail screen (until API). */
-export type EsportsMatchHubDetail = {
-  displayTitle: string;
-  volumeLabel: string;
-  chartPoints: EsportsMatchProbabilityChartPoint[];
-  team1PoolPercent: number;
-  team2PoolPercent: number;
-};
+export type EsportsMatchHubDetail = HubMatchHubDetail;
+export type EsportsMatchProbabilityChartPoint = HubMatchProbabilityChartPoint;
 
 /**
  * Single match row for the esports list (card in the mock).

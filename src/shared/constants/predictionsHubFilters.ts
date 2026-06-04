@@ -45,6 +45,11 @@ export const PREDICTIONS_HUB_SPORT_DISCIPLINES = [
 export type PredictionsHubSportDisciplineId =
   (typeof PREDICTIONS_HUB_SPORT_DISCIPLINES)[number]["id"];
 
+export function getSportDisciplineLabel(disciplineId: PredictionsHubSportDisciplineId): string {
+  const discipline = PREDICTIONS_HUB_SPORT_DISCIPLINES.find((item) => item.id === disciplineId);
+  return discipline?.label ?? disciplineId;
+}
+
 export type PredictionsHubSubFilterKind = "market-type" | "esports-game" | "sport-discipline";
 
 export function getPredictionsHubSubFilterKind(
