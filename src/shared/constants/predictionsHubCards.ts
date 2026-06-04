@@ -3,6 +3,7 @@ import type { CryptoPredictionTimeFilterId } from "@/shared/constants/cryptocurr
 import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import {
   PREDICTIONS_HUB_ITEMS_BY_CATEGORY,
@@ -282,10 +283,74 @@ export const PREDICTIONS_HUB_ESPORTS_CARD_MOCKS = toEsportsHubItems(
 
 export const PREDICTIONS_HUB_SPORT_CARD_MOCKS = toSportHubItems(PREDICTIONS_HUB_SPORT_MATCH_MOCKS);
 
+/** Hub-only politics markets (binary Yes / No). */
+export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
+  {
+    id: "hub-politics-trump-2027",
+    title: "Trump out as President before 2027?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(720),
+    volumeLabel: "$858.74K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 9.8, odds: 8.5 },
+      { id: "no", label: "No", poolPercent: 90.2, odds: 1.12 },
+    ],
+  },
+  {
+    id: "hub-politics-fed-rate-cut",
+    title: "Fed cuts rates before July 2026?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(480),
+    volumeLabel: "$412.30K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 42, odds: 2.1 },
+      { id: "no", label: "No", poolPercent: 58, odds: 1.65 },
+    ],
+  },
+  {
+    id: "hub-politics-uk-election",
+    title: "Snap UK general election called in 2026?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(168),
+    volumeLabel: "$156.20K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 28.5, odds: 3.2 },
+      { id: "no", label: "No", poolPercent: 71.5, odds: 1.35 },
+    ],
+  },
+  {
+    id: "hub-politics-eu-sanctions",
+    title: "New EU sanctions package passed by Q3 2026?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(96),
+    volumeLabel: "$89.50K Vol.",
+    isTradingOpen: false,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 61, odds: 1.55 },
+      { id: "no", label: "No", poolPercent: 39, odds: 2.45 },
+    ],
+  },
+];
+
+export function toPoliticsHubItems(events: PoliticsHubEvent[]): Extract<
+  PredictionsHubItem,
+  { kind: "politics" }
+>[] {
+  return events.map((event) => ({ kind: "politics", event }));
+}
+
+export const PREDICTIONS_HUB_POLITICS_CARD_MOCKS = toPoliticsHubItems(
+  PREDICTIONS_HUB_POLITICS_EVENT_MOCKS,
+);
+
 export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
   ...PREDICTIONS_HUB_CRYPTO_CARD_MOCKS,
   ...PREDICTIONS_HUB_ESPORTS_CARD_MOCKS,
   ...PREDICTIONS_HUB_SPORT_CARD_MOCKS,
+  ...PREDICTIONS_HUB_POLITICS_CARD_MOCKS,
 ];
 
 const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
@@ -299,8 +364,18 @@ const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
   "1w": 7 * 24 * 60 * 60_000,
 };
 
-function cryptoPredictionEndsAtMs(prediction: CryptoPrediction): number {
-  return new Date(prediction.endsAt).getTime();
+function hubItemEndsAtMs(item: PredictionsHubItem): number | null {
+  switch (item.kind) {
+    case "crypto":
+      return new Date(item.prediction.endsAt).getTime();
+    case "politics":
+      return new Date(item.event.endsAt).getTime();
+    case "finance":
+    case "tech":
+      return item.event.endsAt ? new Date(item.event.endsAt).getTime() : null;
+    default:
+      return null;
+  }
 }
 
 function matchesHubTimeFilter(
@@ -309,9 +384,10 @@ function matchesHubTimeFilter(
   nowMs: number,
 ): boolean {
   if (timeId === "all") return true;
-  if (item.kind !== "crypto") return true;
 
-  const end = cryptoPredictionEndsAtMs(item.prediction);
+  const end = hubItemEndsAtMs(item);
+  if (end === null || Number.isNaN(end)) return true;
+
   if (timeId === "live") return end > nowMs;
   const windowMs = TIME_FILTER_MS[timeId];
   if (windowMs === null) return true;

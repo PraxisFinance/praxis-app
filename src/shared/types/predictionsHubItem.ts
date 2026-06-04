@@ -2,9 +2,11 @@ import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHub
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import type { RandomPool } from "@/shared/types/randomPool";
+import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import type { TwoPool } from "@/shared/types/twoPool";
 
+export type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 export type { SportHubMatch } from "@/shared/types/sportHubMatch";
 
 /** Discriminator for hub feed cards — one value per card component. */
@@ -16,12 +18,6 @@ export type PredictionsHubItemKind =
   | "politics"
   | "finance"
   | "tech";
-
-export type PoliticsHubEvent = {
-  id: string;
-  title: string;
-  endsAt?: string;
-};
 
 export type FinanceHubEvent = {
   id: string;
