@@ -82,10 +82,27 @@ type CryptoPredictionBase = {
   volumeLabel?: string;
 };
 
+/** Point on the hub up/down detail price chart. */
+export type CryptoPredictionPriceChartPoint = {
+  timeLabel: string;
+  price: number;
+};
+
+/** Extra fields for the hub up/down detail screen (until API). */
+export type CryptoPredictionUpDownDetail = {
+  baselinePriceLabel: string;
+  priceChartPoints: CryptoPredictionPriceChartPoint[];
+  resolutionAssetLabel: string;
+  resolutionCloseDateLabel: string;
+  resolutionReferenceDateLabel: string;
+  resolutionReferencePriceLabel: string;
+};
+
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */
 export type CryptoPredictionUpDown = CryptoPredictionBase & {
   predictionType: "up_down";
   outcomes: [CryptoBinaryOutcome, CryptoBinaryOutcome];
+  upDownDetail?: CryptoPredictionUpDownDetail;
 };
 
 /** Above/Below: несколько уровней с Yes/No. */

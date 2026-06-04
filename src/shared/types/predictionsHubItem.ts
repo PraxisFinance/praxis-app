@@ -71,6 +71,20 @@ export function isPredictionsHubItemKind(value: string): value is PredictionsHub
   return PREDICTIONS_HUB_ITEM_KINDS.has(value as PredictionsHubItemKind);
 }
 
+export function getPredictionsHubItemEndsAt(item: PredictionsHubItem): string | undefined {
+  switch (item.kind) {
+    case "crypto":
+      return item.prediction.endsAt;
+    case "politics":
+    case "finance":
+      return item.event.endsAt;
+    case "tech":
+      return item.event.endsAt;
+    default:
+      return undefined;
+  }
+}
+
 export function getPredictionsHubItemId(item: PredictionsHubItem): string {
   switch (item.kind) {
     case "crypto":

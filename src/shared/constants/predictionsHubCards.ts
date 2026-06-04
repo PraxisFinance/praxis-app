@@ -30,11 +30,11 @@ function hubMockCpfPoolId(seed: number): bigint {
 export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
   {
     id: "hub-aero-updown-live",
-    title: "AERO Up or Down",
+    title: "AERO Up or Down at 27 February?",
     assetSymbol: "AERO",
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "live", label: "Live now" },
-    endsAt: isoInHours(6),
+    endsAt: new Date(Date.now() + (45 * 60 + 59) * 1000).toISOString(),
     predictionType: "up_down",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(1),
@@ -42,9 +42,23 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     categories: ["crypto"],
     volumeLabel: "$858.74K Vol.",
     outcomes: [
-      { id: "up", label: "Up", odds: 1.72, poolPercent: 65 },
-      { id: "down", label: "Down", odds: 2.05, poolPercent: 35 },
+      { id: "up", label: "Up", odds: 1.72, poolPercent: 9.8 },
+      { id: "down", label: "Down", odds: 2.05, poolPercent: 91.2 },
     ],
+    upDownDetail: {
+      baselinePriceLabel: "$25.807",
+      priceChartPoints: [
+        { timeLabel: "2:50pm", price: 25.42 },
+        { timeLabel: "2:51pm", price: 25.55 },
+        { timeLabel: "2:52pm", price: 25.38 },
+        { timeLabel: "2:54pm", price: 25.62 },
+        { timeLabel: "2:55pm", price: 25.154 },
+      ],
+      resolutionAssetLabel: "Meta (Pyth META/USD)",
+      resolutionCloseDateLabel: "May 21, 2026",
+      resolutionReferenceDateLabel: "May 20, 2026",
+      resolutionReferencePriceLabel: "$604.94",
+    },
   },
   {
     id: "hub-eth-updown-upcoming",
