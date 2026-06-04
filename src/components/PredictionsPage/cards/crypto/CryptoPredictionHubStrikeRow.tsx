@@ -10,7 +10,7 @@ export interface CryptoPredictionHubStrikeRowProps {
 }
 
 const strikeButtonClassName =
-  "text-main-darkPurple h-8 min-w-[52px] shrink-0 px-2.5 text-2xs font-semibold";
+  "text-main-darkPurple h-7 min-w-[52px] shrink-0 px-2.5 text-2xs font-semibold";
 
 export function CryptoPredictionHubStrikeRow({
   strike,
@@ -26,12 +26,7 @@ export function CryptoPredictionHubStrikeRow({
       <span className="text-main-darkPurple w-10 shrink-0 text-right text-2xs font-semibold tabular-nums">
         {probabilityLabel}
       </span>
-      <Button
-        type="button"
-        variant="success"
-        disabled={disabled}
-        className={strikeButtonClassName}
-      >
+      <Button type="button" variant="success" disabled={disabled} className={strikeButtonClassName}>
         Yes
       </Button>
       <Button
