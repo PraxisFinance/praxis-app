@@ -5,8 +5,6 @@ import type { RandomPool } from "@/shared/types/randomPool";
 import type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
-import type { TwoPool } from "@/shared/types/twoPool";
-
 export type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 export type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 export type { SportHubMatch } from "@/shared/types/sportHubMatch";
@@ -51,26 +49,52 @@ export const PREDICTIONS_HUB_ITEMS_BY_CATEGORY: Record<
   tech: ["tech"],
 };
 
-export function getPredictionsHubItemKey(item: PredictionsHubItem): string {
+/** Hub category filter for each feed card kind (used on detail screens). */
+export const PREDICTIONS_HUB_KIND_TO_CATEGORY: Record<
+  PredictionsHubItemKind,
+  PredictionsHubCategoryId
+> = {
+  crypto: "crypto",
+  esports: "esports",
+  "random-reward": "random-rewards",
+  sport: "sport",
+  politics: "politics",
+  finance: "finance",
+  tech: "tech",
+};
+
+const PREDICTIONS_HUB_ITEM_KINDS = new Set<PredictionsHubItemKind>(
+  Object.keys(PREDICTIONS_HUB_KIND_TO_CATEGORY) as PredictionsHubItemKind[],
+);
+
+export function isPredictionsHubItemKind(value: string): value is PredictionsHubItemKind {
+  return PREDICTIONS_HUB_ITEM_KINDS.has(value as PredictionsHubItemKind);
+}
+
+export function getPredictionsHubItemId(item: PredictionsHubItem): string {
   switch (item.kind) {
     case "crypto":
-      return `crypto:${item.prediction.id}`;
+      return item.prediction.id;
     case "esports":
-      return `esports:${item.match.id}`;
+      return item.match.id;
     case "random-reward":
-      return `random-reward:${item.pool.id}`;
+      return item.pool.id;
     case "sport":
-      return `sport:${item.match.id}`;
+      return item.match.id;
     case "politics":
-      return `politics:${item.event.id}`;
+      return item.event.id;
     case "finance":
-      return `finance:${item.event.id}`;
+      return item.event.id;
     case "tech":
-      return `tech:${item.event.id}`;
+      return item.event.id;
   }
 }
 
-export function isPredictionsHubItemKind(
+export function getPredictionsHubItemKey(item: PredictionsHubItem): string {
+  return `${item.kind}:${getPredictionsHubItemId(item)}`;
+}
+
+export function predictionsHubItemHasKind(
   item: PredictionsHubItem,
   kind: PredictionsHubItemKind
 ): boolean {

@@ -1,5 +1,8 @@
+"use client";
+
 import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
 import { CryptoPredictionHubCard } from "./CryptoPredictionHubCard";
+import { PredictionsHubCardLink } from "./PredictionsHubCardLink";
 import { EsportsMatchHubCard } from "./EsportsMatchHubCard";
 import { FinanceEventHubCard } from "./FinanceEventHubCard";
 import { PoliticsEventHubCard } from "./PoliticsEventHubCard";
@@ -11,8 +14,7 @@ interface PredictionsHubCardProps {
   item: PredictionsHubItem;
 }
 
-/** Routes a hub feed item to the matching category card component. */
-export function PredictionsHubCard({ item }: PredictionsHubCardProps) {
+function renderPredictionsHubCard(item: PredictionsHubItem) {
   switch (item.kind) {
     case "crypto":
       return <CryptoPredictionHubCard prediction={item.prediction} />;
@@ -29,4 +31,9 @@ export function PredictionsHubCard({ item }: PredictionsHubCardProps) {
     case "tech":
       return <TechEventHubCard event={item.event} />;
   }
+}
+
+/** Routes a hub feed item to the matching category card component. */
+export function PredictionsHubCard({ item }: PredictionsHubCardProps) {
+  return <PredictionsHubCardLink item={item}>{renderPredictionsHubCard(item)}</PredictionsHubCardLink>;
 }

@@ -10,6 +10,7 @@ import type { RandomPool } from "@/shared/types/randomPool";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 import {
+  getPredictionsHubItemId,
   PREDICTIONS_HUB_ITEMS_BY_CATEGORY,
   type PredictionsHubItem,
 } from "@/shared/types/predictionsHubItem";
@@ -612,4 +613,9 @@ export function getPredictionsHubCardMocks(
   nowMs = Date.now(),
 ): PredictionsHubItem[] {
   return filterPredictionsHubCardMocks(PREDICTIONS_HUB_CARD_MOCKS, filters, nowMs);
+}
+
+/** Resolves a hub feed item by id (mocks until API). */
+export function findPredictionsHubItemById(id: string): PredictionsHubItem | undefined {
+  return PREDICTIONS_HUB_CARD_MOCKS.find((item) => getPredictionsHubItemId(item) === id);
 }

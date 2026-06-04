@@ -100,6 +100,11 @@ export function isPredictionsHubCategoryId(value: string): value is PredictionsH
   return PREDICTIONS_HUB_CATEGORY_IDS.has(value as PredictionsHubCategoryId);
 }
 
+export function getPredictionsHubCategoryLabel(categoryId: PredictionsHubCategoryId): string {
+  const category = PREDICTIONS_HUB_CATEGORY_FILTERS.find((item) => item.id === categoryId);
+  return category?.label ?? categoryId;
+}
+
 export function hubMarketTypeToFeedType(
   id: PredictionsHubMarketTypeId
 ): CryptoPredictionTypeFilterId {

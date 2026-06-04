@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { PredictionsTabBar } from "@/components/PredictionsPage/PredictionsTabBar";
 import {
+  isPredictionsHubDetailPath,
   isRandomRewardsPoolDetailPath,
   isTwoPoolDetailPath,
   PREDICTIONS_ROUTE,
@@ -12,7 +13,7 @@ export function PredictionsTabBarHost() {
   const pathname = usePathname();
   const router = useRouter();
 
-  if (pathname === PREDICTIONS_ROUTE) {
+  if (pathname === PREDICTIONS_ROUTE || isPredictionsHubDetailPath(pathname)) {
     return null;
   }
 
