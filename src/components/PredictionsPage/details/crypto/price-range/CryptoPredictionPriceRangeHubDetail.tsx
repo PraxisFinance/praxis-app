@@ -1,6 +1,6 @@
 "use client";
 
-import type { CryptoPredictionUpDown } from "@/shared/types/cryptoPrediction";
+import type { CryptoPredictionPriceRange } from "@/shared/types/cryptoPrediction";
 import {
   CryptoPredictionHubDetailPriceChart,
   CryptoPredictionHubDetailResolution,
@@ -8,17 +8,17 @@ import {
   CryptoPredictionHubDetailUnavailable,
   getCryptoPredictionHubMarketDetail,
 } from "../shared";
-import { CryptoPredictionUpDownOutcomes } from "./CryptoPredictionUpDownOutcomes";
+import { CryptoPredictionPriceRangeOutcomes } from "./CryptoPredictionPriceRangeOutcomes";
 
-interface CryptoPredictionUpDownHubDetailProps {
-  prediction: CryptoPredictionUpDown;
+interface CryptoPredictionPriceRangeHubDetailProps {
+  prediction: CryptoPredictionPriceRange;
   onPickOutcome?: (outcomeId: string) => void;
 }
 
-export function CryptoPredictionUpDownHubDetail({
+export function CryptoPredictionPriceRangeHubDetail({
   prediction,
   onPickOutcome,
-}: CryptoPredictionUpDownHubDetailProps) {
+}: CryptoPredictionPriceRangeHubDetailProps) {
   const detail = getCryptoPredictionHubMarketDetail(prediction);
 
   if (!detail) {
@@ -32,7 +32,7 @@ export function CryptoPredictionUpDownHubDetail({
         baselinePriceLabel={detail.baselinePriceLabel}
         points={detail.priceChartPoints}
       />
-      <CryptoPredictionUpDownOutcomes prediction={prediction} onPickOutcome={onPickOutcome} />
+      <CryptoPredictionPriceRangeOutcomes prediction={prediction} onPickOutcome={onPickOutcome} />
       <CryptoPredictionHubDetailResolution prediction={prediction} detail={detail} />
     </div>
   );

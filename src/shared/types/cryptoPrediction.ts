@@ -80,6 +80,8 @@ type CryptoPredictionBase = {
   cpfAddress: `0x${string}`;
   /** Formatted trading volume for card header, e.g. "$858.74K Vol." */
   volumeLabel?: string;
+  /** Chart + resolution copy for hub detail screens (until API). */
+  hubDetail?: CryptoPredictionHubMarketDetail;
 };
 
 /** Point on the hub up/down detail price chart. */
@@ -88,8 +90,8 @@ export type CryptoPredictionPriceChartPoint = {
   price: number;
 };
 
-/** Extra fields for the hub up/down detail screen (until API). */
-export type CryptoPredictionUpDownDetail = {
+/** Shared chart + resolution fields for hub crypto detail screens (until API). */
+export type CryptoPredictionHubMarketDetail = {
   baselinePriceLabel: string;
   priceChartPoints: CryptoPredictionPriceChartPoint[];
   resolutionAssetLabel: string;
@@ -97,6 +99,9 @@ export type CryptoPredictionUpDownDetail = {
   resolutionReferenceDateLabel: string;
   resolutionReferencePriceLabel: string;
 };
+
+/** @deprecated Use `CryptoPredictionHubMarketDetail`. */
+export type CryptoPredictionUpDownDetail = CryptoPredictionHubMarketDetail;
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */
 export type CryptoPredictionUpDown = CryptoPredictionBase & {

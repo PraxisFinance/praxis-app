@@ -1,7 +1,7 @@
 import type { PredictionsHubFilterState } from "@/shared/constants/predictionsHubFilters";
 import type { CryptoPredictionTimeFilterId } from "@/shared/constants/cryptocurrencyPredictions";
 import { USDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
-import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import type { CryptoPrediction, CryptoPredictionHubMarketDetail } from "@/shared/types/cryptoPrediction";
 import { buildCryptoAboveBelowHubTitle } from "@/shared/utils/cryptoHubFormat";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/financeHubEvent";
@@ -25,6 +25,29 @@ const HUB_MOCK_CPF_ADDRESS = "0x0000000000000000000000000000000000000001" as con
 
 function hubMockCpfPoolId(seed: number): bigint {
   return BigInt(seed);
+}
+
+const HUB_CRYPTO_DETAIL_CHART_POINTS: CryptoPredictionHubMarketDetail["priceChartPoints"] = [
+  { timeLabel: "2:50pm", price: 25.42 },
+  { timeLabel: "2:51pm", price: 25.55 },
+  { timeLabel: "2:52pm", price: 25.38 },
+  { timeLabel: "2:54pm", price: 25.62 },
+  { timeLabel: "2:55pm", price: 25.154 },
+];
+
+function hubCryptoMarketDetail(
+  assetSymbol: string,
+  baselinePriceLabel: string,
+  referencePriceLabel: string,
+): CryptoPredictionHubMarketDetail {
+  return {
+    baselinePriceLabel,
+    priceChartPoints: HUB_CRYPTO_DETAIL_CHART_POINTS,
+    resolutionAssetLabel: `${assetSymbol} (Pyth ${assetSymbol}/USD)`,
+    resolutionCloseDateLabel: "February 27, 2026",
+    resolutionReferenceDateLabel: "February 26, 2026",
+    resolutionReferencePriceLabel: referencePriceLabel,
+  };
 }
 
 /** Raw crypto predictions for hub card development (not used by legacy feeds). */
@@ -78,6 +101,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "up", label: "Up", odds: 1.9, poolPercent: 52 },
       { id: "down", label: "Down", odds: 1.95, poolPercent: 48 },
     ],
+    hubDetail: hubCryptoMarketDetail("ETH", "$3,842.50", "$3,798.20"),
   },
   {
     id: "hub-aero-above-below",
@@ -105,6 +129,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
         no: { odds: 50, poolPercent: 0 },
       },
     ],
+    hubDetail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
   },
   {
     id: "hub-aero-price-ranges",
@@ -132,6 +157,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
         no: { odds: 1.03, poolPercent: 99.2 },
       },
     ],
+    hubDetail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
   },
   {
     id: "hub-btc-range",
@@ -152,6 +178,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "inside", label: "Inside range", odds: 1.85, poolPercent: 54 },
       { id: "outside", label: "Outside range", odds: 1.92, poolPercent: 46 },
     ],
+    hubDetail: hubCryptoMarketDetail("BTC", "$94,250.00", "$93,880.00"),
   },
   {
     id: "hub-hype-hit",
@@ -171,6 +198,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "hit", label: "Hit", odds: 2.4, poolPercent: 38 },
       { id: "miss", label: "Miss", odds: 1.52, poolPercent: 62 },
     ],
+    hubDetail: hubCryptoMarketDetail("HYPE", "$22.18", "$21.74"),
   },
   {
     id: "hub-link-ended",
@@ -193,6 +221,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "up", label: "Up", odds: 1.5, poolPercent: 40 },
       { id: "down", label: "Down", odds: 2.2, poolPercent: 60 },
     ],
+    hubDetail: hubCryptoMarketDetail("LINK", "$14.82", "$15.01"),
   },
 ];
 

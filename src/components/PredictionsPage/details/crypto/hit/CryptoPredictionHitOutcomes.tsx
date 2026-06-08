@@ -1,26 +1,30 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { CryptoPredictionUpDown } from "@/shared/types/cryptoPrediction";
+import type { CryptoPredictionHit } from "@/shared/types/cryptoPrediction";
 import {
   CryptoPredictionHubDetailOutcomesSection,
   CryptoPredictionHubDetailPoolSplit,
 } from "../shared";
 
-interface CryptoPredictionUpDownOutcomesProps {
-  prediction: CryptoPredictionUpDown;
+interface CryptoPredictionHitOutcomesProps {
+  prediction: CryptoPredictionHit;
   onPickOutcome?: (outcomeId: string) => void;
 }
 
-export function CryptoPredictionUpDownOutcomes({
+export function CryptoPredictionHitOutcomes({
   prediction,
   onPickOutcome,
-}: CryptoPredictionUpDownOutcomesProps) {
-  const [up, down] = prediction.outcomes;
+}: CryptoPredictionHitOutcomesProps) {
+  const [hit, miss] = prediction.outcomes;
   const disabled = !prediction.isTradingOpen;
 
   return (
     <CryptoPredictionHubDetailOutcomesSection>
+      <p className="text-main-darkPurple/80 -mt-1 text-xs font-medium">
+        Target {prediction.targetPriceLabel}
+      </p>
+
       <div className="flex gap-3">
         <div className="h-11 min-w-0 flex-1">
           <Button
@@ -29,9 +33,9 @@ export function CryptoPredictionUpDownOutcomes({
             size="action"
             disabled={disabled}
             className="h-full rounded-[8px] text-base text-white"
-            onClick={() => onPickOutcome?.(up.id)}
+            onClick={() => onPickOutcome?.(hit.id)}
           >
-            {up.label}
+            {hit.label}
           </Button>
         </div>
         <div className="h-11 min-w-0 flex-1">
@@ -41,14 +45,14 @@ export function CryptoPredictionUpDownOutcomes({
             size="action"
             disabled={disabled}
             className="h-full rounded-[8px] text-base text-white"
-            onClick={() => onPickOutcome?.(down.id)}
+            onClick={() => onPickOutcome?.(miss.id)}
           >
-            {down.label}
+            {miss.label}
           </Button>
         </div>
       </div>
 
-      <CryptoPredictionHubDetailPoolSplit left={up} right={down} />
+      <CryptoPredictionHubDetailPoolSplit left={hit} right={miss} />
     </CryptoPredictionHubDetailOutcomesSection>
   );
 }
