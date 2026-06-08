@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame } from "lucide-react";
+import { OutcomesIcon } from "@/components/icons/feature/predictions/OutcomesIcon";
 import { HintIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { CryptoPredictionUpDownDetailPoolSplit } from "@/components/PredictionsPage/details/crypto/up-down/CryptoPredictionUpDownDetailPoolSplit";
@@ -22,7 +22,7 @@ export function FinanceEventDetailOutcomes({
   return (
     <section className="bg-main-lightGray flex flex-col gap-3 rounded-[10px] p-3">
       <div className="flex items-center gap-1.5">
-        <Flame className="text-main-purple size-4 shrink-0" aria-hidden />
+        <OutcomesIcon className="size-4 shrink-0" aria-hidden />
         <h2 className="text-main-darkPurple text-sm font-medium">Outcomes</h2>
         <button
           type="button"

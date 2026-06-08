@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 export interface CryptoPredictionHubStrikeRowProps {
   strike: CryptoStrikeBinary;
   disabled: boolean;
+  onPickYes?: (strikeId: string) => void;
+  onPickNo?: (strikeId: string) => void;
 }
 
 const strikeButtonClassName =
@@ -15,28 +17,37 @@ const strikeButtonClassName =
 export function CryptoPredictionHubStrikeRow({
   strike,
   disabled,
+  onPickYes,
+  onPickNo,
 }: CryptoPredictionHubStrikeRowProps) {
   const probabilityLabel = formatStrikeProbabilityLabel(strike.yes.poolPercent);
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-main-darkPurple min-w-0 flex-1 text-xs font-medium">
-        {strike.targetLabel}
-      </span>
-      <span className="text-main-darkPurple w-10 shrink-0 text-right text-2xs font-semibold tabular-nums">
-        {probabilityLabel}
-      </span>
-      <Button type="button" variant="success" disabled={disabled} className={strikeButtonClassName}>
-        Yes
-      </Button>
-      <Button
-        type="button"
-        variant="destructiveMuted"
-        disabled={disabled}
-        className={strikeButtonClassName}
-      >
-        No
-      </Button>
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2">
+      <span className="text-main-darkPurple text-xs font-medium">{strike.targetLabel}</span>
+      <div className="flex items-center gap-2">
+        <span className="text-main-darkPurple w-10 shrink-0 text-right text-2xs font-semibold tabular-nums">
+          {probabilityLabel}
+        </span>
+        <Button
+          type="button"
+          variant="success"
+          disabled={disabled}
+          className={strikeButtonClassName}
+          onClick={onPickYes ? () => onPickYes(strike.id) : undefined}
+        >
+          Yes
+        </Button>
+        <Button
+          type="button"
+          variant="destructiveMuted"
+          disabled={disabled}
+          className={strikeButtonClassName}
+          onClick={onPickNo ? () => onPickNo(strike.id) : undefined}
+        >
+          No
+        </Button>
+      </div>
     </div>
   );
 }

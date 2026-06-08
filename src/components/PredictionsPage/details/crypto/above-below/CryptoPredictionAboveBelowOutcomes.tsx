@@ -1,8 +1,8 @@
 "use client";
 
 import type { CryptoPredictionAboveBelow } from "@/shared/types/cryptoPrediction";
+import { CryptoPredictionHubStrikeRow } from "@/components/PredictionsPage/cards/crypto/CryptoPredictionHubStrikeRow";
 import { CryptoPredictionHubDetailOutcomesSection } from "../shared";
-import { CryptoPredictionAboveBelowDetailStrikeRow } from "./CryptoPredictionAboveBelowDetailStrikeRow";
 
 interface CryptoPredictionAboveBelowOutcomesProps {
   prediction: CryptoPredictionAboveBelow;
@@ -17,9 +17,9 @@ export function CryptoPredictionAboveBelowOutcomes({
 
   return (
     <CryptoPredictionHubDetailOutcomesSection>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2.5">
         {prediction.strikes.map((strike) => (
-          <CryptoPredictionAboveBelowDetailStrikeRow
+          <CryptoPredictionHubStrikeRow
             key={strike.id}
             strike={strike}
             disabled={disabled}
