@@ -28,7 +28,7 @@ export function RandomRewardDetailJoinSection({
         maxValue={walletBalance}
         placeholder="Deposit amount"
       />
-      <Button type="button" variant="success" size="action" onClick={onJoin}>
+      <Button type="button" variant="success" size="action" className="h-8 text-white" onClick={onJoin}>
         Join pool
       </Button>
     </section>

@@ -33,25 +33,25 @@ export function PoliticsEventDetailOutcomes({
       </div>
 
       <div className="flex gap-3">
-        <div className="h-11 min-w-0 flex-1">
+        <div className="h-8 min-w-0 flex-1">
           <Button
             type="button"
             variant="success"
             size="action"
             disabled={disabled}
-            className="h-full rounded-[8px] text-base text-white"
+            className="h-full text-white"
             onClick={() => onPickOutcome?.(yes.id)}
           >
             {yes.label}
           </Button>
         </div>
-        <div className="h-11 min-w-0 flex-1">
+        <div className="h-8 min-w-0 flex-1">
           <Button
             type="button"
             variant="destructiveMuted"
             size="action"
             disabled={disabled}
-            className="h-full rounded-[8px] text-base text-white"
+            className="h-full text-white"
             onClick={() => onPickOutcome?.(no.id)}
           >
             {no.label}

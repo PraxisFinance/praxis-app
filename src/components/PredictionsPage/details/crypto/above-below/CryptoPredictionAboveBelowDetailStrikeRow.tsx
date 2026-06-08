@@ -11,7 +11,7 @@ interface CryptoPredictionAboveBelowDetailStrikeRowProps {
   onPickNo?: (strikeId: string) => void;
 }
 
-const detailButtonClassName = "h-full rounded-[8px] text-base text-white";
+const detailButtonClassName = "h-full text-2xs text-white";
 
 export function CryptoPredictionAboveBelowDetailStrikeRow({
   strike,
@@ -31,7 +31,7 @@ export function CryptoPredictionAboveBelowDetailStrikeRow({
       </div>
 
       <div className="flex gap-3">
-        <div className="h-11 min-w-0 flex-1">
+        <div className="h-7 min-w-0 flex-1">
           <Button
             type="button"
             variant="success"
@@ -43,7 +43,7 @@ export function CryptoPredictionAboveBelowDetailStrikeRow({
             Yes
           </Button>
         </div>
-        <div className="h-11 min-w-0 flex-1">
+        <div className="h-7 min-w-0 flex-1">
           <Button
             type="button"
             variant="destructiveMuted"

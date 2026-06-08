@@ -10,7 +10,7 @@ export interface CryptoPredictionHubStrikeRowProps {
 }
 
 const strikeButtonClassName =
-  "text-main-darkPurple h-7 min-w-[52px] shrink-0 px-2.5 text-2xs font-semibold";
+  "h-7 min-w-[52px] shrink-0 px-2.5 text-2xs font-semibold text-white";
 
 export function CryptoPredictionHubStrikeRow({
   strike,

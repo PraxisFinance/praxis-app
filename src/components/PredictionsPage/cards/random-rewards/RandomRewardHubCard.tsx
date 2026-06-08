@@ -70,15 +70,27 @@ export function RandomRewardHubCard({ pool, onJoin, onClaim }: RandomRewardHubCa
       ) : null}
 
       {isLive ? (
-        <Button type="button" variant="success" size="action" onClick={() => onJoin?.()}>
+        <Button
+          type="button"
+          variant="success"
+          size="action"
+          className="h-8 text-white"
+          onClick={() => onJoin?.()}
+        >
           Join now
         </Button>
       ) : pool.userWon ? (
-        <Button type="button" variant="primary" size="action" onClick={() => onClaim?.()}>
+        <Button
+          type="button"
+          variant="primary"
+          size="action"
+          className="h-8 text-white"
+          onClick={() => onClaim?.()}
+        >
           Claim rewards
         </Button>
       ) : (
-        <Button type="button" variant="secondaryBrand" size="action" disabled>
+        <Button type="button" variant="secondaryBrand" size="action" className="h-8" disabled>
           Pool lifetime ended
         </Button>
       )}

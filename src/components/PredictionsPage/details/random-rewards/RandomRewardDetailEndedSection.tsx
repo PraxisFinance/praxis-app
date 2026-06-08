@@ -24,7 +24,7 @@ export function RandomRewardDetailEndedSection({
           <p className="text-main-darkPurple text-sm leading-snug">
             Congratulations! You are among the winners — you can claim your rewards now.
           </p>
-          <Button type="button" variant="primary" size="action" onClick={onClaim}>
+          <Button type="button" variant="primary" size="action" className="h-8 text-white" onClick={onClaim}>
             Claim rewards
           </Button>
         </>
