@@ -476,6 +476,21 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 67.5, odds: 1.42 },
       { id: "no", label: "No", poolPercent: 32.5, odds: 2.85 },
     ],
+    techDetail: {
+      chartPoints: [
+        { timeLabel: "9:00am", yesPercent: 58 },
+        { timeLabel: "10:00am", yesPercent: 62 },
+        { timeLabel: "11:00am", yesPercent: 55 },
+        { timeLabel: "12:00pm", yesPercent: 70 },
+        { timeLabel: "1:00pm", yesPercent: 64 },
+        { timeLabel: "2:00pm", yesPercent: 67.5 },
+      ],
+      resolutionParagraphs: [
+        'This market will resolve to "Yes" if OpenAI publicly releases a model branded as GPT-5 (including GPT-5, GPT-5 Turbo, or an equivalent successor name) before July 1, 2026, 11:59 PM ET. Otherwise, it will resolve to "No".',
+        "A release counts if it is generally available to the public or announced as GA with a fixed launch date on or before the deadline. Private previews, waitlists, or research-only demos do not count.",
+        "The resolution source will be a consensus of credible reporting and official OpenAI announcements.",
+      ],
+    },
   },
   {
     id: "hub-tech-apple-foldable",
@@ -488,6 +503,21 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 22.3, odds: 4.1 },
       { id: "no", label: "No", poolPercent: 77.7, odds: 1.22 },
     ],
+    techDetail: {
+      chartPoints: [
+        { timeLabel: "Mon", yesPercent: 18 },
+        { timeLabel: "Tue", yesPercent: 21 },
+        { timeLabel: "Wed", yesPercent: 19 },
+        { timeLabel: "Thu", yesPercent: 24 },
+        { timeLabel: "Fri", yesPercent: 20 },
+        { timeLabel: "Sat", yesPercent: 22.3 },
+      ],
+      resolutionParagraphs: [
+        'This market will resolve to "Yes" if Apple Inc. officially announces a foldable iPhone product line before January 1, 2027, 11:59 PM ET. Otherwise, it will resolve to "No".',
+        "An announcement at an Apple event, press release, or SEC filing that confirms a foldable iPhone is in development with a stated launch window will suffice.",
+        "Rumors, patents, or supply-chain leaks alone will not count toward resolution.",
+      ],
+    },
   },
   {
     id: "hub-tech-spacex-starship",
@@ -500,6 +530,21 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 14.6, odds: 6.2 },
       { id: "no", label: "No", poolPercent: 85.4, odds: 1.08 },
     ],
+    techDetail: {
+      chartPoints: [
+        { timeLabel: "Jan", yesPercent: 11 },
+        { timeLabel: "Feb", yesPercent: 13 },
+        { timeLabel: "Mar", yesPercent: 10 },
+        { timeLabel: "Apr", yesPercent: 12 },
+        { timeLabel: "May", yesPercent: 15 },
+        { timeLabel: "Jun", yesPercent: 14.6 },
+      ],
+      resolutionParagraphs: [
+        'This market will resolve to "Yes" if SpaceX successfully lands a Starship vehicle on the surface of Mars before January 1, 2028, 11:59 PM ET. Otherwise, it will resolve to "No".',
+        "A landing counts if SpaceX or a consensus of credible reporting confirms that a Starship vehicle made controlled contact with the Martian surface and transmitted telemetry afterward.",
+        "Flybys, orbit-only missions, or uncrewed crash landings without confirmation do not count.",
+      ],
+    },
   },
   {
     id: "hub-tech-nvidia-4nm",
@@ -512,6 +557,21 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 54.2, odds: 1.78 },
       { id: "no", label: "No", poolPercent: 45.8, odds: 2.05 },
     ],
+    techDetail: {
+      chartPoints: [
+        { timeLabel: "W1", yesPercent: 48 },
+        { timeLabel: "W2", yesPercent: 52 },
+        { timeLabel: "W3", yesPercent: 50 },
+        { timeLabel: "W4", yesPercent: 56 },
+        { timeLabel: "W5", yesPercent: 53 },
+        { timeLabel: "W6", yesPercent: 54.2 },
+      ],
+      resolutionParagraphs: [
+        'This market will resolve to "Yes" if NVIDIA begins shipping consumer-grade Blackwell Ultra GPUs to retail customers before December 31, 2026, 11:59 PM ET. Otherwise, it will resolve to "No".',
+        "Shipping counts when units are available for purchase by consumers through NVIDIA, authorized board partners, or major retailers — not solely to enterprise/data-center customers.",
+        "The resolution source will be a consensus of credible reporting and official NVIDIA product pages.",
+      ],
+    },
   },
 ];
 

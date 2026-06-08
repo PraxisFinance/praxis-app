@@ -6,6 +6,18 @@ export type TechHubBinaryOutcome = {
   odds?: number;
 };
 
+/** One point on the hub tech detail probability chart (Yes share 0–100). */
+export type TechProbabilityChartPoint = {
+  timeLabel: string;
+  yesPercent: number;
+};
+
+/** Extra fields for the hub tech detail screen (until API). */
+export type TechHubEventDetail = {
+  chartPoints: TechProbabilityChartPoint[];
+  resolutionParagraphs: string[];
+};
+
 export type TechHubEvent = {
   id: string;
   /** Market question, e.g. «Will GPT-5 launch before July 2026?» */
@@ -17,4 +29,5 @@ export type TechHubEvent = {
   volumeLabel?: string;
   isTradingOpen: boolean;
   outcomes: [TechHubBinaryOutcome, TechHubBinaryOutcome];
+  techDetail?: TechHubEventDetail;
 };
