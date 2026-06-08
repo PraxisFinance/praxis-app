@@ -1,5 +1,10 @@
 import { format, isThisYear, isToday, isTomorrow } from "date-fns";
-import type { CryptoPrediction, CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
+import type {
+  CryptoPrediction,
+  CryptoPredictionAboveBelow,
+  CryptoPredictionStatus,
+  CryptoStrikeBinary,
+} from "@/shared/types/cryptoPrediction";
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -32,6 +37,23 @@ export function getCryptoDrawerInfoLines(
   return {
     primaryQuestion: `${symPrefix}${topic} at ${dateStr}?`,
     secondaryMuted: `${symPrefix}${selectedOutcomeLabel} at ${dateStr}`,
+  };
+}
+
+/** Drawer copy for an above/below strike row (Yes / No on a price level). */
+export function getCryptoAboveBelowDrawerInfoLines(
+  prediction: CryptoPredictionAboveBelow,
+  strike: CryptoStrikeBinary,
+  side: "yes" | "no",
+): { primaryQuestion: string; secondaryMuted: string } {
+  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt);
+  const symbol = prediction.assetSymbol.trim();
+  const symPrefix = symbol ? `$${symbol} ` : "";
+  const sideLabel = side === "yes" ? "Yes" : "No";
+
+  return {
+    primaryQuestion: `${symPrefix}${strike.targetLabel} at ${dateStr}?`,
+    secondaryMuted: `${symPrefix}${sideLabel} · ${strike.targetLabel} at ${dateStr}`,
   };
 }
 

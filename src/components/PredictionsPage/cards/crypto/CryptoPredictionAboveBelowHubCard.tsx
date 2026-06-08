@@ -11,10 +11,12 @@ import { CryptoPredictionHubStrikeRow } from "./CryptoPredictionHubStrikeRow";
 
 export interface CryptoPredictionAboveBelowHubCardProps {
   prediction: CryptoPredictionAboveBelow;
+  onPickOutcome?: (outcomeId: string) => void;
 }
 
 export function CryptoPredictionAboveBelowHubCard({
   prediction,
+  onPickOutcome,
 }: CryptoPredictionAboveBelowHubCardProps) {
   const disabled = !prediction.isTradingOpen;
   const endLine = getCryptoHubCardEndLine(prediction.endsAt);
@@ -33,7 +35,13 @@ export function CryptoPredictionAboveBelowHubCard({
 
       <div className="flex flex-col gap-2.5">
         {prediction.strikes.map((strike) => (
-          <CryptoPredictionHubStrikeRow key={strike.id} strike={strike} disabled={disabled} />
+          <CryptoPredictionHubStrikeRow
+            key={strike.id}
+            strike={strike}
+            disabled={disabled}
+            onPickYes={(strikeId) => onPickOutcome?.(`${strikeId}:yes`)}
+            onPickNo={(strikeId) => onPickOutcome?.(`${strikeId}:no`)}
+          />
         ))}
       </div>
 

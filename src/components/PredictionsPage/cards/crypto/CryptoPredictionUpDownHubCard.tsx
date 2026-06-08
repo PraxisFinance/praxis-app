@@ -3,6 +3,7 @@
 import type { CryptoPredictionUpDown } from "@/shared/types/cryptoPrediction";
 import { getCryptoPredictionEndLine } from "@/shared/utils/cryptoPredictionFormat";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 import { CryptoPredictionHubCardHeader } from "./CryptoPredictionHubCardHeader";
 import { CryptoPredictionHubPoolSplit } from "./CryptoPredictionHubPoolSplit";
 
@@ -36,7 +37,10 @@ export function CryptoPredictionUpDownHubCard({
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(up.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(up.id);
+            }}
           >
             {up.label}
           </Button>
@@ -48,7 +52,10 @@ export function CryptoPredictionUpDownHubCard({
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(down.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(down.id);
+            }}
           >
             {down.label}
           </Button>

@@ -12,12 +12,15 @@ import { TechEventHubCard } from "./TechEventHubCard";
 
 interface PredictionsHubCardProps {
   item: PredictionsHubItem;
+  onCryptoPickOutcome?: (outcomeId: string) => void;
 }
 
-function renderPredictionsHubCard(item: PredictionsHubItem) {
+function renderPredictionsHubCard(item: PredictionsHubItem, onCryptoPickOutcome?: (outcomeId: string) => void) {
   switch (item.kind) {
     case "crypto":
-      return <CryptoPredictionHubCard prediction={item.prediction} />;
+      return (
+        <CryptoPredictionHubCard prediction={item.prediction} onPickOutcome={onCryptoPickOutcome} />
+      );
     case "esports":
       return <EsportsMatchHubCard match={item.match} />;
     case "random-reward":
@@ -34,6 +37,10 @@ function renderPredictionsHubCard(item: PredictionsHubItem) {
 }
 
 /** Routes a hub feed item to the matching category card component. */
-export function PredictionsHubCard({ item }: PredictionsHubCardProps) {
-  return <PredictionsHubCardLink item={item}>{renderPredictionsHubCard(item)}</PredictionsHubCardLink>;
+export function PredictionsHubCard({ item, onCryptoPickOutcome }: PredictionsHubCardProps) {
+  return (
+    <PredictionsHubCardLink item={item}>
+      {renderPredictionsHubCard(item, onCryptoPickOutcome)}
+    </PredictionsHubCardLink>
+  );
 }

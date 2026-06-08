@@ -18,7 +18,12 @@ export function CryptoPredictionHubCard({ prediction, onPickOutcome }: CryptoPre
         <CryptoPredictionUpDownHubCard prediction={prediction} onPickOutcome={onPickOutcome} />
       );
     case "above_below":
-      return <CryptoPredictionAboveBelowHubCard prediction={prediction} />;
+      return (
+        <CryptoPredictionAboveBelowHubCard
+          prediction={prediction}
+          onPickOutcome={onPickOutcome}
+        />
+      );
     case "price_range":
       return (
         <CryptoPredictionPriceRangeHubCard prediction={prediction} onPickOutcome={onPickOutcome} />

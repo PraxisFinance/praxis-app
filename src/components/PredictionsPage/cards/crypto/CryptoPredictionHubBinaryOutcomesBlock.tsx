@@ -2,6 +2,7 @@
 
 import type { CryptoBinaryOutcome } from "@/shared/types/cryptoPrediction";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 import { CryptoPredictionHubPoolSplit } from "./CryptoPredictionHubPoolSplit";
 
 interface CryptoPredictionHubBinaryOutcomesBlockProps {
@@ -27,7 +28,10 @@ export function CryptoPredictionHubBinaryOutcomesBlock({
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onOutcomePick?.(first.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onOutcomePick?.(first.id);
+            }}
           >
             {first.label}
           </Button>
@@ -39,7 +43,10 @@ export function CryptoPredictionHubBinaryOutcomesBlock({
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onOutcomePick?.(second.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onOutcomePick?.(second.id);
+            }}
           >
             {second.label}
           </Button>

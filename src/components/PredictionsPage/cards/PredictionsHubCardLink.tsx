@@ -8,7 +8,7 @@ import {
   type PredictionsHubItem,
 } from "@/shared/types/predictionsHubItem";
 
-const INTERACTIVE_SELECTOR = "button, a, [role='button']";
+const INTERACTIVE_SELECTOR = 'button, a, [role="button"], [data-slot="button"]';
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
   return target instanceof HTMLElement && Boolean(target.closest(INTERACTIVE_SELECTOR));

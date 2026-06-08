@@ -3,6 +3,7 @@
 import type { CryptoStrikeBinary } from "@/shared/types/cryptoPrediction";
 import { formatStrikeProbabilityLabel } from "@/shared/utils/cryptoHubFormat";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 
 export interface CryptoPredictionHubStrikeRowProps {
   strike: CryptoStrikeBinary;
@@ -34,7 +35,10 @@ export function CryptoPredictionHubStrikeRow({
           variant="success"
           disabled={disabled}
           className={strikeButtonClassName}
-          onClick={onPickYes ? () => onPickYes(strike.id) : undefined}
+          onClick={(event) => {
+            stopHubCardLinkNavigation(event);
+            onPickYes?.(strike.id);
+          }}
         >
           Yes
         </Button>
@@ -43,7 +47,10 @@ export function CryptoPredictionHubStrikeRow({
           variant="destructiveMuted"
           disabled={disabled}
           className={strikeButtonClassName}
-          onClick={onPickNo ? () => onPickNo(strike.id) : undefined}
+          onClick={(event) => {
+            stopHubCardLinkNavigation(event);
+            onPickNo?.(strike.id);
+          }}
         >
           No
         </Button>
