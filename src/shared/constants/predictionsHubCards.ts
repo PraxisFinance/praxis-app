@@ -8,6 +8,7 @@ import { buildFinanceHubTitle, type FinanceHubEvent } from "@/shared/types/finan
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
+import type { TechHubEvent } from "@/shared/types/techHubEvent";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 import {
   getPredictionsHubItemId,
@@ -433,6 +434,67 @@ export const PREDICTIONS_HUB_POLITICS_CARD_MOCKS = toPoliticsHubItems(
   PREDICTIONS_HUB_POLITICS_EVENT_MOCKS,
 );
 
+/** Hub-only tech markets (binary Yes / No). */
+export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
+  {
+    id: "hub-tech-gpt5-launch",
+    title: "GPT-5 released before July 2026?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(540),
+    volumeLabel: "$624.10K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 67.5, odds: 1.42 },
+      { id: "no", label: "No", poolPercent: 32.5, odds: 2.85 },
+    ],
+  },
+  {
+    id: "hub-tech-apple-foldable",
+    title: "Apple announces foldable iPhone before 2027?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(960),
+    volumeLabel: "$318.45K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 22.3, odds: 4.1 },
+      { id: "no", label: "No", poolPercent: 77.7, odds: 1.22 },
+    ],
+  },
+  {
+    id: "hub-tech-spacex-starship",
+    title: "SpaceX lands Starship on Mars before 2028?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(1200),
+    volumeLabel: "$892.60K Vol.",
+    isTradingOpen: true,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 14.6, odds: 6.2 },
+      { id: "no", label: "No", poolPercent: 85.4, odds: 1.08 },
+    ],
+  },
+  {
+    id: "hub-tech-nvidia-4nm",
+    title: "NVIDIA ships consumer Blackwell Ultra GPUs in 2026?",
+    thumbnailUrl: "",
+    endsAt: isoInHours(72),
+    volumeLabel: "$205.80K Vol.",
+    isTradingOpen: false,
+    outcomes: [
+      { id: "yes", label: "Yes", poolPercent: 54.2, odds: 1.78 },
+      { id: "no", label: "No", poolPercent: 45.8, odds: 2.05 },
+    ],
+  },
+];
+
+export function toTechHubItems(events: TechHubEvent[]): Extract<
+  PredictionsHubItem,
+  { kind: "tech" }
+>[] {
+  return events.map((event) => ({ kind: "tech", event }));
+}
+
+export const PREDICTIONS_HUB_TECH_CARD_MOCKS = toTechHubItems(PREDICTIONS_HUB_TECH_EVENT_MOCKS);
+
 /** Hub-only finance markets (binary Up / Down). */
 export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
   {
@@ -616,6 +678,7 @@ export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
   ...PREDICTIONS_HUB_POLITICS_CARD_MOCKS,
   ...PREDICTIONS_HUB_FINANCE_CARD_MOCKS,
   ...PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS,
+  ...PREDICTIONS_HUB_TECH_CARD_MOCKS,
 ];
 
 const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
@@ -635,9 +698,8 @@ function hubItemEndsAtMs(item: PredictionsHubItem): number | null {
       return new Date(item.prediction.endsAt).getTime();
     case "politics":
     case "finance":
-      return new Date(item.event.endsAt).getTime();
     case "tech":
-      return item.event.endsAt ? new Date(item.event.endsAt).getTime() : null;
+      return new Date(item.event.endsAt).getTime();
     default:
       return null;
   }

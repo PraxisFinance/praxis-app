@@ -7,9 +7,11 @@ import type { RandomPool } from "@/shared/types/randomPool";
 import type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
+import type { TechHubEvent } from "@/shared/types/techHubEvent";
 export type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 export type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 export type { SportHubMatch } from "@/shared/types/sportHubMatch";
+export type { TechHubEvent } from "@/shared/types/techHubEvent";
 
 /** Discriminator for hub feed cards — one value per card component. */
 export type PredictionsHubItemKind =
@@ -20,12 +22,6 @@ export type PredictionsHubItemKind =
   | "politics"
   | "finance"
   | "tech";
-
-export type TechHubEvent = {
-  id: string;
-  title: string;
-  endsAt?: string;
-};
 
 export type PredictionsHubItem =
   | { kind: "crypto"; prediction: CryptoPrediction }
@@ -85,6 +81,8 @@ export function getPredictionsHubDetailBreadcrumb(item: PredictionsHubItem): str
       return "Politics";
     case "finance":
       return "Finance";
+    case "tech":
+      return "Tech";
     default:
       return undefined;
   }

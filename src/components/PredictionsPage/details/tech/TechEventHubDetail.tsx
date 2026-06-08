@@ -1,6 +1,6 @@
 "use client";
 
-import type { TechHubEvent } from "@/shared/types/predictionsHubItem";
+import type { TechHubEvent } from "@/shared/types/techHubEvent";
 import { HubDetailShell } from "../HubDetailShell";
 
 interface TechEventHubDetailProps {
