@@ -3,6 +3,7 @@
 import type { FinanceHubEvent } from "@/shared/types/financeHubEvent";
 import { getFinanceEventEndLine } from "@/shared/utils/financeHubEventFormat";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "./stopHubCardLinkNavigation";
 import { FinanceEventHubCardHeader, FinanceEventHubPoolSplit } from "./finance";
 
 interface FinanceEventHubCardProps {
@@ -32,7 +33,10 @@ export function FinanceEventHubCard({ event, onPickOutcome }: FinanceEventHubCar
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(up.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(up.id);
+            }}
           >
             {up.label}
           </Button>
@@ -44,7 +48,10 @@ export function FinanceEventHubCard({ event, onPickOutcome }: FinanceEventHubCar
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(down.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(down.id);
+            }}
           >
             {down.label}
           </Button>

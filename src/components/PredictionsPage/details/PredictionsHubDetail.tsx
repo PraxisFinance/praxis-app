@@ -7,6 +7,8 @@ import {
   usePredictionsHubRandomRewardClaimDrawer,
   usePredictionsHubRandomRewardJoinDrawer,
   usePredictionsHubPoliticsDrawer,
+  usePredictionsHubFinanceDrawer,
+  usePredictionsHubTechDrawer,
   usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubDetail } from "./crypto/CryptoPredictionHubDetail";
@@ -29,6 +31,8 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
   const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
   const openSportDrawer = usePredictionsHubSportDrawer();
   const openPoliticsDrawer = usePredictionsHubPoliticsDrawer();
+  const openFinanceDrawer = usePredictionsHubFinanceDrawer();
+  const openTechDrawer = usePredictionsHubTechDrawer();
 
   switch (item.kind) {
     case "crypto":
@@ -76,8 +80,18 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
         />
       );
     case "finance":
-      return <FinanceEventHubDetail event={item.event} />;
+      return (
+        <FinanceEventHubDetail
+          event={item.event}
+          onPickOutcome={(outcomeId) => openFinanceDrawer(item.event, outcomeId)}
+        />
+      );
     case "tech":
-      return <TechEventHubDetail event={item.event} />;
+      return (
+        <TechEventHubDetail
+          event={item.event}
+          onPickOutcome={(outcomeId) => openTechDrawer(item.event, outcomeId)}
+        />
+      );
   }
 }

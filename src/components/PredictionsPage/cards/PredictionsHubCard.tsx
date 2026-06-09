@@ -19,6 +19,8 @@ interface PredictionsHubCardProps {
   onRandomRewardClaim?: () => void;
   onSportPickTeam?: (side: SportMatchDrawerSide) => void;
   onPoliticsPickOutcome?: (outcomeId: string) => void;
+  onFinancePickOutcome?: (outcomeId: string) => void;
+  onTechPickOutcome?: (outcomeId: string) => void;
 }
 
 function renderPredictionsHubCard(
@@ -29,6 +31,8 @@ function renderPredictionsHubCard(
   onRandomRewardClaim?: () => void,
   onSportPickTeam?: (side: SportMatchDrawerSide) => void,
   onPoliticsPickOutcome?: (outcomeId: string) => void,
+  onFinancePickOutcome?: (outcomeId: string) => void,
+  onTechPickOutcome?: (outcomeId: string) => void,
 ) {
   switch (item.kind) {
     case "crypto":
@@ -52,9 +56,11 @@ function renderPredictionsHubCard(
         <PoliticsEventHubCard event={item.event} onPickOutcome={onPoliticsPickOutcome} />
       );
     case "finance":
-      return <FinanceEventHubCard event={item.event} />;
+      return (
+        <FinanceEventHubCard event={item.event} onPickOutcome={onFinancePickOutcome} />
+      );
     case "tech":
-      return <TechEventHubCard event={item.event} />;
+      return <TechEventHubCard event={item.event} onPickOutcome={onTechPickOutcome} />;
   }
 }
 
@@ -67,6 +73,8 @@ export function PredictionsHubCard({
   onRandomRewardClaim,
   onSportPickTeam,
   onPoliticsPickOutcome,
+  onFinancePickOutcome,
+  onTechPickOutcome,
 }: PredictionsHubCardProps) {
   return (
     <PredictionsHubCardLink item={item}>
@@ -78,6 +86,8 @@ export function PredictionsHubCard({
         onRandomRewardClaim,
         onSportPickTeam,
         onPoliticsPickOutcome,
+        onFinancePickOutcome,
+        onTechPickOutcome,
       )}
     </PredictionsHubCardLink>
   );

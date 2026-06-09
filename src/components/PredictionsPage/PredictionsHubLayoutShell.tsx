@@ -4,9 +4,11 @@ import type { ReactNode } from "react";
 import {
   PredictionsHubCryptoDrawerProvider,
   PredictionsHubEsportsDrawerProvider,
+  PredictionsHubFinanceDrawerProvider,
   PredictionsHubRandomRewardDrawerProvider,
   PredictionsHubPoliticsDrawerProvider,
   PredictionsHubSportDrawerProvider,
+  PredictionsHubTechDrawerProvider,
 } from "@/components/PredictionsPage/drawers";
 
 interface PredictionsHubLayoutShellProps {
@@ -19,7 +21,11 @@ export function PredictionsHubLayoutShell({ children }: PredictionsHubLayoutShel
       <PredictionsHubEsportsDrawerProvider>
         <PredictionsHubRandomRewardDrawerProvider>
           <PredictionsHubSportDrawerProvider>
-            <PredictionsHubPoliticsDrawerProvider>{children}</PredictionsHubPoliticsDrawerProvider>
+            <PredictionsHubPoliticsDrawerProvider>
+              <PredictionsHubFinanceDrawerProvider>
+                <PredictionsHubTechDrawerProvider>{children}</PredictionsHubTechDrawerProvider>
+              </PredictionsHubFinanceDrawerProvider>
+            </PredictionsHubPoliticsDrawerProvider>
           </PredictionsHubSportDrawerProvider>
         </PredictionsHubRandomRewardDrawerProvider>
       </PredictionsHubEsportsDrawerProvider>

@@ -2,10 +2,10 @@
 
 import { HubBinaryMarketDrawerHeading } from "../../shared/HubBinaryMarketDrawerHeading";
 
-interface PoliticsEventDrawerHeadingProps {
+interface TechEventDrawerHeadingProps {
   thumbnailUrl: string;
 }
 
-export function PoliticsEventDrawerHeading({ thumbnailUrl }: PoliticsEventDrawerHeadingProps) {
+export function TechEventDrawerHeading({ thumbnailUrl }: TechEventDrawerHeadingProps) {
   return <HubBinaryMarketDrawerHeading imageUrl={thumbnailUrl} />;
 }

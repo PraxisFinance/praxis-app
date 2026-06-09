@@ -10,6 +10,8 @@ import {
   usePredictionsHubRandomRewardClaimDrawer,
   usePredictionsHubRandomRewardJoinDrawer,
   usePredictionsHubPoliticsDrawer,
+  usePredictionsHubFinanceDrawer,
+  usePredictionsHubTechDrawer,
   usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { PredictionsHubCard } from "./PredictionsHubCard";
@@ -29,6 +31,8 @@ export function PredictionsHubItemsList({
   const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
   const openSportDrawer = usePredictionsHubSportDrawer();
   const openPoliticsDrawer = usePredictionsHubPoliticsDrawer();
+  const openFinanceDrawer = usePredictionsHubFinanceDrawer();
+  const openTechDrawer = usePredictionsHubTechDrawer();
 
   if (items.length === 0) {
     return <p className="text-main-darkPurple/70 px-1 text-sm">{emptyMessage}</p>;
@@ -75,6 +79,14 @@ export function PredictionsHubItemsList({
             item.kind === "politics"
               ? (outcomeId) => openPoliticsDrawer(item.event, outcomeId)
               : undefined
+          }
+          onFinancePickOutcome={
+            item.kind === "finance"
+              ? (outcomeId) => openFinanceDrawer(item.event, outcomeId)
+              : undefined
+          }
+          onTechPickOutcome={
+            item.kind === "tech" ? (outcomeId) => openTechDrawer(item.event, outcomeId) : undefined
           }
         />
       ))}

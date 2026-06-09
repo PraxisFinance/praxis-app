@@ -3,6 +3,7 @@
 import type { TechHubEvent } from "@/shared/types/techHubEvent";
 import { getTechEventEndLine } from "@/shared/utils/techHubEventFormat";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "./stopHubCardLinkNavigation";
 import { TechEventHubCardHeader, TechEventHubPoolSplit } from "./tech";
 
 interface TechEventHubCardProps {
@@ -32,7 +33,10 @@ export function TechEventHubCard({ event, onPickOutcome }: TechEventHubCardProps
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(yes.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(yes.id);
+            }}
           >
             {yes.label}
           </Button>
@@ -44,7 +48,10 @@ export function TechEventHubCard({ event, onPickOutcome }: TechEventHubCardProps
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(no.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(no.id);
+            }}
           >
             {no.label}
           </Button>

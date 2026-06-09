@@ -17,6 +17,13 @@ export {
   type EsportsMatchHubDrawerProps,
 } from "./esports";
 export {
+  FinanceEventHubDrawer,
+  PredictionsHubFinanceDrawerProvider,
+  useFinanceEventDrawer,
+  usePredictionsHubFinanceDrawer,
+  type FinanceEventHubDrawerProps,
+} from "./finance";
+export {
   PoliticsEventHubDrawer,
   PredictionsHubPoliticsDrawerProvider,
   usePoliticsEventDrawer,
@@ -41,4 +48,11 @@ export {
   type SportMatchDrawerSide,
   type SportMatchHubDrawerProps,
 } from "./sport";
-export { PredictionsDrawerTitle } from "./shared";
+export {
+  TechEventHubDrawer,
+  PredictionsHubTechDrawerProvider,
+  usePredictionsHubTechDrawer,
+  useTechEventDrawer,
+  type TechEventHubDrawerProps,
+} from "./tech";
+export { HubBinaryMarketDrawerHeading, PredictionsDrawerTitle } from "./shared";
