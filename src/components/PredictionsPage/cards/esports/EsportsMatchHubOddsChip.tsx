@@ -2,6 +2,7 @@
 
 import { formatEsportsOdds } from "@/shared/utils/esportsMatchFormat";
 import { cn } from "@/lib/utils";
+import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 
 const chipClassName =
   "flex min-w-0 flex-1 items-center justify-between gap-2 rounded-lg bg-main-grayPurple px-3 py-2.5";
@@ -36,7 +37,10 @@ export function EsportsMatchHubOddsChip({
         type="button"
         data-side={side}
         disabled={disabled}
-        onClick={onPress}
+        onClick={(event) => {
+          stopHubCardLinkNavigation(event);
+          onPress();
+        }}
         className={cn(
           chipClassName,
           "text-left outline-none transition-opacity hover:opacity-95 disabled:pointer-events-none disabled:opacity-45",

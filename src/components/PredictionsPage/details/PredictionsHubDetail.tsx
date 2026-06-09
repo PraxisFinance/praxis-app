@@ -1,7 +1,10 @@
 "use client";
 
 import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
-import { usePredictionsHubCryptoDrawer } from "@/components/PredictionsPage/drawers";
+import {
+  usePredictionsHubCryptoDrawer,
+  usePredictionsHubEsportsDrawer,
+} from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubDetail } from "./crypto/CryptoPredictionHubDetail";
 import { EsportsMatchHubDetail } from "./esports/EsportsMatchHubDetail";
 import { FinanceEventHubDetail } from "./finance/FinanceEventHubDetail";
@@ -17,6 +20,7 @@ interface PredictionsHubDetailProps {
 /** Routes a hub item to the matching category detail component. */
 export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
   const openCryptoDrawer = usePredictionsHubCryptoDrawer();
+  const openEsportsDrawer = usePredictionsHubEsportsDrawer();
 
   switch (item.kind) {
     case "crypto":
@@ -27,7 +31,12 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
         />
       );
     case "esports":
-      return <EsportsMatchHubDetail match={item.match} />;
+      return (
+        <EsportsMatchHubDetail
+          match={item.match}
+          onPickTeam={(side) => openEsportsDrawer(item.match, side)}
+        />
+      );
     case "random-reward":
       return <RandomRewardHubDetail pool={item.pool} />;
     case "sport":
