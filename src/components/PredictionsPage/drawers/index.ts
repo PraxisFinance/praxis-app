@@ -17,6 +17,13 @@ export {
   type EsportsMatchHubDrawerProps,
 } from "./esports";
 export {
+  PoliticsEventHubDrawer,
+  PredictionsHubPoliticsDrawerProvider,
+  usePoliticsEventDrawer,
+  usePredictionsHubPoliticsDrawer,
+  type PoliticsEventHubDrawerProps,
+} from "./politics";
+export {
   RandomRewardClaimDrawer,
   RandomRewardJoinDrawer,
   PredictionsHubRandomRewardDrawerProvider,

@@ -9,6 +9,7 @@ import {
   usePredictionsHubEsportsDrawer,
   usePredictionsHubRandomRewardClaimDrawer,
   usePredictionsHubRandomRewardJoinDrawer,
+  usePredictionsHubPoliticsDrawer,
   usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { PredictionsHubCard } from "./PredictionsHubCard";
@@ -27,6 +28,7 @@ export function PredictionsHubItemsList({
   const openRandomRewardJoinDrawer = usePredictionsHubRandomRewardJoinDrawer();
   const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
   const openSportDrawer = usePredictionsHubSportDrawer();
+  const openPoliticsDrawer = usePredictionsHubPoliticsDrawer();
 
   if (items.length === 0) {
     return <p className="text-main-darkPurple/70 px-1 text-sm">{emptyMessage}</p>;
@@ -68,6 +70,11 @@ export function PredictionsHubItemsList({
           }
           onSportPickTeam={
             item.kind === "sport" ? (side) => openSportDrawer(item.match, side) : undefined
+          }
+          onPoliticsPickOutcome={
+            item.kind === "politics"
+              ? (outcomeId) => openPoliticsDrawer(item.event, outcomeId)
+              : undefined
           }
         />
       ))}

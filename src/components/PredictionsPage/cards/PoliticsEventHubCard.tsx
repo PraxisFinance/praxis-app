@@ -3,6 +3,7 @@
 import type { PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import { getPoliticsEventEndLine } from "@/shared/utils/politicsHubEventFormat";
 import { Button } from "@/components/ui/button";
+import { stopHubCardLinkNavigation } from "./stopHubCardLinkNavigation";
 import { PoliticsEventHubCardHeader, PoliticsEventHubPoolSplit } from "./politics";
 
 interface PoliticsEventHubCardProps {
@@ -32,7 +33,10 @@ export function PoliticsEventHubCard({ event, onPickOutcome }: PoliticsEventHubC
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(yes.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(yes.id);
+            }}
           >
             {yes.label}
           </Button>
@@ -44,7 +48,10 @@ export function PoliticsEventHubCard({ event, onPickOutcome }: PoliticsEventHubC
             size="action"
             disabled={disabled}
             className="h-full text-white"
-            onClick={() => onPickOutcome?.(no.id)}
+            onClick={(event) => {
+              stopHubCardLinkNavigation(event);
+              onPickOutcome?.(no.id);
+            }}
           >
             {no.label}
           </Button>
