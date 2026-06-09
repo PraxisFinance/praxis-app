@@ -8,8 +8,8 @@ const SLIPPAGE_OPTIONS = ["1%", "3%", "5%"] as const;
 export type PredictionsDrawerSlippage = (typeof SLIPPAGE_OPTIONS)[number];
 
 interface PredictionsDrawerSlippageRowProps {
-  value?: PredictionsDrawerSlippage;
-  onChange?: (value: PredictionsDrawerSlippage) => void;
+  value?: PredictionsDrawerSlippage | null;
+  onChange?: (value: PredictionsDrawerSlippage | null) => void;
   disabled?: boolean;
 }
 
@@ -18,13 +18,14 @@ export function PredictionsDrawerSlippageRow({
   onChange,
   disabled = false,
 }: PredictionsDrawerSlippageRowProps) {
-  const [internalValue, setInternalValue] = useState<PredictionsDrawerSlippage>("3%");
-  const value = controlledValue ?? internalValue;
+  const [internalValue, setInternalValue] = useState<PredictionsDrawerSlippage | null>(null);
+  const value = controlledValue !== undefined ? controlledValue : internalValue;
 
-  const handleSelect = (next: PredictionsDrawerSlippage) => {
+  const handleSelect = (option: PredictionsDrawerSlippage) => {
     if (disabled) return;
-    setInternalValue(next);
-    onChange?.(next);
+    const nextValue = value === option ? null : option;
+    setInternalValue(nextValue);
+    onChange?.(nextValue);
   };
 
   return (
