@@ -1,6 +1,36 @@
 /** Main menu (/) middle cards — canonical paths. */
 export const EARN_ROUTE = "/earn";
 
+export const PREDICTIONS_ROUTE = "/predictions";
+
+/** Query key for hub category preset on `/predictions`. */
+export const PREDICTIONS_HUB_CATEGORY_QUERY = "category";
+
+export function buildPredictionsHubRoute(categoryId: string): string {
+  return `${PREDICTIONS_ROUTE}?${PREDICTIONS_HUB_CATEGORY_QUERY}=${encodeURIComponent(categoryId)}`;
+}
+
+/** Legacy and section routes under `/predictions` — not hub item detail ids. */
+const PREDICTIONS_RESERVED_PATH_SEGMENTS = new Set([
+  "all",
+  "cryptocurrency",
+  "esports",
+  "random-rewards",
+  "detail",
+]);
+
+/** Hub prediction detail: `/predictions/[id]` (category comes from item data). */
+export function buildPredictionsHubDetailRoute(id: string): string {
+  return `${PREDICTIONS_ROUTE}/${encodeURIComponent(id)}`;
+}
+
+export function isPredictionsHubDetailPath(pathname: string): boolean {
+  const match = pathname.match(/^\/predictions\/([^/]+)$/);
+  if (!match) return false;
+  const segment = decodeURIComponent(match[1]);
+  return !PREDICTIONS_RESERVED_PATH_SEGMENTS.has(segment);
+}
+
 export const PREDICTIONS_ALL_ROUTE = "/predictions/all";
 
 export const PREDICTIONS_RANDOM_REWARDS_ROUTE = "/predictions/random-rewards";
@@ -45,7 +75,7 @@ export type PredictionsTabId = "all" | "cryptocurrency" | "esports" | "random-re
 export function isPredictionsSubTabActive(tabId: PredictionsTabId, pathname: string): boolean {
   switch (tabId) {
     case "all":
-      return pathname === "/predictions" || pathname === "/predictions/all";
+      return pathname === PREDICTIONS_ALL_ROUTE;
     case "cryptocurrency":
       return (
         pathname === "/predictions/cryptocurrency" ||

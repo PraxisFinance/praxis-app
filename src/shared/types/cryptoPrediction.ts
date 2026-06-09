@@ -78,12 +78,36 @@ type CryptoPredictionBase = {
   cpfPoolId: bigint;
   /** CPF contract address for this pool — resolved from vault, not from env. */
   cpfAddress: `0x${string}`;
+  /** Formatted trading volume for card header, e.g. "$858.74K Vol." */
+  volumeLabel?: string;
+  /** Chart + resolution copy for hub detail screens (until API). */
+  hubDetail?: CryptoPredictionHubMarketDetail;
 };
+
+/** Point on the hub up/down detail price chart. */
+export type CryptoPredictionPriceChartPoint = {
+  timeLabel: string;
+  price: number;
+};
+
+/** Shared chart + resolution fields for hub crypto detail screens (until API). */
+export type CryptoPredictionHubMarketDetail = {
+  baselinePriceLabel: string;
+  priceChartPoints: CryptoPredictionPriceChartPoint[];
+  resolutionAssetLabel: string;
+  resolutionCloseDateLabel: string;
+  resolutionReferenceDateLabel: string;
+  resolutionReferencePriceLabel: string;
+};
+
+/** @deprecated Use `CryptoPredictionHubMarketDetail`. */
+export type CryptoPredictionUpDownDetail = CryptoPredictionHubMarketDetail;
 
 /** Up/Down: две крупные кнопки, общая двухцветная полоса по poolPercent. */
 export type CryptoPredictionUpDown = CryptoPredictionBase & {
   predictionType: "up_down";
   outcomes: [CryptoBinaryOutcome, CryptoBinaryOutcome];
+  upDownDetail?: CryptoPredictionUpDownDetail;
 };
 
 /** Above/Below: несколько уровней с Yes/No. */

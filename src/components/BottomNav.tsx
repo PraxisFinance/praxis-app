@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { isPredictionsSectionPath, isProfileSectionPath } from "@/lib/routes";
+import {
+  isPredictionsSectionPath,
+  isProfileSectionPath,
+  PREDICTIONS_ROUTE,
+} from "@/lib/routes";
 import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "@/components/icons/navigation";
 
 interface NavItem {
@@ -15,7 +19,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { id: "main", label: "Main", href: "/main", icon: HomeIcon },
   { id: "earn", label: "Earn", href: "/earn", icon: EarnIcon },
-  { id: "predictions", label: "Predictions", href: "/predictions", icon: PredictionsIcon },
+  { id: "predictions", label: "Predictions", href: PREDICTIONS_ROUTE, icon: PredictionsIcon },
   { id: "history", label: "History", href: "/history", icon: HistoryIcon },
   { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];

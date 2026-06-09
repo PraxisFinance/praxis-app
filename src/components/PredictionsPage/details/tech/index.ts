@@ -1,0 +1,1 @@
+export { TechEventHubDetail } from "./TechEventHubDetail";

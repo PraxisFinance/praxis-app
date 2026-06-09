@@ -20,6 +20,7 @@ export function MainMenu() {
             backgroundImage={item.backgroundImage}
             redirectUrl={item.redirectUrl}
             redirectLabel={item.redirectLabel}
+            hubCategoryId={item.hubCategoryId}
           />
         ))}
 
@@ -32,6 +33,7 @@ export function MainMenu() {
               backgroundImage={item.backgroundImage}
               redirectUrl={item.redirectUrl}
               redirectLabel={item.redirectLabel}
+              hubCategoryId={item.hubCategoryId}
             />
           ))}
         </div>

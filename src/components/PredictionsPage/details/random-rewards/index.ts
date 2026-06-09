@@ -1,0 +1,1 @@
+export { RandomRewardHubDetail } from "./RandomRewardHubDetail";

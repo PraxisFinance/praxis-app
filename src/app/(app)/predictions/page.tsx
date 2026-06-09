@@ -1,5 +1,10 @@
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { PredictionsPageContent } from "@/components/PredictionsPage/PredictionsPageContent";
 
 export default function PredictionsPage() {
-  redirect("/predictions/all");
+  return (
+    <Suspense>
+      <PredictionsPageContent />
+    </Suspense>
+  );
 }

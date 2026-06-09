@@ -8,6 +8,15 @@ export const ESPORTS_GAMES = [
 
 export type EsportsGameFilterId = (typeof ESPORTS_GAMES)[number]["id"];
 
+/** Display label for hub filters and detail breadcrumbs. */
+export function getEsportsGameLabel(gameId: EsportsGameFilterId): string {
+  const game = ESPORTS_GAMES.find((entry) => entry.id === gameId);
+  if (!game) return gameId;
+  if (game.id === "csgo") return "CS2";
+  if (game.id === "dota2") return "Dota 2";
+  return game.label;
+}
+
 export const ESPORTS_TIME_FILTERS = [
   { id: "all", label: "All" },
   { id: "live", label: "Live" },

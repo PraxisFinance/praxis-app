@@ -33,6 +33,14 @@ export type EsportsMatchStatus =
       label?: string;
     };
 
+import type {
+  HubMatchHubDetail,
+  HubMatchProbabilityChartPoint,
+} from "@/shared/types/hubMatchDetail";
+
+export type EsportsMatchHubDetail = HubMatchHubDetail;
+export type EsportsMatchProbabilityChartPoint = HubMatchProbabilityChartPoint;
+
 /**
  * Single match row for the esports list (card in the mock).
  * Game icon in the corner is resolved from `gameId` via `ESPORTS_GAMES`.
@@ -48,4 +56,5 @@ export type EsportsMatch = {
   team1: EsportsMatchTeam;
   team2: EsportsMatchTeam;
   status: EsportsMatchStatus;
+  esportsDetail?: EsportsMatchHubDetail;
 };

@@ -1,0 +1,58 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import type { CryptoPredictionHit } from "@/shared/types/cryptoPrediction";
+import {
+  CryptoPredictionHubDetailOutcomesSection,
+  CryptoPredictionHubDetailPoolSplit,
+} from "../shared";
+
+interface CryptoPredictionHitOutcomesProps {
+  prediction: CryptoPredictionHit;
+  onPickOutcome?: (outcomeId: string) => void;
+}
+
+export function CryptoPredictionHitOutcomes({
+  prediction,
+  onPickOutcome,
+}: CryptoPredictionHitOutcomesProps) {
+  const [hit, miss] = prediction.outcomes;
+  const disabled = !prediction.isTradingOpen;
+
+  return (
+    <CryptoPredictionHubDetailOutcomesSection>
+      <p className="text-main-darkPurple/80 -mt-1 text-xs font-medium">
+        Target {prediction.targetPriceLabel}
+      </p>
+
+      <div className="flex gap-3">
+        <div className="h-8 min-w-0 flex-1">
+          <Button
+            type="button"
+            variant="success"
+            size="action"
+            disabled={disabled}
+            className="h-full text-white"
+            onClick={() => onPickOutcome?.(hit.id)}
+          >
+            {hit.label}
+          </Button>
+        </div>
+        <div className="h-8 min-w-0 flex-1">
+          <Button
+            type="button"
+            variant="destructiveMuted"
+            size="action"
+            disabled={disabled}
+            className="h-full text-white"
+            onClick={() => onPickOutcome?.(miss.id)}
+          >
+            {miss.label}
+          </Button>
+        </div>
+      </div>
+
+      <CryptoPredictionHubDetailPoolSplit left={hit} right={miss} />
+    </CryptoPredictionHubDetailOutcomesSection>
+  );
+}

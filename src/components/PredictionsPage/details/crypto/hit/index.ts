@@ -1,0 +1,1 @@
+export { CryptoPredictionHitHubDetail } from "./CryptoPredictionHitHubDetail";

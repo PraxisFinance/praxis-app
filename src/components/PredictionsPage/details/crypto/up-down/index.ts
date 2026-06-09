@@ -1,0 +1,1 @@
+export { CryptoPredictionUpDownHubDetail } from "./CryptoPredictionUpDownHubDetail";
