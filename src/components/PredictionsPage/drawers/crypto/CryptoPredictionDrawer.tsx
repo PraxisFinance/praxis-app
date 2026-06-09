@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
-import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type {
   CryptoBinaryOutcome,
   CryptoPrediction,
@@ -14,16 +12,16 @@ import { getCryptoDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat"
 import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import {
-  CryptoPredictionDrawerForm,
-  CryptoPredictionDrawerHeading,
+  PREDICTIONS_DRAWER_MAX_BALANCE,
+  PredictionsDrawerHeader,
+  PredictionsDrawerPredictionForm,
+  PredictionsDrawerTemplate,
+} from "../shared";
+import {
+  CryptoPredictionDrawerIcon,
   CryptoPredictionDrawerOutcomeCard,
   formatCryptoPredictionDrawerPrice,
 } from "./shared";
-
-const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
-  DEFAULT_BALANCES[0]?.value ??
-  "0";
 
 export type BinaryCryptoPrediction =
   | CryptoPredictionUpDown
@@ -96,24 +94,28 @@ function CryptoPredictionDrawerBody({
         ? "Placing bet…"
         : status === "success"
           ? "Placed!"
-          : "Place prediction";
+          : undefined;
 
   const disabled = !isAvailable || isPending;
 
   return (
-    <div className="flex flex-col gap-4">
-      <CryptoPredictionDrawerHeading iconUrl={prediction.iconUrl} />
-
+    <PredictionsDrawerTemplate
+      header={
+        <PredictionsDrawerHeader
+          trailing={<CryptoPredictionDrawerIcon iconUrl={prediction.iconUrl} />}
+        />
+      }
+    >
       <CryptoPredictionDrawerOutcomeCard
         primaryLine={primaryQuestion}
         secondaryLine={secondaryMuted}
         poolPercent={selectedOutcome.poolPercent}
       />
 
-      <CryptoPredictionDrawerForm
+      <PredictionsDrawerPredictionForm
         amount={amount}
         onAmountChange={setAmount}
-        maxBalance={PREDICTION_MAX_BALANCE}
+        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
         priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
         disabled={disabled}
         unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
@@ -121,6 +123,6 @@ function CryptoPredictionDrawerBody({
         buttonLabel={buttonLabel}
         onSubmit={() => void placeBet()}
       />
-    </div>
+    </PredictionsDrawerTemplate>
   );
 }

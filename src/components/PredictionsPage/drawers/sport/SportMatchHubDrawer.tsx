@@ -1,22 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
-import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import { DrawerShell } from "@/components/ui/DrawerShell";
-import { PredictionsDrawerTitle } from "../shared";
 import {
-  CryptoPredictionDrawerForm,
-  formatCryptoPredictionDrawerPrice,
-} from "../crypto/shared";
+  PREDICTIONS_DRAWER_MAX_BALANCE,
+  PredictionsDrawerHeader,
+  PredictionsDrawerPredictionForm,
+  PredictionsDrawerTemplate,
+} from "../shared";
+import { formatCryptoPredictionDrawerPrice } from "../crypto/shared";
 import { SportMatchDrawerOutcomeCard } from "./shared";
 import type { SportMatchDrawerSide } from "./useSportMatchDrawer";
-
-const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
-  DEFAULT_BALANCES[0]?.value ??
-  "0";
 
 export interface SportMatchHubDrawerProps {
   match: SportHubMatch | null;
@@ -49,21 +44,18 @@ function SportMatchHubDrawerBody({
   const isAvailable = match.isBettingAvailable;
 
   return (
-    <div className="flex flex-col gap-4">
-      <PredictionsDrawerTitle />
-
+    <PredictionsDrawerTemplate header={<PredictionsDrawerHeader />}>
       <SportMatchDrawerOutcomeCard match={match} selectedTeam={selectedTeam} />
 
-      <CryptoPredictionDrawerForm
+      <PredictionsDrawerPredictionForm
         amount={amount}
         onAmountChange={setAmount}
-        maxBalance={PREDICTION_MAX_BALANCE}
+        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
         priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
         disabled={!isAvailable}
         unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
-        buttonLabel="Place prediction"
         onSubmit={() => {}}
       />
-    </div>
+    </PredictionsDrawerTemplate>
   );
 }

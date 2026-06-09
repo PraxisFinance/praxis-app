@@ -5,23 +5,23 @@ import { cn } from "@/lib/utils";
 
 const SLIPPAGE_OPTIONS = ["1%", "3%", "5%"] as const;
 
-export type CryptoPredictionDrawerSlippage = (typeof SLIPPAGE_OPTIONS)[number];
+export type PredictionsDrawerSlippage = (typeof SLIPPAGE_OPTIONS)[number];
 
-interface CryptoPredictionDrawerSlippageRowProps {
-  value?: CryptoPredictionDrawerSlippage;
-  onChange?: (value: CryptoPredictionDrawerSlippage) => void;
+interface PredictionsDrawerSlippageRowProps {
+  value?: PredictionsDrawerSlippage;
+  onChange?: (value: PredictionsDrawerSlippage) => void;
   disabled?: boolean;
 }
 
-export function CryptoPredictionDrawerSlippageRow({
+export function PredictionsDrawerSlippageRow({
   value: controlledValue,
   onChange,
   disabled = false,
-}: CryptoPredictionDrawerSlippageRowProps) {
-  const [internalValue, setInternalValue] = useState<CryptoPredictionDrawerSlippage>("3%");
+}: PredictionsDrawerSlippageRowProps) {
+  const [internalValue, setInternalValue] = useState<PredictionsDrawerSlippage>("3%");
   const value = controlledValue ?? internalValue;
 
-  const handleSelect = (next: CryptoPredictionDrawerSlippage) => {
+  const handleSelect = (next: PredictionsDrawerSlippage) => {
     if (disabled) return;
     setInternalValue(next);
     onChange?.(next);

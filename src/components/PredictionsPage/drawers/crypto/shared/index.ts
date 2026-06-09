@@ -1,9 +1,7 @@
-export { CryptoPredictionDrawerForm } from "./CryptoPredictionDrawerForm";
-export { CryptoPredictionDrawerHeading } from "./CryptoPredictionDrawerHeading";
 export { CryptoPredictionDrawerIcon } from "./CryptoPredictionDrawerIcon";
 export { CryptoPredictionDrawerOutcomeCard } from "./CryptoPredictionDrawerOutcomeCard";
-export { CryptoPredictionDrawerPriceRow } from "./CryptoPredictionDrawerPriceRow";
-export { CryptoPredictionDrawerSlippageRow } from "./CryptoPredictionDrawerSlippageRow";
-export {
-  formatCryptoPredictionDrawerPrice,
-} from "./cryptoPredictionDrawerFormat";
+export { formatCryptoPredictionDrawerPrice } from "./cryptoPredictionDrawerFormat";
+export { PredictionsDrawerPredictionForm as CryptoPredictionDrawerForm } from "../../shared";
+export { PredictionsDrawerPriceRow as CryptoPredictionDrawerPriceRow } from "../../shared";
+export { PredictionsDrawerSlippageRow as CryptoPredictionDrawerSlippageRow } from "../../shared";
+export type { PredictionsDrawerSlippage as CryptoPredictionDrawerSlippage } from "../../shared";

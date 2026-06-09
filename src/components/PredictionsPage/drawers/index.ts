@@ -55,4 +55,17 @@ export {
   useTechEventDrawer,
   type TechEventHubDrawerProps,
 } from "./tech";
-export { HubBinaryMarketDrawerHeading, PredictionsDrawerTitle } from "./shared";
+export {
+  PREDICTIONS_DRAWER_MAX_BALANCE,
+  PredictionsDrawerAmountInput,
+  PredictionsDrawerHeader,
+  PredictionsDrawerHeaderImage,
+  PredictionsDrawerPlaceButton,
+  PredictionsDrawerPredictionForm,
+  PredictionsDrawerPriceRow,
+  PredictionsDrawerSlippageRow,
+  PredictionsDrawerTemplate,
+  PredictionsDrawerTitle,
+  type PredictionsDrawerHeaderImageFit,
+  type PredictionsDrawerSlippage,
+} from "./shared";

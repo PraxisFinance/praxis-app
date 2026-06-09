@@ -1,10 +1,10 @@
 "use client";
 
-interface CryptoPredictionDrawerPriceRowProps {
+interface PredictionsDrawerPriceRowProps {
   priceLabel: string;
 }
 
-export function CryptoPredictionDrawerPriceRow({ priceLabel }: CryptoPredictionDrawerPriceRowProps) {
+export function PredictionsDrawerPriceRow({ priceLabel }: PredictionsDrawerPriceRowProps) {
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-main-darkPurple/55 text-sm">Price</span>

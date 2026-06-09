@@ -1,1 +1,0 @@
-export { PoliticsEventDrawerHeading } from "./PoliticsEventDrawerHeading";

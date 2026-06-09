@@ -1,1 +1,0 @@
-export { FinanceEventDrawerHeading } from "./FinanceEventDrawerHeading";

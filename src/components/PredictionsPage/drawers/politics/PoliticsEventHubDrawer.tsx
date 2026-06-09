@@ -1,22 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
-import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { PoliticsHubBinaryOutcome, PoliticsHubEvent } from "@/shared/types/politicsHubEvent";
 import { getPoliticsDrawerInfoLines } from "@/shared/utils/politicsHubEventFormat";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import {
-  CryptoPredictionDrawerForm,
+  PREDICTIONS_DRAWER_MAX_BALANCE,
+  PredictionsDrawerHeader,
+  PredictionsDrawerHeaderImage,
+  PredictionsDrawerPredictionForm,
+  PredictionsDrawerTemplate,
+} from "../shared";
+import {
   CryptoPredictionDrawerOutcomeCard,
   formatCryptoPredictionDrawerPrice,
 } from "../crypto/shared";
-import { PoliticsEventDrawerHeading } from "./shared";
-
-const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
-  DEFAULT_BALANCES[0]?.value ??
-  "0";
 
 export interface PoliticsEventHubDrawerProps {
   event: PoliticsHubEvent | null;
@@ -61,29 +59,32 @@ function PoliticsEventHubDrawerBody({
   const isAvailable = event.isTradingOpen;
   const { primaryQuestion, secondaryMuted } = getPoliticsDrawerInfoLines(
     event,
-    selectedOutcome.label
+    selectedOutcome.label,
   );
 
   return (
-    <div className="flex flex-col gap-2">
-      <PoliticsEventDrawerHeading thumbnailUrl={event.thumbnailUrl} />
-
+    <PredictionsDrawerTemplate
+      header={
+        <PredictionsDrawerHeader
+          trailing={<PredictionsDrawerHeaderImage imageUrl={event.thumbnailUrl} />}
+        />
+      }
+    >
       <CryptoPredictionDrawerOutcomeCard
         primaryLine={primaryQuestion}
         secondaryLine={secondaryMuted}
         poolPercent={selectedOutcome.poolPercent}
       />
 
-      <CryptoPredictionDrawerForm
+      <PredictionsDrawerPredictionForm
         amount={amount}
         onAmountChange={setAmount}
-        maxBalance={PREDICTION_MAX_BALANCE}
+        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
         priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
         disabled={!isAvailable}
         unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-        buttonLabel="Place prediction"
         onSubmit={() => {}}
       />
-    </div>
+    </PredictionsDrawerTemplate>
   );
 }

@@ -1,23 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { DEFAULT_BALANCES } from "@/shared/constants/balances";
 import { ESPORTS_GAMES } from "@/shared/constants/esports";
-import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { DrawerShell } from "@/components/ui/DrawerShell";
-import { PredictionsDrawerTitle } from "../shared";
 import {
-  CryptoPredictionDrawerForm,
-  formatCryptoPredictionDrawerPrice,
-} from "../crypto/shared";
+  PREDICTIONS_DRAWER_MAX_BALANCE,
+  PredictionsDrawerHeader,
+  PredictionsDrawerPredictionForm,
+  PredictionsDrawerTemplate,
+} from "../shared";
+import { formatCryptoPredictionDrawerPrice } from "../crypto/shared";
 import { EsportsMatchDrawerOutcomeCard } from "./shared";
 import type { EsportsMatchDrawerSide } from "./useEsportsMatchDrawer";
-
-const PREDICTION_MAX_BALANCE =
-  DEFAULT_BALANCES.find((b) => b.iconUrl === YT_ICON_URL)?.value ??
-  DEFAULT_BALANCES[0]?.value ??
-  "0";
 
 export interface EsportsMatchHubDrawerProps {
   match: EsportsMatch | null;
@@ -52,25 +47,22 @@ function EsportsMatchHubDrawerBody({
   const gameIconUrl = game?.iconUrl ?? "";
 
   return (
-    <div className="flex flex-col gap-4">
-      <PredictionsDrawerTitle />
-
+    <PredictionsDrawerTemplate header={<PredictionsDrawerHeader />}>
       <EsportsMatchDrawerOutcomeCard
         match={match}
         selectedTeam={selectedTeam}
         gameIconUrl={gameIconUrl}
       />
 
-      <CryptoPredictionDrawerForm
+      <PredictionsDrawerPredictionForm
         amount={amount}
         onAmountChange={setAmount}
-        maxBalance={PREDICTION_MAX_BALANCE}
+        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
         priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
         disabled={!isAvailable}
         unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
-        buttonLabel="Place prediction"
         onSubmit={() => {}}
       />
-    </div>
+    </PredictionsDrawerTemplate>
   );
 }
