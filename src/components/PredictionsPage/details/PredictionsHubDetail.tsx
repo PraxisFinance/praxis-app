@@ -4,6 +4,8 @@ import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
 import {
   usePredictionsHubCryptoDrawer,
   usePredictionsHubEsportsDrawer,
+  usePredictionsHubRandomRewardClaimDrawer,
+  usePredictionsHubRandomRewardJoinDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubDetail } from "./crypto/CryptoPredictionHubDetail";
 import { EsportsMatchHubDetail } from "./esports/EsportsMatchHubDetail";
@@ -21,6 +23,8 @@ interface PredictionsHubDetailProps {
 export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
   const openCryptoDrawer = usePredictionsHubCryptoDrawer();
   const openEsportsDrawer = usePredictionsHubEsportsDrawer();
+  const openRandomRewardJoinDrawer = usePredictionsHubRandomRewardJoinDrawer();
+  const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
 
   switch (item.kind) {
     case "crypto":
@@ -38,7 +42,21 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
         />
       );
     case "random-reward":
-      return <RandomRewardHubDetail pool={item.pool} />;
+      return (
+        <RandomRewardHubDetail
+          pool={item.pool}
+          onJoin={() => {
+            if (item.pool.status === "live") {
+              openRandomRewardJoinDrawer(item.pool);
+            }
+          }}
+          onClaim={() => {
+            if (item.pool.status === "ended" && item.pool.userWon) {
+              openRandomRewardClaimDrawer(item.pool);
+            }
+          }}
+        />
+      );
     case "sport":
       return <SportMatchHubDetail match={item.match} />;
     case "politics":

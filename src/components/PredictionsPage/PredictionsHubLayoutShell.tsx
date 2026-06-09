@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import {
   PredictionsHubCryptoDrawerProvider,
   PredictionsHubEsportsDrawerProvider,
+  PredictionsHubRandomRewardDrawerProvider,
 } from "@/components/PredictionsPage/drawers";
 
 interface PredictionsHubLayoutShellProps {
@@ -13,7 +14,9 @@ interface PredictionsHubLayoutShellProps {
 export function PredictionsHubLayoutShell({ children }: PredictionsHubLayoutShellProps) {
   return (
     <PredictionsHubCryptoDrawerProvider>
-      <PredictionsHubEsportsDrawerProvider>{children}</PredictionsHubEsportsDrawerProvider>
+      <PredictionsHubEsportsDrawerProvider>
+        <PredictionsHubRandomRewardDrawerProvider>{children}</PredictionsHubRandomRewardDrawerProvider>
+      </PredictionsHubEsportsDrawerProvider>
     </PredictionsHubCryptoDrawerProvider>
   );
 }

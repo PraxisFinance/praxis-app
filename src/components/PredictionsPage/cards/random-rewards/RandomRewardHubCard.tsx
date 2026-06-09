@@ -5,6 +5,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatBadge } from "@/components/ui/StatBadge";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
 import type { RandomPool } from "@/shared/types/randomPool";
+import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 import { RandomPoolHubIcon } from "./RandomPoolHubIcon";
 
 export interface RandomRewardHubCardProps {
@@ -75,7 +76,10 @@ export function RandomRewardHubCard({ pool, onJoin, onClaim }: RandomRewardHubCa
           variant="success"
           size="action"
           className="h-8 text-white"
-          onClick={() => onJoin?.()}
+          onClick={(event) => {
+            stopHubCardLinkNavigation(event);
+            onJoin?.();
+          }}
         >
           Join now
         </Button>
@@ -85,7 +89,10 @@ export function RandomRewardHubCard({ pool, onJoin, onClaim }: RandomRewardHubCa
           variant="primary"
           size="action"
           className="h-8 text-white"
-          onClick={() => onClaim?.()}
+          onClick={(event) => {
+            stopHubCardLinkNavigation(event);
+            onClaim?.();
+          }}
         >
           Claim rewards
         </Button>
