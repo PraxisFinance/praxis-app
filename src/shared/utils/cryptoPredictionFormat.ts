@@ -35,8 +35,8 @@ export function getCryptoDrawerInfoLines(
   const symbol = prediction.assetSymbol.trim();
   const symPrefix = symbol ? `$${symbol} ` : "";
   return {
-    primaryQuestion: `${symPrefix}${topic} at ${dateStr}?`,
-    secondaryMuted: `${symPrefix}${selectedOutcomeLabel} at ${dateStr}`,
+    primaryQuestion: `Outcome: ${symPrefix}${selectedOutcomeLabel} at ${dateStr}?`,
+    secondaryMuted: `${symPrefix}${topic} at ${dateStr}?`,
   };
 }
 
@@ -50,10 +50,11 @@ export function getCryptoAboveBelowDrawerInfoLines(
   const symbol = prediction.assetSymbol.trim();
   const symPrefix = symbol ? `$${symbol} ` : "";
   const sideLabel = side === "yes" ? "Yes" : "No";
+  const marketTitle = prediction.title.trim();
 
   return {
-    primaryQuestion: `${symPrefix}${strike.targetLabel} at ${dateStr}?`,
-    secondaryMuted: `${symPrefix}${sideLabel} · ${strike.targetLabel} at ${dateStr}`,
+    primaryQuestion: `Outcome: ${symPrefix}${sideLabel} · ${strike.targetLabel} at ${dateStr}?`,
+    secondaryMuted: marketTitle.length > 0 ? marketTitle : `${symPrefix}above/below at ${dateStr}?`,
   };
 }
 
