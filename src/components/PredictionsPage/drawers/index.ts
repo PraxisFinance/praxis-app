@@ -26,4 +26,12 @@ export {
   type RandomRewardClaimDrawerProps,
   type RandomRewardJoinDrawerProps,
 } from "./random-rewards";
+export {
+  SportMatchHubDrawer,
+  PredictionsHubSportDrawerProvider,
+  usePredictionsHubSportDrawer,
+  useSportMatchDrawer,
+  type SportMatchDrawerSide,
+  type SportMatchHubDrawerProps,
+} from "./sport";
 export { PredictionsDrawerTitle } from "./shared";

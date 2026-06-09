@@ -1,7 +1,7 @@
 "use client";
 
 import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
-import type { EsportsMatchDrawerSide } from "@/components/PredictionsPage/drawers";
+import type { EsportsMatchDrawerSide, SportMatchDrawerSide } from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubCard } from "./CryptoPredictionHubCard";
 import { PredictionsHubCardLink } from "./PredictionsHubCardLink";
 import { EsportsMatchHubCard } from "./EsportsMatchHubCard";
@@ -17,6 +17,7 @@ interface PredictionsHubCardProps {
   onEsportsPickTeam?: (side: EsportsMatchDrawerSide) => void;
   onRandomRewardJoin?: () => void;
   onRandomRewardClaim?: () => void;
+  onSportPickTeam?: (side: SportMatchDrawerSide) => void;
 }
 
 function renderPredictionsHubCard(
@@ -25,6 +26,7 @@ function renderPredictionsHubCard(
   onEsportsPickTeam?: (side: EsportsMatchDrawerSide) => void,
   onRandomRewardJoin?: () => void,
   onRandomRewardClaim?: () => void,
+  onSportPickTeam?: (side: SportMatchDrawerSide) => void,
 ) {
   switch (item.kind) {
     case "crypto":
@@ -42,7 +44,7 @@ function renderPredictionsHubCard(
         />
       );
     case "sport":
-      return <SportMatchHubCard match={item.match} />;
+      return <SportMatchHubCard match={item.match} onPickTeam={onSportPickTeam} />;
     case "politics":
       return <PoliticsEventHubCard event={item.event} />;
     case "finance":
@@ -59,6 +61,7 @@ export function PredictionsHubCard({
   onEsportsPickTeam,
   onRandomRewardJoin,
   onRandomRewardClaim,
+  onSportPickTeam,
 }: PredictionsHubCardProps) {
   return (
     <PredictionsHubCardLink item={item}>
@@ -68,6 +71,7 @@ export function PredictionsHubCard({
         onEsportsPickTeam,
         onRandomRewardJoin,
         onRandomRewardClaim,
+        onSportPickTeam,
       )}
     </PredictionsHubCardLink>
   );

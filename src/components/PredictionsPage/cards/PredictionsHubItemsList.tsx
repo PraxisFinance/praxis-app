@@ -9,6 +9,7 @@ import {
   usePredictionsHubEsportsDrawer,
   usePredictionsHubRandomRewardClaimDrawer,
   usePredictionsHubRandomRewardJoinDrawer,
+  usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { PredictionsHubCard } from "./PredictionsHubCard";
 
@@ -25,6 +26,7 @@ export function PredictionsHubItemsList({
   const openEsportsDrawer = usePredictionsHubEsportsDrawer();
   const openRandomRewardJoinDrawer = usePredictionsHubRandomRewardJoinDrawer();
   const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
+  const openSportDrawer = usePredictionsHubSportDrawer();
 
   if (items.length === 0) {
     return <p className="text-main-darkPurple/70 px-1 text-sm">{emptyMessage}</p>;
@@ -63,6 +65,9 @@ export function PredictionsHubItemsList({
                   }
                 }
               : undefined
+          }
+          onSportPickTeam={
+            item.kind === "sport" ? (side) => openSportDrawer(item.match, side) : undefined
           }
         />
       ))}

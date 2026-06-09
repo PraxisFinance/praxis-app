@@ -5,6 +5,7 @@ import {
   PredictionsHubCryptoDrawerProvider,
   PredictionsHubEsportsDrawerProvider,
   PredictionsHubRandomRewardDrawerProvider,
+  PredictionsHubSportDrawerProvider,
 } from "@/components/PredictionsPage/drawers";
 
 interface PredictionsHubLayoutShellProps {
@@ -15,7 +16,9 @@ export function PredictionsHubLayoutShell({ children }: PredictionsHubLayoutShel
   return (
     <PredictionsHubCryptoDrawerProvider>
       <PredictionsHubEsportsDrawerProvider>
-        <PredictionsHubRandomRewardDrawerProvider>{children}</PredictionsHubRandomRewardDrawerProvider>
+        <PredictionsHubRandomRewardDrawerProvider>
+          <PredictionsHubSportDrawerProvider>{children}</PredictionsHubSportDrawerProvider>
+        </PredictionsHubRandomRewardDrawerProvider>
       </PredictionsHubEsportsDrawerProvider>
     </PredictionsHubCryptoDrawerProvider>
   );

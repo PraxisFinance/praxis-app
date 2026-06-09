@@ -6,6 +6,7 @@ import {
   usePredictionsHubEsportsDrawer,
   usePredictionsHubRandomRewardClaimDrawer,
   usePredictionsHubRandomRewardJoinDrawer,
+  usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubDetail } from "./crypto/CryptoPredictionHubDetail";
 import { EsportsMatchHubDetail } from "./esports/EsportsMatchHubDetail";
@@ -25,6 +26,7 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
   const openEsportsDrawer = usePredictionsHubEsportsDrawer();
   const openRandomRewardJoinDrawer = usePredictionsHubRandomRewardJoinDrawer();
   const openRandomRewardClaimDrawer = usePredictionsHubRandomRewardClaimDrawer();
+  const openSportDrawer = usePredictionsHubSportDrawer();
 
   switch (item.kind) {
     case "crypto":
@@ -58,7 +60,12 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
         />
       );
     case "sport":
-      return <SportMatchHubDetail match={item.match} />;
+      return (
+        <SportMatchHubDetail
+          match={item.match}
+          onPickTeam={(side) => openSportDrawer(item.match, side)}
+        />
+      );
     case "politics":
       return <PoliticsEventHubDetail event={item.event} />;
     case "finance":
