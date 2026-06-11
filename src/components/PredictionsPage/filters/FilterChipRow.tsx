@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { FilterChipButton } from "./FilterChipButton";
 
 export interface FilterChipOption<T extends string> {
   id: T;
@@ -25,21 +25,15 @@ export function FilterChipRow<T extends string>({
       {options.map(({ id, label }) => {
         const isActive = value === id;
         return (
-          <button
+          <FilterChipButton
             key={id}
-            type="button"
+            isActive={isActive}
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(id)}
-            className={cn(
-              "px-3 py-1.5 rounded-[5px] text-xs font-medium transition-all",
-              isActive
-                ? "bg-main-purple text-white"
-                : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple",
-            )}
           >
             {label}
-          </button>
+          </FilterChipButton>
         );
       })}
     </div>
