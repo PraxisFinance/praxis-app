@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { RandomPoolParticipantList } from "@/components/RandomRewardsPage/RandomPoolParticipantList";
 import type { RandomPool } from "@/shared/types/randomPool";
 import { RandomRewardDetailEndedSection } from "./RandomRewardDetailEndedSection";
 import { RandomRewardDetailJoinSection } from "./RandomRewardDetailJoinSection";
 import { RandomRewardDetailPoolInfo } from "./RandomRewardDetailPoolInfo";
+import { RandomRewardsPoolPartitiantList } from "./RandomRewardsPoolPartitiantList";
 
 interface RandomRewardHubDetailProps {
   pool: RandomPool;
@@ -32,14 +32,14 @@ export function RandomRewardHubDetail({ pool, onJoin, onClaim }: RandomRewardHub
             onJoin={onJoin}
           />
           {participants.length > 0 ? (
-            <RandomPoolParticipantList title="Users in pool" users={participants} />
+            <RandomRewardsPoolPartitiantList title="Users in pool" users={participants} />
           ) : null}
         </>
       ) : (
         <>
           <RandomRewardDetailEndedSection pool={pool} onClaim={onClaim} />
           {winners.length > 0 ? (
-            <RandomPoolParticipantList title="Winners" users={winners} />
+            <RandomRewardsPoolPartitiantList title="Winners" users={winners} />
           ) : null}
         </>
       )}
