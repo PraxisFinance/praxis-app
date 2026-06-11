@@ -14,7 +14,7 @@ import {
   usePredictionsHubTechDrawer,
   usePredictionsHubSportDrawer,
 } from "@/components/PredictionsPage/drawers";
-import { PredictionsHubCard } from "./PredictionsHubCard";
+import { PredictionsHubCard } from "./cards/PredictionsHubCard";
 
 interface PredictionsHubItemsListProps {
   items: PredictionsHubItem[];
@@ -50,9 +50,7 @@ export function PredictionsHubItemsList({
               : undefined
           }
           onEsportsPickTeam={
-            item.kind === "esports"
-              ? (side) => openEsportsDrawer(item.match, side)
-              : undefined
+            item.kind === "esports" ? (side) => openEsportsDrawer(item.match, side) : undefined
           }
           onRandomRewardJoin={
             item.kind === "random-reward"

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PredictionsHubItemsList } from "@/components/PredictionsPage/cards";
-import { PredictionsHubFilter } from "@/components/PredictionsPage/filter";
+import { PredictionsHubFilter } from "@/components/PredictionsPage/filters";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { getPredictionsHubCardMocks } from "@/shared/constants/predictionsHubCards";
 import {
@@ -18,11 +18,9 @@ export interface PredictionsHubPageProps {
   initialCategoryId?: PredictionsHubCategoryId;
 }
 
-export function PredictionsHubPage({
-  initialCategoryId = "all",
-}: PredictionsHubPageProps) {
+export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHubPageProps) {
   const [filters, setFilters] = useState<PredictionsHubFilterState>(() =>
-    createPredictionsHubFilterState(initialCategoryId),
+    createPredictionsHubFilterState(initialCategoryId)
   );
 
   useEffect(() => {
@@ -36,7 +34,7 @@ export function PredictionsHubPage({
 
   const sectionTitle = useMemo(() => {
     const activeCategory = PREDICTIONS_HUB_CATEGORY_FILTERS.find(
-      (category) => category.id === filters.categoryId,
+      (category) => category.id === filters.categoryId
     );
     return activeCategory?.title;
   }, [filters.categoryId]);

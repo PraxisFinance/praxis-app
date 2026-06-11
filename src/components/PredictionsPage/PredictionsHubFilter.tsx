@@ -10,9 +10,9 @@ import {
   getPredictionsHubSubFilterKind,
   type PredictionsHubFilterState,
 } from "@/shared/constants/predictionsHubFilters";
-import { EsportsGameFilterRow } from "./EsportsGameFilterRow";
-import { FilterChipRow } from "./FilterChipRow";
-import { OptionalFilterChipRow } from "./OptionalFilterChipRow";
+import { EsportsGameFilterRow } from "./filters/EsportsGameFilterRow";
+import { FilterChipRow } from "./filters/FilterChipRow";
+import { OptionalFilterChipRow } from "./filters/OptionalFilterChipRow";
 
 export interface PredictionsHubFilterProps {
   value: PredictionsHubFilterState;

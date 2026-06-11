@@ -1,4 +1,3 @@
-import { Balances } from "@/components/Balances/Balances";
 import { PredictionsHubLayoutShell } from "@/components/PredictionsPage/PredictionsHubLayoutShell";
 
 export default function PredictionsLayout({ children }: { children: React.ReactNode }) {
