@@ -1,10 +1,14 @@
 "use client";
 
-import { RandomPoolIcon } from "@/components/RandomRewardsPage/RandomPoolIcon";
-import { RandomPoolStatCard } from "@/components/RandomRewardsPage/RandomPoolStatCard";
 import { formatRandomPoolRemainingTime } from "@/shared/utils/randomPoolFormat";
-import type { RandomPool, RandomPoolLive, RandomPoolRemainingTime } from "@/shared/types/randomPool";
+import type {
+  RandomPool,
+  RandomPoolLive,
+  RandomPoolRemainingTime,
+} from "@/shared/types/randomPool";
 import { useRandomPoolRemainingCountdown } from "../shared/useRandomPoolRemainingCountdown";
+import { RandomRewardsPoolIcon } from "./RandomRewardsPoolIcon";
+import { RandomRewardsPoolStatCard } from "./RandomRewardsPoolStatCard";
 
 function LiveRemainingTimeLine({ remainingTime }: { remainingTime: RandomPoolRemainingTime }) {
   const remaining = useRandomPoolRemainingCountdown(remainingTime);
@@ -35,7 +39,7 @@ export function RandomRewardDetailPoolInfo({ pool }: RandomRewardDetailPoolInfoP
   return (
     <section className="flex flex-col gap-3">
       <div className="flex gap-3">
-        <RandomPoolIcon variant="details" iconUrl={pool.iconUrl} alt={pool.title} />
+        <RandomRewardsPoolIcon variant="details" iconUrl={pool.iconUrl} alt={pool.title} />
         <div className="min-w-0 flex-1">
           <h1 className="text-main-darkPurple text-lg leading-tight font-medium">{pool.title}</h1>
           {livePool ? (
@@ -47,9 +51,9 @@ export function RandomRewardDetailPoolInfo({ pool }: RandomRewardDetailPoolInfoP
       </div>
 
       <div className="flex flex-wrap items-start justify-start gap-2">
-        <RandomPoolStatCard label="Pool TVL" value={pool.tvl} />
-        <RandomPoolStatCard label={secondStat.label} value={secondStat.value} />
-        <RandomPoolStatCard label={thirdStat.label} value={thirdStat.value} />
+        <RandomRewardsPoolStatCard label="Pool TVL" value={pool.tvl} />
+        <RandomRewardsPoolStatCard label={secondStat.label} value={secondStat.value} />
+        <RandomRewardsPoolStatCard label={thirdStat.label} value={thirdStat.value} />
       </div>
     </section>
   );

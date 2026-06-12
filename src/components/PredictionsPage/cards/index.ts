@@ -1,5 +1,5 @@
 export { PredictionsHubCard } from "./PredictionsHubCard";
-export { PredictionsHubItemsList } from "./PredictionsHubItemsList";
+export { PredictionsHubItemsList } from "../PredictionsHubItemsList";
 export { CryptoPredictionHubCard } from "./CryptoPredictionHubCard";
 export { EsportsMatchHubCard } from "./EsportsMatchHubCard";
 export { RandomRewardHubCard } from "./RandomRewardHubCard";

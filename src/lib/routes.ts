@@ -1,5 +1,13 @@
-/** Main menu (/) middle cards — canonical paths. */
+import { isPredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
+
+/** App route paths — keep in sync with `src/app/(app)` page files. */
+
+export const MAIN_ROUTE = "/main";
 export const EARN_ROUTE = "/earn";
+export const HISTORY_ROUTE = "/history";
+export const HOW_IT_WORKS_ROUTE = "/how-it-works";
+export const INVITE_FRIENDS_ROUTE = "/invite-friends";
+export const LEADERBOARD_ROUTE = "/leaderboard";
 
 export const PREDICTIONS_ROUTE = "/predictions";
 
@@ -10,43 +18,34 @@ export function buildPredictionsHubRoute(categoryId: string): string {
   return `${PREDICTIONS_ROUTE}?${PREDICTIONS_HUB_CATEGORY_QUERY}=${encodeURIComponent(categoryId)}`;
 }
 
-/** Legacy and section routes under `/predictions` — not hub item detail ids. */
-const PREDICTIONS_RESERVED_PATH_SEGMENTS = new Set([
-  "all",
-  "cryptocurrency",
-  "esports",
-  "random-rewards",
-  "detail",
-]);
-
-/** Hub prediction detail: `/predictions/[id]` (category comes from item data). */
+/** Hub prediction detail: `/predictions/[id]`. */
 export function buildPredictionsHubDetailRoute(id: string): string {
   return `${PREDICTIONS_ROUTE}/${encodeURIComponent(id)}`;
 }
 
+/** True for `/predictions/[id]` detail pages (not hub category slugs). */
 export function isPredictionsHubDetailPath(pathname: string): boolean {
   const match = pathname.match(/^\/predictions\/([^/]+)$/);
   if (!match) return false;
   const segment = decodeURIComponent(match[1]);
-  return !PREDICTIONS_RESERVED_PATH_SEGMENTS.has(segment);
+  return !isPredictionsHubCategoryId(segment);
 }
 
-export const PREDICTIONS_ALL_ROUTE = "/predictions/all";
+export const PROFILE_ROUTE = "/profile";
+export const PROFILE_BALANCES_ROUTE = "/profile/balances";
+export const PROFILE_REWARDS_ROUTE = "/profile/rewards";
+export const PROFILE_DEPOSITS_ROUTE = "/profile/deposits";
+export const PROFILE_PREDICTIONS_ROUTE = "/profile/predictions";
+export const PROFILE_SETTINGS_ROUTE = "/profile/settings";
 
-export const PREDICTIONS_RANDOM_REWARDS_ROUTE = "/predictions/random-rewards";
-
-export const PREDICTIONS_CRYPTOCURRENCY_ROUTE = "/predictions/cryptocurrency";
-
-export const PREDICTIONS_ESPORTS_ROUTE = "/predictions/esports";
-
-/** Any screen under the Predictions section (bottom nav + tab bar). */
+/** Any screen under the Predictions section (bottom nav). */
 export function isPredictionsSectionPath(pathname: string): boolean {
-  return pathname === "/predictions" || pathname.startsWith("/predictions/");
+  return pathname === PREDICTIONS_ROUTE || pathname.startsWith(`${PREDICTIONS_ROUTE}/`);
 }
 
 /** Any screen under the Profile section (bottom nav + tab bar). */
 export function isProfileSectionPath(pathname: string): boolean {
-  return pathname === "/profile" || pathname.startsWith("/profile/");
+  return pathname === PROFILE_ROUTE || pathname.startsWith(`${PROFILE_ROUTE}/`);
 }
 
 export type ProfileTabId = "balances" | "rewards" | "deposits" | "predictions" | "settings";
@@ -55,50 +54,16 @@ export type ProfileTabId = "balances" | "rewards" | "deposits" | "predictions" |
 export function isProfileSubTabActive(tabId: ProfileTabId, pathname: string): boolean {
   switch (tabId) {
     case "balances":
-      return pathname === "/profile" || pathname === "/profile/balances";
+      return pathname === PROFILE_ROUTE || pathname === PROFILE_BALANCES_ROUTE;
     case "rewards":
-      return pathname === "/profile/rewards";
+      return pathname === PROFILE_REWARDS_ROUTE;
     case "deposits":
-      return pathname === "/profile/deposits";
+      return pathname === PROFILE_DEPOSITS_ROUTE;
     case "predictions":
-      return pathname === "/profile/predictions";
+      return pathname === PROFILE_PREDICTIONS_ROUTE;
     case "settings":
-      return pathname === "/profile/settings";
+      return pathname === PROFILE_SETTINGS_ROUTE;
     default:
       return false;
   }
-}
-
-export type PredictionsTabId = "all" | "cryptocurrency" | "esports" | "random-rewards";
-
-/** Active state for a Predictions sub-tab link (matches PredictionsTabBar rules). */
-export function isPredictionsSubTabActive(tabId: PredictionsTabId, pathname: string): boolean {
-  switch (tabId) {
-    case "all":
-      return pathname === PREDICTIONS_ALL_ROUTE;
-    case "cryptocurrency":
-      return (
-        pathname === "/predictions/cryptocurrency" ||
-        pathname.startsWith("/predictions/cryptocurrency/")
-      );
-    case "esports":
-      return pathname === "/predictions/esports";
-    case "random-rewards":
-      return (
-        pathname === "/predictions/random-rewards" ||
-        pathname.startsWith("/predictions/random-rewards/")
-      );
-    default:
-      return false;
-  }
-}
-
-/** Random pool details page: `/predictions/random-rewards/[id]` */
-export function isRandomRewardsPoolDetailPath(pathname: string): boolean {
-  return /^\/predictions\/random-rewards\/[^/]+$/.test(pathname);
-}
-
-/** Two-Pool detail page: `/predictions/cryptocurrency/twopools/[id]` */
-export function isTwoPoolDetailPath(pathname: string): boolean {
-  return /^\/predictions\/cryptocurrency\/twopools\/[^/]+$/.test(pathname);
 }

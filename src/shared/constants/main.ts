@@ -1,13 +1,10 @@
 import type { MenuItem } from "@/shared/types/main";
 import {
   EARN_ROUTE,
-  PREDICTIONS_CRYPTOCURRENCY_ROUTE,
-  PREDICTIONS_ESPORTS_ROUTE,
-  PREDICTIONS_RANDOM_REWARDS_ROUTE,
+  HOW_IT_WORKS_ROUTE,
+  INVITE_FRIENDS_ROUTE,
+  LEADERBOARD_ROUTE,
 } from "@/lib/routes";
-import { INVITE_FRIENDS_ROUTE } from "@/shared/constants/inviteFriends";
-import { LEADERBOARD_ROUTE } from "@/shared/constants/leaderboard";
-import { HOW_IT_WORKS_ROUTE } from "@/shared/constants/howItWorks";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -32,7 +29,6 @@ export const MENU_ITEMS: MenuItem[] = [
     backgroundImage: "/main/random-distribution.png",
     hubCategoryId: "random-rewards",
     redirectLabel: "Random distribution",
-    // redirectUrl: PREDICTIONS_RANDOM_REWARDS_ROUTE,
   },
   {
     key: "financial-predictions",
@@ -40,7 +36,6 @@ export const MENU_ITEMS: MenuItem[] = [
     backgroundImage: "/main/financial-predictions.png",
     hubCategoryId: "finance",
     redirectLabel: "Financial predictions",
-    // redirectUrl: PREDICTIONS_CRYPTOCURRENCY_ROUTE,
   },
   {
     key: "e-sports-predictions",
@@ -48,7 +43,6 @@ export const MENU_ITEMS: MenuItem[] = [
     backgroundImage: "/main/e-sports-predictions.png",
     hubCategoryId: "esports",
     redirectLabel: "E-sport predictions",
-    // redirectUrl: PREDICTIONS_ESPORTS_ROUTE,
   },
   {
     key: "invite-friends",

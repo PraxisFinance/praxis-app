@@ -1,7 +1,7 @@
 "use client";
 
-import { RequestFailedIcon } from "@/components/icons/shared/request-failed";
-import { RequestSuccessIcon } from "@/components/icons/shared/request-success";
+import { RequestFailedIcon } from "@/components/icons/request/request-failed";
+import { RequestSuccessIcon } from "@/components/icons/request/request-success";
 import { cn } from "@/lib/utils";
 
 export type RequestResultStatus = "success" | "failed";
