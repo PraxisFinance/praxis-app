@@ -13,6 +13,7 @@
 
 import { randomUUID } from "crypto";
 import { getAddress } from "viem";
+import { Prisma } from "@prisma/client";
 import type { UserActivity, UserHistoryCache } from "@prisma/client";
 import { db } from "@/lib/db";
 import {
@@ -656,7 +657,7 @@ async function step10_persist(
   todayTs: bigint,
 ): Promise<PersistResult> {
   const tDb = Date.now();
-  const mementoJson = serializePortfolio(portfolio, today);
+  const mementoJson = serializePortfolio(portfolio, today) as unknown as Prisma.InputJsonValue;
 
   const { recentActivities, chartPoints } = await db.$transaction(
     async (tx) => {
@@ -673,7 +674,7 @@ async function step10_persist(
             amountDelta: a.amountDelta,
             blockNumber: a.blockNumber,
             blockTime: a.blockTime,
-            metadataJson: a.metadataJson,
+            metadataJson: a.metadataJson as Prisma.InputJsonValue,
           })),
           skipDuplicates: true,
         });
@@ -692,7 +693,7 @@ async function step10_persist(
               },
               update: {
                 totalValue: fp.totalValue,
-                breakdownJson: fp.breakdownJson,
+                breakdownJson: fp.breakdownJson as Prisma.InputJsonValue,
               },
               create: {
                 id: randomUUID(),
@@ -700,7 +701,7 @@ async function step10_persist(
                 bucketDate: fp.bucketDate,
                 bucketTs: fp.bucketTs,
                 totalValue: fp.totalValue,
-                breakdownJson: fp.breakdownJson,
+                breakdownJson: fp.breakdownJson as Prisma.InputJsonValue,
               },
             }),
           ),
@@ -714,7 +715,7 @@ async function step10_persist(
         },
         update: {
           totalValue: portfolio.totalValueUsdc,
-          breakdownJson: portfolio.breakdown,
+          breakdownJson: portfolio.breakdown as Prisma.InputJsonValue,
         },
         create: {
           id: randomUUID(),
@@ -722,7 +723,7 @@ async function step10_persist(
           bucketDate: today,
           bucketTs: todayTs,
           totalValue: portfolio.totalValueUsdc,
-          breakdownJson: portfolio.breakdown,
+          breakdownJson: portfolio.breakdown as Prisma.InputJsonValue,
         },
       });
 
