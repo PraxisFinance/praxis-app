@@ -19,11 +19,11 @@ export function CryptoPredictionAboveBelowHubCard({
   onPickOutcome,
 }: CryptoPredictionAboveBelowHubCardProps) {
   const disabled = !prediction.isTradingOpen;
-  const endLine = getCryptoHubCardEndLine(prediction.endsAt);
+  const endLine = getCryptoHubCardEndLine(prediction.endsAt ?? "");
   const title =
     prediction.title.includes("__") || prediction.title.includes("above")
       ? prediction.title
-      : buildCryptoAboveBelowHubTitle(prediction.assetSymbol, prediction.endsAt);
+      : buildCryptoAboveBelowHubTitle(prediction.assetSymbol, prediction.endsAt ?? "");
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">

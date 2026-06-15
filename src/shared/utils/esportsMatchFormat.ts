@@ -12,6 +12,16 @@ export function getEsportsMatchStatusLine(status: EsportsMatchStatus): {
       return null;
     case "finished":
       return { text: status.label ?? "Final", showLiveDot: false };
+    case "locked":
+      return { text: status.label ?? "Locked", showLiveDot: false };
+    case "resolving":
+      return { text: status.label ?? "Resolving", showLiveDot: false };
+    case "ended":
+      return { text: status.label ?? "Ended", showLiveDot: false };
+    default: {
+      const _exhaustive: never = status;
+      return _exhaustive;
+    }
   }
 }
 

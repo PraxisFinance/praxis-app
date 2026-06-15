@@ -12,7 +12,7 @@ interface PoliticsEventHubDetailProps {
 }
 
 export function PoliticsEventHubDetail({ event, onPickOutcome }: PoliticsEventHubDetailProps) {
-  const detail = event.politicsDetail;
+  const detail = event.detail;
 
   if (!detail) {
     return (
@@ -22,10 +22,10 @@ export function PoliticsEventHubDetail({ event, onPickOutcome }: PoliticsEventHu
 
   return (
     <div className="flex flex-col gap-4">
-      <PoliticsEventDetailTitleCard thumbnailUrl={event.thumbnailUrl} title={event.title} />
+      <PoliticsEventDetailTitleCard thumbnailUrl={event.imageUrl} title={event.title} />
       <PoliticsEventDetailProbabilityChart points={detail.chartPoints} />
       <PoliticsEventDetailOutcomes event={event} onPickOutcome={onPickOutcome} />
-      <PoliticsEventDetailResolution paragraphs={detail.resolutionParagraphs} />
+      <PoliticsEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
     </div>
   );
 }

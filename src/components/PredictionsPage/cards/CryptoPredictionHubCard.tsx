@@ -13,26 +13,22 @@ interface CryptoPredictionHubCardProps {
 
 export function CryptoPredictionHubCard({ prediction, onPickOutcome }: CryptoPredictionHubCardProps) {
   switch (prediction.predictionType) {
-    case "up_down":
+    case "crypto_up_down":
       return (
         <CryptoPredictionUpDownHubCard prediction={prediction} onPickOutcome={onPickOutcome} />
       );
-    case "above_below":
+    case "crypto_above_below":
       return (
         <CryptoPredictionAboveBelowHubCard
           prediction={prediction}
           onPickOutcome={onPickOutcome}
         />
       );
-    case "price_range":
+    case "crypto_price_range":
       return (
         <CryptoPredictionPriceRangeHubCard prediction={prediction} onPickOutcome={onPickOutcome} />
       );
-    case "hit":
+    case "crypto_hit":
       return <CryptoPredictionHitHubCard prediction={prediction} onPickOutcome={onPickOutcome} />;
-    default: {
-      const _exhaustive: never = prediction;
-      return _exhaustive;
-    }
   }
 }

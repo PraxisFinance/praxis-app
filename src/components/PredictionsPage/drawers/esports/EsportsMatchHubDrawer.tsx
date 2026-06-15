@@ -41,8 +41,8 @@ function EsportsMatchHubDrawerBody({
   side: EsportsMatchDrawerSide;
 }) {
   const [amount, setAmount] = useState("");
-  const selectedTeam = side === "team1" ? match.team1 : match.team2;
-  const isAvailable = match.isBettingAvailable;
+  const selectedTeam = side === "team1" ? match.participantA : match.participantB;
+  const isAvailable = match.isTradingOpen;
   const game = ESPORTS_GAMES.find((entry) => entry.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
 

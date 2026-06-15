@@ -10,7 +10,7 @@ interface FinanceEventHubPoolSplitProps {
 
 /** Sentiment bar — Up share in green (finance hub mock, same as crypto Up/Down). */
 export function FinanceEventHubPoolSplit({ up, down }: FinanceEventHubPoolSplitProps) {
-  const upWidth = Math.min(100, Math.max(0, up.poolPercent));
+  const upWidth = Math.min(100, Math.max(0, up.poolPercent ?? 0));
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -19,8 +19,8 @@ export function FinanceEventHubPoolSplit({ up, down }: FinanceEventHubPoolSplitP
       </div>
 
       <div className="flex items-center justify-between text-2xs tabular-nums">
-        <span className="text-main-success font-semibold">{formatFinancePoolPercent(up.poolPercent)}</span>
-        <span className="text-main-red font-semibold">{formatFinancePoolPercent(down.poolPercent)}</span>
+        <span className="text-main-success font-semibold">{formatFinancePoolPercent(up.poolPercent ?? 0)}</span>
+        <span className="text-main-red font-semibold">{formatFinancePoolPercent(down.poolPercent ?? 0)}</span>
       </div>
     </div>
   );

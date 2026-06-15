@@ -14,7 +14,7 @@ interface SportMatchHubDetailProps {
 }
 
 export function SportMatchHubDetail({ match, onPickTeam }: SportMatchHubDetailProps) {
-  const detail = match.sportDetail;
+  const detail = match.detail;
 
   if (!detail) {
     return (
@@ -26,20 +26,20 @@ export function SportMatchHubDetail({ match, onPickTeam }: SportMatchHubDetailPr
     <div className="flex flex-col gap-4">
       <SportMatchDetailMatchCard match={match} displayTitle={detail.displayTitle} />
       <HubMatchDetailProbabilityChart
-        volumeLabel={detail.volumeLabel}
+        volumeLabel={detail.volumeLabel ?? ""}
         points={detail.chartPoints}
-        team1={match.team1}
-        team2={match.team2}
+        team1={match.participantA}
+        team2={match.participantB}
       />
       <HubMatchDetailOutcomes
         match={match}
-        team1PoolPercent={detail.team1PoolPercent}
-        team2PoolPercent={detail.team2PoolPercent}
+        team1PoolPercent={detail.participantAPoolPercent}
+        team2PoolPercent={detail.participantBPoolPercent}
         onPickTeam={onPickTeam}
       />
       <SportMatchDetailResolution
-        clubName={match.team1.name}
-        opponentName={match.team2.name}
+        clubName={match.participantA.name}
+        opponentName={match.participantB.name}
         resolutionDeadlineLabel={detail.resolutionDeadlineLabel}
       />
     </div>

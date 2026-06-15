@@ -3,6 +3,7 @@
 import {
   getPredictionsHubDetailBreadcrumb,
   getPredictionsHubItemEndsAt,
+  getPredictionsHubItemKind,
   PREDICTIONS_HUB_KIND_TO_CATEGORY,
   type PredictionsHubItem,
 } from "@/shared/types/predictionsHubItem";
@@ -14,7 +15,7 @@ export interface PredictionsHubDetailRoutePageProps {
 }
 
 export function PredictionsHubDetailRoutePage({ item }: PredictionsHubDetailRoutePageProps) {
-  const categoryId = PREDICTIONS_HUB_KIND_TO_CATEGORY[item.kind];
+  const categoryId = PREDICTIONS_HUB_KIND_TO_CATEGORY[getPredictionsHubItemKind(item)];
 
   return (
     <PredictionsHubDetailPage

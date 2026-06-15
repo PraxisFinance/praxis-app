@@ -16,7 +16,7 @@ export function CryptoPredictionHitHubCard({
   onPickOutcome,
 }: CryptoPredictionHitHubCardProps) {
   const disabled = !prediction.isTradingOpen;
-  const endLine = getCryptoPredictionEndLine(prediction.endsAt);
+  const endLine = getCryptoPredictionEndLine(prediction.endsAt ?? "");
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">

@@ -19,9 +19,9 @@ interface SportMatchDetailMatchCardProps {
 }
 
 export function SportMatchDetailMatchCard({ match, displayTitle }: SportMatchDetailMatchCardProps) {
-  const { team1, team2 } = match;
+  const { participantA, participantB } = match;
   const statusLine = getSportMatchStatusLine(match.status);
-  const hasScores = team1.score !== undefined && team2.score !== undefined;
+  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
 
   return (
     <section className="bg-main-lightGray relative flex flex-col gap-4 rounded-[10px] p-3">
@@ -38,7 +38,7 @@ export function SportMatchDetailMatchCard({ match, displayTitle }: SportMatchDet
 
       <div className="flex w-full items-stretch gap-2">
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <SportMatchHubTeamBlock name={team1.name} logoUrl={team1.logoUrl} />
+          <SportMatchHubTeamBlock name={participantA.name} logoUrl={participantA.logoUrl} />
         </div>
 
         <div className="flex min-w-0 shrink flex-col items-center justify-center gap-2 self-stretch px-1">
@@ -62,15 +62,15 @@ export function SportMatchDetailMatchCard({ match, displayTitle }: SportMatchDet
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <SportMatchHubScoreBox value={hasScores ? team1.score : undefined} />
-                <SportMatchHubScoreBox value={hasScores ? team2.score : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
               </div>
             </>
           )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <SportMatchHubTeamBlock name={team2.name} logoUrl={team2.logoUrl} />
+          <SportMatchHubTeamBlock name={participantB.name} logoUrl={participantB.logoUrl} />
         </div>
       </div>
     </section>

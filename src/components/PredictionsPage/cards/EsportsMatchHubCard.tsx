@@ -21,10 +21,10 @@ interface EsportsMatchHubCardProps {
 export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardProps) {
   const game = ESPORTS_GAMES.find((g) => g.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
-  const { team1, team2 } = match;
+  const { participantA, participantB } = match;
   const statusLine = getEsportsMatchStatusLine(match.status);
-  const hasScores = team1.score !== undefined && team2.score !== undefined;
-  const bettingDisabled = !match.isBettingAvailable;
+  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
+  const bettingDisabled = !match.isTradingOpen;
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-4 rounded-[10px] p-3">
@@ -40,7 +40,7 @@ export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardPr
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <EsportsMatchHubTeamBlock name={team1.name} logoUrl={team1.logoUrl} />
+          <EsportsMatchHubTeamBlock name={participantA.name} logoUrl={participantA.logoUrl} />
         </div>
 
         <div className="flex min-w-0 shrink flex-col items-center justify-end gap-2 self-stretch px-1 pb-5">
@@ -64,15 +64,15 @@ export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardPr
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <EsportsMatchHubScoreBox value={hasScores ? team1.score : undefined} />
-                <EsportsMatchHubScoreBox value={hasScores ? team2.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
               </div>
             </>
           )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <EsportsMatchHubTeamBlock name={team2.name} logoUrl={team2.logoUrl} />
+          <EsportsMatchHubTeamBlock name={participantB.name} logoUrl={participantB.logoUrl} />
         </div>
 
         <div className="flex shrink-0 flex-col items-center justify-start">
@@ -83,15 +83,15 @@ export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardPr
       <div className="flex gap-2">
         <EsportsMatchHubOddsChip
           side="T1"
-          teamName={team1.name}
-          odds={team1.odds}
+          teamName={participantA.name}
+          odds={participantA.odds}
           disabled={bettingDisabled}
           onPress={onPickTeam ? () => onPickTeam("team1") : undefined}
         />
         <EsportsMatchHubOddsChip
           side="T2"
-          teamName={team2.name}
-          odds={team2.odds}
+          teamName={participantB.name}
+          odds={participantB.odds}
           disabled={bettingDisabled}
           onPress={onPickTeam ? () => onPickTeam("team2") : undefined}
         />

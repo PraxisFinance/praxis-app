@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { RandomPool } from "@/shared/types/randomPool";
+import { isRandomRewardsEndedCard, isRandomRewardsLiveCard } from "@/shared/types/predictions";
 import { RandomRewardDetailEndedSection } from "./RandomRewardDetailEndedSection";
 import { RandomRewardDetailJoinSection } from "./RandomRewardDetailJoinSection";
 import { RandomRewardDetailPoolInfo } from "./RandomRewardDetailPoolInfo";
@@ -15,34 +16,21 @@ interface RandomRewardHubDetailProps {
 
 export function RandomRewardHubDetail({ pool, onJoin, onClaim }: RandomRewardHubDetailProps) {
   const [amount, setAmount] = useState("");
-  const participants = pool.hubDetail?.participants ?? [];
-  const winners = pool.hubDetail?.winners ?? [];
-  const walletBalance = pool.hubDetail?.walletBalance ?? "0";
 
   return (
     <div className="flex flex-col gap-4">
       <RandomRewardDetailPoolInfo pool={pool} />
 
-      {pool.status === "live" ? (
-        <>
-          <RandomRewardDetailJoinSection
-            amount={amount}
-            onAmountChange={setAmount}
-            walletBalance={walletBalance}
-            onJoin={onJoin}
-          />
-          {participants.length > 0 ? (
-            <RandomRewardsPoolPartitiantList title="Users in pool" users={participants} />
-          ) : null}
-        </>
-      ) : (
-        <>
-          <RandomRewardDetailEndedSection pool={pool} onClaim={onClaim} />
-          {winners.length > 0 ? (
-            <RandomRewardsPoolPartitiantList title="Winners" users={winners} />
-          ) : null}
-        </>
-      )}
+      {isRandomRewardsLiveCard(pool) ? (
+        <RandomRewardDetailJoinSection
+          amount={amount}
+          onAmountChange={setAmount}
+          walletBalance="0"
+          onJoin={onJoin}
+        />
+      ) : isRandomRewardsEndedCard(pool) ? (
+        <RandomRewardDetailEndedSection pool={pool} onClaim={onClaim} />
+      ) : null}
     </div>
   );
 }

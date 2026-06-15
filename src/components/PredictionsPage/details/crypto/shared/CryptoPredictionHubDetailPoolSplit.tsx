@@ -1,18 +1,20 @@
 "use client";
 
-import type { CryptoBinaryOutcome } from "@/shared/types/cryptoPrediction";
+import type { PredictionOutcome } from "@/shared/types/predictions";
 import { formatHubDetailPoolPercent } from "../../shared/hubDetailFormat";
 
 interface CryptoPredictionHubDetailPoolSplitProps {
-  left: CryptoBinaryOutcome;
-  right: CryptoBinaryOutcome;
+  left: PredictionOutcome;
+  right: PredictionOutcome;
 }
 
 export function CryptoPredictionHubDetailPoolSplit({
   left,
   right,
 }: CryptoPredictionHubDetailPoolSplitProps) {
-  const leftWidth = Math.min(100, Math.max(0, left.poolPercent));
+  const leftPercent = left.poolPercent ?? 0;
+  const rightPercent = right.poolPercent ?? 0;
+  const leftWidth = Math.min(100, Math.max(0, leftPercent));
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -21,10 +23,10 @@ export function CryptoPredictionHubDetailPoolSplit({
       </div>
       <div className="flex items-center justify-between text-2xs tabular-nums">
         <span className="text-main-success font-semibold">
-          {formatHubDetailPoolPercent(left.poolPercent)}
+          {formatHubDetailPoolPercent(leftPercent)}
         </span>
         <span className="text-main-red font-semibold">
-          {formatHubDetailPoolPercent(right.poolPercent)}
+          {formatHubDetailPoolPercent(rightPercent)}
         </span>
       </div>
     </div>

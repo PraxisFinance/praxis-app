@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import type {
-  CryptoBinaryOutcome,
   CryptoPrediction,
   CryptoPredictionHit,
   CryptoPredictionPriceRange,
   CryptoPredictionUpDown,
 } from "@/shared/types/cryptoPrediction";
+import type { PredictionOutcome } from "@/shared/types/predictions";
 import { getCryptoDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
 import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
 import { DrawerShell } from "@/components/ui/DrawerShell";
@@ -29,7 +29,7 @@ export type BinaryCryptoPrediction =
   | CryptoPredictionHit;
 
 function isBinaryCryptoPrediction(p: CryptoPrediction | null): p is BinaryCryptoPrediction {
-  return p != null && p.predictionType !== "above_below";
+  return p != null && p.predictionType !== "crypto_above_below";
 }
 
 export interface CryptoPredictionDrawerProps {
@@ -70,7 +70,7 @@ function CryptoPredictionDrawerBody({
   selectedOutcome,
 }: {
   prediction: BinaryCryptoPrediction;
-  selectedOutcome: CryptoBinaryOutcome;
+  selectedOutcome: PredictionOutcome;
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = prediction.isTradingOpen;

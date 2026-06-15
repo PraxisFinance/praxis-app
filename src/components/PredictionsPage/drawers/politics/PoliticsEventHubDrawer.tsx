@@ -66,7 +66,7 @@ function PoliticsEventHubDrawerBody({
     <PredictionsDrawerTemplate
       header={
         <PredictionsDrawerHeader
-          trailing={<PredictionsDrawerHeaderImage imageUrl={event.thumbnailUrl} />}
+          trailing={<PredictionsDrawerHeaderImage imageUrl={event.imageUrl} />}
         />
       }
     >

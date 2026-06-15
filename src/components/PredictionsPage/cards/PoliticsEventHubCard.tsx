@@ -14,12 +14,12 @@ interface PoliticsEventHubCardProps {
 export function PoliticsEventHubCard({ event, onPickOutcome }: PoliticsEventHubCardProps) {
   const [yes, no] = event.outcomes;
   const disabled = !event.isTradingOpen;
-  const endLine = getPoliticsEventEndLine(event.endsAt);
+  const endLine = getPoliticsEventEndLine(event.endsAt ?? "");
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">
       <PoliticsEventHubCardHeader
-        thumbnailUrl={event.thumbnailUrl}
+        thumbnailUrl={event.imageUrl}
         title={event.title}
         endLine={endLine}
         volumeLabel={event.volumeLabel}

@@ -151,7 +151,7 @@ export function mapCPFPoolToCryptoPrediction(
     iconUrl: offchain?.logoPath ?? "",
     status: deriveStatus(pool, offchain, nowMs),
     endsAt: deriveEndsAt(pool, offchain),
-    predictionType: "up_down",
+    predictionType: "crypto_up_down",
     isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
     outcomes,
   };

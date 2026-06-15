@@ -25,14 +25,14 @@ export function PredictionsHubCryptoDrawerProvider({
     useCryptoPredictionDrawer();
 
   const value = useMemo(() => openDrawer, [openDrawer]);
-  const isAboveBelow = prediction?.predictionType === "above_below";
+  const isAboveBelow = prediction?.predictionType === "crypto_above_below";
 
   return (
     <PredictionsHubCryptoDrawerContext.Provider value={value}>
       {children}
       {isAboveBelow ? (
         <CryptoPredictionAboveBelowDrawer
-          prediction={prediction?.predictionType === "above_below" ? prediction : null}
+          prediction={prediction?.predictionType === "crypto_above_below" ? prediction : null}
           selectedOutcomeId={selectedOutcomeId}
           open={open}
           onOpenChange={onOpenChange}

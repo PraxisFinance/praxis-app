@@ -10,7 +10,7 @@ interface PoliticsEventHubPoolSplitProps {
 
 /** Sentiment bar — Yes share in red (per politics hub mock). */
 export function PoliticsEventHubPoolSplit({ yes, no }: PoliticsEventHubPoolSplitProps) {
-  const yesWidth = Math.min(100, Math.max(0, yes.poolPercent));
+  const yesWidth = Math.min(100, Math.max(0, yes.poolPercent ?? 0));
 
   return (
     <div className="flex flex-col gap-1.5">
@@ -19,9 +19,9 @@ export function PoliticsEventHubPoolSplit({ yes, no }: PoliticsEventHubPoolSplit
       </div>
 
       <div className="flex items-center justify-between text-2xs tabular-nums">
-        <span className="text-main-red font-semibold">{formatPoliticsPoolPercent(yes.poolPercent)}</span>
+        <span className="text-main-red font-semibold">{formatPoliticsPoolPercent(yes.poolPercent ?? 0)}</span>
         <span className="text-main-darkPurple font-semibold">
-          {formatPoliticsPoolPercent(no.poolPercent)}
+          {formatPoliticsPoolPercent(no.poolPercent ?? 0)}
         </span>
       </div>
     </div>
