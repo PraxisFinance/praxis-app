@@ -1,31 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import {
-  PREDICTIONS_HISTORY_INTERVALS,
-  PREDICTIONS_HISTORY_MOCK_DATA,
-} from "@/shared/constants/profile";
+import { PREDICTIONS_HISTORY_INTERVALS } from "@/shared/constants/profile";
 import type { PredictionHistoryItem, PredictionsHistoryInterval } from "@/shared/types/profile";
+import { useStatisticsStore } from "@/stores/statisticsStore";
+import type { PredictionHistoryItem as StorePredItem } from "@/stores/statisticsStore";
 import { PredictionsHistoryRow } from "./PredictionsHistoryRow";
 
 export type { PredictionHistoryItem, PredictionsHistoryInterval };
 
+const DAY_MS = 86_400_000;
+
+const EMPTY_PRED_HISTORY: Record<PredictionsHistoryInterval, PredictionHistoryItem[]> = {
+  "1D": [],
+  "3D": [],
+  "7D": [],
+  "1M": [],
+  "1Y": [],
+};
+
 export interface PredictionsHistoryProps {
-  data?: Partial<Record<PredictionsHistoryInterval, PredictionHistoryItem[]>>;
   className?: string;
 }
 
-export function PredictionsHistory({ data, className }: PredictionsHistoryProps) {
+function buildPredHistoryData(
+  items: StorePredItem[]
+): Record<PredictionsHistoryInterval, PredictionHistoryItem[]> {
+  const now = Date.now();
+  if (!items.length) return EMPTY_PRED_HISTORY;
+
+  const sorted = [...items].sort((a, b) => b.date - a.date);
+
+  const ddmmyy = (ms: number) => {
+    const d = new Date(ms);
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yy = String(d.getFullYear()).slice(2);
+    return `${dd}/${mm}/${yy}`;
+  };
+
+  function slice(days: number, fmt: (ms: number) => string): PredictionHistoryItem[] {
+    const cutoff = now - days * DAY_MS;
+    return sorted
+      .filter((i) => i.date >= cutoff)
+      .map((i) => ({
+        id: i.id,
+        result: i.status,
+        prediction: i.label,
+        date: fmt(i.date),
+        amount: Number(i.amount < 0n ? -i.amount : i.amount) / 1_000_000,
+        currency: "$wUSDC",
+      }));
+  }
+
+  const shortMonthYear = (ms: number) =>
+    new Date(ms).toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+
+  return {
+    "1D": slice(1, ddmmyy),
+    "3D": slice(3, ddmmyy),
+    "7D": slice(7, ddmmyy),
+    "1M": slice(30, ddmmyy),
+    "1Y": slice(365, shortMonthYear),
+  };
+}
+
+export function PredictionsHistory({ className }: PredictionsHistoryProps) {
   const [activeInterval, setActiveInterval] = useState<PredictionsHistoryInterval>("3D");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const predictionHistory = useStatisticsStore((s) => s.predictionHistory);
 
   const activeLabel =
     PREDICTIONS_HISTORY_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
 
-  const items = data?.[activeInterval] ?? PREDICTIONS_HISTORY_MOCK_DATA[activeInterval];
+  const data = useMemo(() => buildPredHistoryData(predictionHistory), [predictionHistory]);
+  const items = data[activeInterval];
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -51,7 +103,12 @@ export function PredictionsHistory({ data, className }: PredictionsHistoryProps)
 
           {dropdownOpen && (
             <>
-              <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+              <button
+                type="button"
+                aria-label="Close predictions history interval menu"
+                className="fixed inset-0 z-10 cursor-default"
+                onClick={() => setDropdownOpen(false)}
+              />
               <div className="absolute right-0 z-20 mt-1.5 min-w-[100px] overflow-hidden rounded-sm bg-white shadow-[0_4px_20px_rgba(45,39,75,0.12)]">
                 {PREDICTIONS_HISTORY_INTERVALS.map((interval) => (
                   <button
@@ -90,9 +147,13 @@ export function PredictionsHistory({ data, className }: PredictionsHistoryProps)
 
       {/* Rows */}
       <div className="flex flex-col gap-2">
-        {items.map((item) => (
-          <PredictionsHistoryRow key={item.id} item={item} />
-        ))}
+        {items.length > 0 ? (
+          items.map((item) => <PredictionsHistoryRow key={item.id} item={item} />)
+        ) : (
+          <p className="text-main-darkPurple/50 py-6 text-center text-xs leading-5">
+            No predictions in this period.
+          </p>
+        )}
       </div>
     </div>
   );

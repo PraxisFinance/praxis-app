@@ -7,10 +7,16 @@ import type { HistoryEvent } from "@/shared/types/history";
 import { formatHistoryTimestamp, formatSignedHistoryAmount } from "./historyEventFormat";
 import { HistoryEventTypeIcon } from "./HistoryEventTypeIcon";
 
-export function HistoryEventCard({ event }: { event: HistoryEvent }) {
+export function HistoryEventCard({
+  event,
+  label,
+}: {
+  event: HistoryEvent;
+  label?: string;
+}) {
   const meta = BALANCE_CURRENCY_META.find((m) => m.key === event.amountCurrency);
   const iconUrl = meta?.iconUrl ?? BALANCE_CURRENCY_META[0].iconUrl;
-  const label = HISTORY_EVENT_TYPE_LABELS[event.type];
+  const displayLabel = label ?? HISTORY_EVENT_TYPE_LABELS[event.type];
 
   return (
     <article className="flex flex-col gap-0 rounded-sm bg-main-grayPurple/60 p-2">
@@ -24,7 +30,7 @@ export function HistoryEventCard({ event }: { event: HistoryEvent }) {
       <div className="flex items-center min-w-0">
         <HistoryEventTypeIcon type={event.type} />
         <span className="text-main-darkPurple min-w-0 flex-1 truncate text-sm leading-5">
-          {label}
+          {displayLabel}
         </span>
 
         <div className="flex shrink-0 items-center gap-1.5 rounded-sm bg-main-grayPurple px-2 py-1">

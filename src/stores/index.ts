@@ -69,7 +69,6 @@ export {
   formatChartDate,
   formatWinRate,
   type BalanceChartPoint,
-  type PredictionChartPoint,
   type PredictionHistoryItem,
 } from "./statisticsStore";
 

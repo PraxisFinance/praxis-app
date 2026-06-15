@@ -43,7 +43,7 @@ export interface PredictionsStatsLineMeta {
 // ── Predictions history ────────────────────────────────────────────────────
 
 export type PredictionsHistoryInterval = "1D" | "3D" | "7D" | "1M" | "1Y";
-export type PredictionHistoryResult = "won" | "lost";
+export type PredictionHistoryResult = "won" | "lost" | "pending";
 
 export interface PredictionHistoryItem {
   id: string;

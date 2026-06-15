@@ -4,13 +4,14 @@ import { useMemo, useState, useSyncExternalStore } from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
 import {
-  HISTORY_EVENTS_MOCK,
   HISTORY_PAGE_CLOCK_ANCHOR_MS,
   HISTORY_TIME_FILTER_OPTIONS,
   historyTimeFilterCutoffMs,
 } from "@/shared/constants/history";
 import type { HistoryTimeFilter } from "@/shared/types/history";
+import { useHistoryStore } from "@/stores/historyStore";
 import { HistoryEventCard } from "./HistoryEventCard";
+import { historyItemToDisplayEvent } from "./historyItemAdapter";
 
 const NOW_BUCKET_MS = 60_000;
 
@@ -29,13 +30,15 @@ function useHistoryPageNowMs(): number {
 export function HistoryPage() {
   const [timeFilter, setTimeFilter] = useState<HistoryTimeFilter>("3D");
   const nowMs = useHistoryPageNowMs();
+  const history = useHistoryStore((s) => s.history);
 
   const visibleEvents = useMemo(() => {
     const from = historyTimeFilterCutoffMs(timeFilter, nowMs);
-    return HISTORY_EVENTS_MOCK.filter((e) => e.timestamp >= from).sort(
-      (a, b) => b.timestamp - a.timestamp
-    );
-  }, [timeFilter, nowMs]);
+    return history
+      .map(historyItemToDisplayEvent)
+      .filter((e) => e.timestamp >= from)
+      .sort((a, b) => b.timestamp - a.timestamp);
+  }, [history, timeFilter, nowMs]);
 
   return (
     <div className="flex min-h-full flex-col gap-4 pb-8">
@@ -52,7 +55,9 @@ export function HistoryPage() {
 
       <div className="flex flex-col gap-3">
         {visibleEvents.length > 0 ? (
-          visibleEvents.map((event) => <HistoryEventCard key={event.id} event={event} />)
+          visibleEvents.map((event) => (
+            <HistoryEventCard key={event.id} event={event} label={event.label} />
+          ))
         ) : (
           <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
             No actions in this period.

@@ -31,6 +31,8 @@ model Event {
   votingDeadlineTs    Float?
   vault               String?
   logoPath            String?
+  cpfAddress          String?
+  resolutionStatus    String?
 }
 
 model Admin {
@@ -68,15 +70,74 @@ model TwoPoolContract {
   createdAt   DateTime @default(now())
 }
 
-model MarketCache {
+model CacheMetadata {
   key        String   @id
-  markets    Json
   totalCount Int
   updatedAt  DateTime
+}
+
+model CachedMarket {
+  id                  Int    @id
+  tradeType           String
+  volume              Float
+  liquidity           Float
+  expirationTimestamp Float
+  data                Json
+
+  @@index([expirationTimestamp])
+  @@index([liquidity(sort: Desc)])
+  @@index([tradeType])
+  @@index([volume(sort: Desc)])
 }
 
 enum EventStatus {
   open
   resolved
   cancelled
+}
+
+// Resumability cursor + live portfolio snapshot per user (Base only).
+model UserHistoryCache {
+  id                 String   @id @default(uuid())
+  userAddress        String   @unique // EIP-55 checksummed; use getAddress() on write
+  lastProcessedBlock BigInt
+  envioBlockAtSync   BigInt   // the Envio head at last sync
+  schemaVersion      Int      // bump this constant to force full recompute
+  portfolioJson      Json     // current per-product snapshot (small)
+  touchedVaults      String[] // lowercased contract addresses
+  touchedRyds        String[]
+  touchedCpfPools    String[] // `${cpfAddress}:${poolId}`
+  touchedTwoPools    String[]
+  updatedAt          DateTime @updatedAt
+}
+
+// Immutable, append-only activity rows.
+// id == Envio event id with chain prefix stripped: `${paddedBlock}_${paddedLogIndex}`
+// Envio raw format is `8453_${paddedBlock}_${paddedLogIndex}` — strip "8453_" on write.
+model UserActivity {
+  id           String @id
+  userAddress  String // EIP-55 checksummed
+  kind         String // ActivityKind values defined in src/shared/types/history.ts
+  productAddr  String
+  marketRef    String? // poolId / rydAddr / vaultAddr
+  amountDelta  String  // signed BigInt as string (+in / −out)
+  blockNumber  BigInt
+  blockTime    BigInt  // unix seconds from Envio block.timestamp
+  metadataJson Json    // event-specific extras (side, ytBurn, payout…)
+
+  @@index([userAddress, blockTime])
+  @@index([userAddress])
+}
+
+// Upsert-by-day portfolio value series.
+model UserPortfolioPoint {
+  id            String @id @default(uuid())
+  userAddress   String // EIP-55 checksummed
+  bucketDate    String // "YYYY-MM-DD" UTC
+  bucketTs      BigInt // unix seconds of bucket start (00:00 UTC)
+  totalValue    String // USDC 6dp as BigInt string
+  breakdownJson Json   // { vault, ryd, cpf, twoPool, freeYt, claimable }
+
+  @@unique([userAddress, bucketDate])
+  @@index([userAddress, bucketTs])
 }
