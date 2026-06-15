@@ -8,8 +8,8 @@ interface EsportsMatchDetailResolutionProps {
 }
 
 export function EsportsMatchDetailResolution({ match }: EsportsMatchDetailResolutionProps) {
-  const winnerName = match.team1.name;
-  const loserName = match.team2.name;
+  const winnerName = match.participantA.name;
+  const loserName = match.participantB.name;
 
   return (
     <section className="flex flex-col gap-3">

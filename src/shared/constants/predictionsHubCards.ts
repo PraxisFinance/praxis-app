@@ -11,13 +11,58 @@ import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import type { TechHubEvent } from "@/shared/types/techHubEvent";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
 import {
+  getCryptoMarketType,
   getPredictionsHubItemId,
-  PREDICTIONS_HUB_ITEMS_BY_CATEGORY,
-  type PredictionsHubItem,
-} from "@/shared/types/predictionsHubItem";
+  getPredictionsHubItemKind,
+  isCryptoPredictionCard,
+  predictionTypeMatchesHubCategory,
+  type PredictionsHubListItem,
+} from "@/shared/types/predictions";
 
 function isoInHours(hoursFromNow: number): string {
   return new Date(Date.now() + hoursFromNow * 60 * 60 * 1000).toISOString();
+}
+
+function tagEsportsMatch(match: Omit<EsportsMatch, "predictionType">): EsportsMatch {
+  return { ...match, predictionType: "esports" };
+}
+
+function tagSportMatch(match: Omit<SportHubMatch, "predictionType">): SportHubMatch {
+  return { ...match, predictionType: "sport" };
+}
+
+function tagPoliticsEvent(
+  event: Omit<PoliticsHubEvent, "predictionType" | "status">,
+): PoliticsHubEvent {
+  return {
+    ...event,
+    predictionType: "politics",
+    status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+  };
+}
+
+function tagFinanceEvent(
+  event: Omit<FinanceHubEvent, "predictionType" | "status">,
+): FinanceHubEvent {
+  return {
+    ...event,
+    predictionType: "finance",
+    status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+  };
+}
+
+function tagTechEvent(event: Omit<TechHubEvent, "predictionType" | "status">): TechHubEvent {
+  return {
+    ...event,
+    predictionType: "tech",
+    status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+  };
+}
+
+function tagRandomPool<T extends Omit<RandomPool, "predictionType">>(
+  pool: T,
+): T & { predictionType: "random_reward" } {
+  return { ...pool, predictionType: "random_reward" };
 }
 
 const HUB_MOCK_ICON = USDC_ICON_URL;
@@ -59,7 +104,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "live", label: "Live now" },
     endsAt: new Date(Date.now() + (45 * 60 + 59) * 1000).toISOString(),
-    predictionType: "up_down",
+    predictionType: "crypto_up_down",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(1),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -69,7 +114,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "up", label: "Up", odds: 1.72, poolPercent: 9.8 },
       { id: "down", label: "Down", odds: 2.05, poolPercent: 91.2 },
     ],
-    upDownDetail: {
+    detail: {
       baselinePriceLabel: "$25.807",
       priceChartPoints: [
         { timeLabel: "2:50pm", price: 25.42 },
@@ -91,7 +136,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "upcoming", startsAt: isoInHours(2) },
     endsAt: isoInHours(30),
-    predictionType: "up_down",
+    predictionType: "crypto_up_down",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(2),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -101,7 +146,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "up", label: "Up", odds: 1.9, poolPercent: 52 },
       { id: "down", label: "Down", odds: 1.95, poolPercent: 48 },
     ],
-    hubDetail: hubCryptoMarketDetail("ETH", "$3,842.50", "$3,798.20"),
+    detail: hubCryptoMarketDetail("ETH", "$3,842.50", "$3,798.20"),
   },
   {
     id: "hub-aero-above-below",
@@ -110,7 +155,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "live", label: "Live now" },
     endsAt: "2026-02-27T15:30:00.000Z",
-    predictionType: "above_below",
+    predictionType: "crypto_above_below",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(3),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -129,7 +174,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
         no: { odds: 50, poolPercent: 0 },
       },
     ],
-    hubDetail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
+    detail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
   },
   {
     id: "hub-aero-price-ranges",
@@ -138,7 +183,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "live", label: "Live now" },
     endsAt: "2026-02-27T15:30:00.000Z",
-    predictionType: "above_below",
+    predictionType: "crypto_above_below",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(7),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -157,7 +202,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
         no: { odds: 1.03, poolPercent: 99.2 },
       },
     ],
-    hubDetail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
+    detail: hubCryptoMarketDetail("AERO", "$18.42", "$17.95"),
   },
   {
     id: "hub-btc-range",
@@ -166,7 +211,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "upcoming", startsAt: isoInHours(12) },
     endsAt: isoInHours(72),
-    predictionType: "price_range",
+    predictionType: "crypto_price_range",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(4),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -178,7 +223,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "inside", label: "Inside range", odds: 1.85, poolPercent: 54 },
       { id: "outside", label: "Outside range", odds: 1.92, poolPercent: 46 },
     ],
-    hubDetail: hubCryptoMarketDetail("BTC", "$94,250.00", "$93,880.00"),
+    detail: hubCryptoMarketDetail("BTC", "$94,250.00", "$93,880.00"),
   },
   {
     id: "hub-hype-hit",
@@ -187,7 +232,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
     iconUrl: HUB_MOCK_ICON,
     status: { kind: "upcoming", startsAt: isoInHours(6) },
     endsAt: isoInHours(48),
-    predictionType: "hit",
+    predictionType: "crypto_hit",
     isTradingOpen: true,
     cpfPoolId: hubMockCpfPoolId(5),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -198,7 +243,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "hit", label: "Hit", odds: 2.4, poolPercent: 38 },
       { id: "miss", label: "Miss", odds: 1.52, poolPercent: 62 },
     ],
-    hubDetail: hubCryptoMarketDetail("HYPE", "$22.18", "$21.74"),
+    detail: hubCryptoMarketDetail("HYPE", "$22.18", "$21.74"),
   },
   {
     id: "hub-link-ended",
@@ -211,7 +256,7 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       endedAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     },
     endsAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-    predictionType: "up_down",
+    predictionType: "crypto_up_down",
     isTradingOpen: false,
     cpfPoolId: hubMockCpfPoolId(6),
     cpfAddress: HUB_MOCK_CPF_ADDRESS,
@@ -221,176 +266,154 @@ export const PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS: CryptoPrediction[] = [
       { id: "up", label: "Up", odds: 1.5, poolPercent: 40 },
       { id: "down", label: "Down", odds: 2.2, poolPercent: 60 },
     ],
-    hubDetail: hubCryptoMarketDetail("LINK", "$14.82", "$15.01"),
+    detail: hubCryptoMarketDetail("LINK", "$14.82", "$15.01"),
   },
 ];
-
-export function toCryptoHubItems(predictions: CryptoPrediction[]): Extract<
-  PredictionsHubItem,
-  { kind: "crypto" }
->[] {
-  return predictions.map((prediction) => ({ kind: "crypto", prediction }));
-}
 
 /** Hub-only esports matches (relative dates for upcoming rows). */
 export const PREDICTIONS_HUB_ESPORTS_MATCH_MOCKS: EsportsMatch[] = [
-  {
+  tagEsportsMatch({
     id: "hub-match-dota-live-1",
     gameId: "dota2",
     streamUrl: "https://www.youtube.com/live",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "live", label: "Live now" },
-    team1: { name: "Inner Circle", logoUrl: "", odds: 1.35, score: 1 },
-    team2: { name: "AVULUS", logoUrl: "", odds: 3.4, score: 0 },
-    esportsDetail: {
+    participantA: { name: "Inner Circle", logoUrl: "", odds: 1.35, score: 1 },
+    participantB: { name: "AVULUS", logoUrl: "", odds: 3.4, score: 0 },
+    detail: {
       displayTitle: "Team Inner Circle vs AVULUS Team",
       volumeLabel: "$858.74K Vol.",
       chartPoints: [
-        { timeLabel: "5:20pm", team1Percent: 52, team2Percent: 48 },
-        { timeLabel: "5:40pm", team1Percent: 48, team2Percent: 52 },
-        { timeLabel: "6:00pm", team1Percent: 55, team2Percent: 45 },
-        { timeLabel: "6:20pm", team1Percent: 44, team2Percent: 56 },
-        { timeLabel: "6:40pm", team1Percent: 38, team2Percent: 62 },
-        { timeLabel: "7:00pm", team1Percent: 41, team2Percent: 59 },
+        { timeLabel: "5:20pm", participantAPercent: 52, participantBPercent: 48 },
+        { timeLabel: "5:40pm", participantAPercent: 48, participantBPercent: 52 },
+        { timeLabel: "6:00pm", participantAPercent: 55, participantBPercent: 45 },
+        { timeLabel: "6:20pm", participantAPercent: 44, participantBPercent: 56 },
+        { timeLabel: "6:40pm", participantAPercent: 38, participantBPercent: 62 },
+        { timeLabel: "7:00pm", participantAPercent: 41, participantBPercent: 59 },
       ],
-      team1PoolPercent: 41,
-      team2PoolPercent: 59,
+      participantAPoolPercent: 41,
+      participantBPoolPercent: 59,
     },
-  },
-  {
+  }),
+  tagEsportsMatch({
     id: "hub-match-csgo-live-1",
     gameId: "csgo",
     streamUrl: "https://www.twitch.tv/example",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "live" },
-    team1: { name: "Natus Vincere", logoUrl: "", odds: 1.55, score: 9 },
-    team2: { name: "FaZe Clan", logoUrl: "", odds: 2.35, score: 7 },
-  },
-  {
+    participantA: { name: "Natus Vincere", logoUrl: "", odds: 1.55, score: 9 },
+    participantB: { name: "FaZe Clan", logoUrl: "", odds: 2.35, score: 7 },
+  }),
+  tagEsportsMatch({
     id: "hub-match-csgo-live-2",
     gameId: "csgo",
-    isBettingAvailable: false,
+    isTradingOpen: false,
     status: { kind: "live", label: "Live now" },
-    team1: { name: "Team Spirit", logoUrl: "", odds: 2.1, score: 4 },
-    team2: { name: "MOUZ", logoUrl: "", odds: 1.72, score: 6 },
-  },
-  {
+    participantA: { name: "Team Spirit", logoUrl: "", odds: 2.1, score: 4 },
+    participantB: { name: "MOUZ", logoUrl: "", odds: 1.72, score: 6 },
+  }),
+  tagEsportsMatch({
     id: "hub-match-lol-upcoming-1",
     gameId: "lol",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "upcoming", startsAt: isoInHours(2) },
-    team1: { name: "T1", logoUrl: "", odds: 1.28 },
-    team2: { name: "Gen.G", logoUrl: "", odds: 3.6 },
-  },
-  {
+    participantA: { name: "T1", logoUrl: "", odds: 1.28 },
+    participantB: { name: "Gen.G", logoUrl: "", odds: 3.6 },
+  }),
+  tagEsportsMatch({
     id: "hub-match-valorant-finished-1",
     gameId: "valorant",
-    isBettingAvailable: false,
+    isTradingOpen: false,
     status: { kind: "finished", label: "Final" },
-    team1: { name: "FNATIC", logoUrl: "", odds: 1.9, score: 2 },
-    team2: { name: "LOUD", logoUrl: "", odds: 1.9, score: 0 },
-  },
-  {
+    participantA: { name: "FNATIC", logoUrl: "", odds: 1.9, score: 2 },
+    participantB: { name: "LOUD", logoUrl: "", odds: 1.9, score: 0 },
+  }),
+  tagEsportsMatch({
     id: "hub-match-cod-upcoming-1",
     gameId: "cod",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "upcoming", startsAt: isoInHours(26) },
-    team1: { name: "OpTic Texas", logoUrl: "", odds: 2.05 },
-    team2: { name: "Atlanta FaZe", logoUrl: "", odds: 1.75 },
-  },
+    participantA: { name: "OpTic Texas", logoUrl: "", odds: 2.05 },
+    participantB: { name: "Atlanta FaZe", logoUrl: "", odds: 1.75 },
+  }),
 ];
-
-export function toEsportsHubItems(matches: EsportsMatch[]): Extract<
-  PredictionsHubItem,
-  { kind: "esports" }
->[] {
-  return matches.map((match) => ({ kind: "esports", match }));
-}
 
 /** Hub-only sport matches. */
 export const PREDICTIONS_HUB_SPORT_MATCH_MOCKS: SportHubMatch[] = [
-  {
+  tagSportMatch({
     id: "hub-sport-football-live-1",
     disciplineId: "football",
     streamUrl: "https://www.youtube.com/live",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "upcoming", startsAt: "2026-05-24T19:00:00.000Z" },
-    team1: { name: "Napoli", logoUrl: "", odds: 1.62 },
-    team2: { name: "Udinese", logoUrl: "", odds: 2.4 },
-    sportDetail: {
+    participantA: { name: "Napoli", logoUrl: "", odds: 1.62 },
+    participantB: { name: "Udinese", logoUrl: "", odds: 2.4 },
+    detail: {
       displayTitle: "Napoli Team vs Udinese Team",
       volumeLabel: "$858.74K Vol.",
       chartPoints: [
-        { timeLabel: "5:20pm", team1Percent: 55, team2Percent: 45 },
-        { timeLabel: "5:40pm", team1Percent: 48, team2Percent: 52 },
-        { timeLabel: "6:00pm", team1Percent: 53, team2Percent: 47 },
-        { timeLabel: "6:20pm", team1Percent: 44, team2Percent: 56 },
-        { timeLabel: "6:40pm", team1Percent: 38, team2Percent: 62 },
-        { timeLabel: "7:00pm", team1Percent: 60, team2Percent: 30 },
+        { timeLabel: "5:20pm", participantAPercent: 55, participantBPercent: 45 },
+        { timeLabel: "5:40pm", participantAPercent: 48, participantBPercent: 52 },
+        { timeLabel: "6:00pm", participantAPercent: 53, participantBPercent: 47 },
+        { timeLabel: "6:20pm", participantAPercent: 44, participantBPercent: 56 },
+        { timeLabel: "6:40pm", participantAPercent: 38, participantBPercent: 62 },
+        { timeLabel: "7:00pm", participantAPercent: 60, participantBPercent: 30 },
       ],
-      team1PoolPercent: 60,
-      team2PoolPercent: 30,
+      participantAPoolPercent: 60,
+      participantBPoolPercent: 30,
       resolutionDeadlineLabel: "June 23, 2026",
     },
-  },
-  {
+  }),
+  tagSportMatch({
     id: "hub-sport-basketball-live-1",
     disciplineId: "basketball",
     streamUrl: "https://www.twitch.tv/example",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "live" },
-    team1: { name: "Lakers", logoUrl: "", odds: 1.85, score: 78 },
-    team2: { name: "Celtics", logoUrl: "", odds: 1.95, score: 82 },
-  },
-  {
+    participantA: { name: "Lakers", logoUrl: "", odds: 1.85, score: 78 },
+    participantB: { name: "Celtics", logoUrl: "", odds: 1.95, score: 82 },
+  }),
+  tagSportMatch({
     id: "hub-sport-hockey-upcoming-1",
     disciplineId: "hockey",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "upcoming", startsAt: isoInHours(4) },
-    team1: { name: "Rangers", logoUrl: "", odds: 2.1 },
-    team2: { name: "Bruins", logoUrl: "", odds: 1.72 },
-  },
-  {
+    participantA: { name: "Rangers", logoUrl: "", odds: 2.1 },
+    participantB: { name: "Bruins", logoUrl: "", odds: 1.72 },
+  }),
+  tagSportMatch({
     id: "hub-sport-formula1-upcoming-1",
     disciplineId: "formula1",
-    isBettingAvailable: true,
+    isTradingOpen: true,
     status: { kind: "upcoming", startsAt: isoInHours(18) },
-    team1: { name: "Verstappen", logoUrl: "", odds: 1.45 },
-    team2: { name: "Norris", logoUrl: "", odds: 3.2 },
-  },
-  {
+    participantA: { name: "Verstappen", logoUrl: "", odds: 1.45 },
+    participantB: { name: "Norris", logoUrl: "", odds: 3.2 },
+  }),
+  tagSportMatch({
     id: "hub-sport-football-finished-1",
     disciplineId: "football",
-    isBettingAvailable: false,
+    isTradingOpen: false,
     status: { kind: "finished", label: "Final" },
-    team1: { name: "Barcelona", logoUrl: "", odds: 1.7, score: 2 },
-    team2: { name: "Real Madrid", logoUrl: "", odds: 2.15, score: 1 },
-  },
+    participantA: { name: "Barcelona", logoUrl: "", odds: 1.7, score: 2 },
+    participantB: { name: "Real Madrid", logoUrl: "", odds: 2.15, score: 1 },
+  }),
 ];
 
-export function toSportHubItems(matches: SportHubMatch[]): Extract<
-  PredictionsHubItem,
-  { kind: "sport" }
->[] {
-  return matches.map((match) => ({ kind: "sport", match }));
-}
+export const PREDICTIONS_HUB_CRYPTO_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS;
 
-export const PREDICTIONS_HUB_CRYPTO_CARD_MOCKS = toCryptoHubItems(
-  PREDICTIONS_HUB_CRYPTO_PREDICTION_MOCKS,
-);
+export const PREDICTIONS_HUB_ESPORTS_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_ESPORTS_MATCH_MOCKS;
 
-export const PREDICTIONS_HUB_ESPORTS_CARD_MOCKS = toEsportsHubItems(
-  PREDICTIONS_HUB_ESPORTS_MATCH_MOCKS,
-);
-
-export const PREDICTIONS_HUB_SPORT_CARD_MOCKS = toSportHubItems(PREDICTIONS_HUB_SPORT_MATCH_MOCKS);
+export const PREDICTIONS_HUB_SPORT_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_SPORT_MATCH_MOCKS;
 
 /** Hub-only politics markets (binary Yes / No). */
 export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
-  {
+  tagPoliticsEvent({
     id: "hub-politics-trump-2027",
     title: "Trump out as President before 2027?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(720),
     volumeLabel: "$858.74K Vol.",
     isTradingOpen: true,
@@ -398,7 +421,7 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 9.8, odds: 8.5 },
       { id: "no", label: "No", poolPercent: 90.2, odds: 1.12 },
     ],
-    politicsDetail: {
+    detail: {
       chartPoints: [
         { timeLabel: "5:20pm", yesPercent: 12 },
         { timeLabel: "5:40pm", yesPercent: 8 },
@@ -413,11 +436,11 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
         "The resolution source will be a consensus of credible reporting.",
       ],
     },
-  },
-  {
+  }),
+  tagPoliticsEvent({
     id: "hub-politics-fed-rate-cut",
     title: "Fed cuts rates before July 2026?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(480),
     volumeLabel: "$412.30K Vol.",
     isTradingOpen: true,
@@ -425,11 +448,11 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 42, odds: 2.1 },
       { id: "no", label: "No", poolPercent: 58, odds: 1.65 },
     ],
-  },
-  {
+  }),
+  tagPoliticsEvent({
     id: "hub-politics-uk-election",
     title: "Snap UK general election called in 2026?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(168),
     volumeLabel: "$156.20K Vol.",
     isTradingOpen: true,
@@ -437,11 +460,11 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 28.5, odds: 3.2 },
       { id: "no", label: "No", poolPercent: 71.5, odds: 1.35 },
     ],
-  },
-  {
+  }),
+  tagPoliticsEvent({
     id: "hub-politics-eu-sanctions",
     title: "New EU sanctions package passed by Q3 2026?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(96),
     volumeLabel: "$89.50K Vol.",
     isTradingOpen: false,
@@ -449,26 +472,18 @@ export const PREDICTIONS_HUB_POLITICS_EVENT_MOCKS: PoliticsHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 61, odds: 1.55 },
       { id: "no", label: "No", poolPercent: 39, odds: 2.45 },
     ],
-  },
+  }),
 ];
 
-export function toPoliticsHubItems(events: PoliticsHubEvent[]): Extract<
-  PredictionsHubItem,
-  { kind: "politics" }
->[] {
-  return events.map((event) => ({ kind: "politics", event }));
-}
-
-export const PREDICTIONS_HUB_POLITICS_CARD_MOCKS = toPoliticsHubItems(
-  PREDICTIONS_HUB_POLITICS_EVENT_MOCKS,
-);
+export const PREDICTIONS_HUB_POLITICS_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_POLITICS_EVENT_MOCKS;
 
 /** Hub-only tech markets (binary Yes / No). */
 export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
-  {
+  tagTechEvent({
     id: "hub-tech-gpt5-launch",
     title: "GPT-5 released before July 2026?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(540),
     volumeLabel: "$624.10K Vol.",
     isTradingOpen: true,
@@ -476,7 +491,7 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 67.5, odds: 1.42 },
       { id: "no", label: "No", poolPercent: 32.5, odds: 2.85 },
     ],
-    techDetail: {
+    detail: {
       chartPoints: [
         { timeLabel: "9:00am", yesPercent: 58 },
         { timeLabel: "10:00am", yesPercent: 62 },
@@ -491,11 +506,11 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
         "The resolution source will be a consensus of credible reporting and official OpenAI announcements.",
       ],
     },
-  },
-  {
+  }),
+  tagTechEvent({
     id: "hub-tech-apple-foldable",
     title: "Apple announces foldable iPhone before 2027?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(960),
     volumeLabel: "$318.45K Vol.",
     isTradingOpen: true,
@@ -503,7 +518,7 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 22.3, odds: 4.1 },
       { id: "no", label: "No", poolPercent: 77.7, odds: 1.22 },
     ],
-    techDetail: {
+    detail: {
       chartPoints: [
         { timeLabel: "Mon", yesPercent: 18 },
         { timeLabel: "Tue", yesPercent: 21 },
@@ -518,11 +533,11 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
         "Rumors, patents, or supply-chain leaks alone will not count toward resolution.",
       ],
     },
-  },
-  {
+  }),
+  tagTechEvent({
     id: "hub-tech-spacex-starship",
     title: "SpaceX lands Starship on Mars before 2028?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(1200),
     volumeLabel: "$892.60K Vol.",
     isTradingOpen: true,
@@ -530,7 +545,7 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 14.6, odds: 6.2 },
       { id: "no", label: "No", poolPercent: 85.4, odds: 1.08 },
     ],
-    techDetail: {
+    detail: {
       chartPoints: [
         { timeLabel: "Jan", yesPercent: 11 },
         { timeLabel: "Feb", yesPercent: 13 },
@@ -545,11 +560,11 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
         "Flybys, orbit-only missions, or uncrewed crash landings without confirmation do not count.",
       ],
     },
-  },
-  {
+  }),
+  tagTechEvent({
     id: "hub-tech-nvidia-4nm",
     title: "NVIDIA ships consumer Blackwell Ultra GPUs in 2026?",
-    thumbnailUrl: "",
+    imageUrl: "",
     endsAt: isoInHours(72),
     volumeLabel: "$205.80K Vol.",
     isTradingOpen: false,
@@ -557,7 +572,7 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
       { id: "yes", label: "Yes", poolPercent: 54.2, odds: 1.78 },
       { id: "no", label: "No", poolPercent: 45.8, odds: 2.05 },
     ],
-    techDetail: {
+    detail: {
       chartPoints: [
         { timeLabel: "W1", yesPercent: 48 },
         { timeLabel: "W2", yesPercent: 52 },
@@ -572,25 +587,19 @@ export const PREDICTIONS_HUB_TECH_EVENT_MOCKS: TechHubEvent[] = [
         "The resolution source will be a consensus of credible reporting and official NVIDIA product pages.",
       ],
     },
-  },
+  }),
 ];
 
-export function toTechHubItems(events: TechHubEvent[]): Extract<
-  PredictionsHubItem,
-  { kind: "tech" }
->[] {
-  return events.map((event) => ({ kind: "tech", event }));
-}
-
-export const PREDICTIONS_HUB_TECH_CARD_MOCKS = toTechHubItems(PREDICTIONS_HUB_TECH_EVENT_MOCKS);
+export const PREDICTIONS_HUB_TECH_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_TECH_EVENT_MOCKS;
 
 /** Hub-only finance markets (binary Up / Down). */
 export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
-  {
+  tagFinanceEvent({
     id: "hub-finance-meta-updown",
     assetName: "Meta",
     assetTicker: "META",
-    logoUrl: "",
+    imageUrl: "",
     title: buildFinanceHubTitle("Meta", "META"),
     endsAt: new Date(Date.now() + (45 * 60 + 59) * 1000).toISOString(),
     volumeLabel: "$858.74K Vol.",
@@ -599,7 +608,7 @@ export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
       { id: "up", label: "Up", poolPercent: 9.8, odds: 8.5 },
       { id: "down", label: "Down", poolPercent: 91.2, odds: 1.12 },
     ],
-    financeDetail: {
+    detail: {
       baselinePriceLabel: "$1.3552",
       priceChartPoints: [
         { timeLabel: "2:50pm", price: 1.38 },
@@ -614,12 +623,12 @@ export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
       resolutionReferencePriceLabel: "$604.94",
       resolutionSourceLabel: "Pyth META/USD price feed",
     },
-  },
-  {
+  }),
+  tagFinanceEvent({
     id: "hub-finance-aapl-updown",
     assetName: "Apple",
     assetTicker: "AAPL",
-    logoUrl: "",
+    imageUrl: "",
     title: buildFinanceHubTitle("Apple", "AAPL"),
     endsAt: isoInHours(336),
     volumeLabel: "$1.24M Vol.",
@@ -628,12 +637,12 @@ export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
       { id: "up", label: "Up", poolPercent: 54, odds: 1.75 },
       { id: "down", label: "Down", poolPercent: 46, odds: 2.05 },
     ],
-  },
-  {
+  }),
+  tagFinanceEvent({
     id: "hub-finance-tsla-updown",
     assetName: "Tesla",
     assetTicker: "TSLA",
-    logoUrl: "",
+    imageUrl: "",
     title: buildFinanceHubTitle("Tesla", "TSLA"),
     endsAt: isoInHours(120),
     volumeLabel: "$642.10K Vol.",
@@ -642,12 +651,12 @@ export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
       { id: "up", label: "Up", poolPercent: 38.5, odds: 2.35 },
       { id: "down", label: "Down", poolPercent: 61.5, odds: 1.48 },
     ],
-  },
-  {
+  }),
+  tagFinanceEvent({
     id: "hub-finance-nvda-updown",
     assetName: "NVIDIA",
     assetTicker: "NVDA",
-    logoUrl: "",
+    imageUrl: "",
     title: buildFinanceHubTitle("NVIDIA", "NVDA"),
     endsAt: isoInHours(48),
     volumeLabel: "$2.08M Vol.",
@@ -656,19 +665,11 @@ export const PREDICTIONS_HUB_FINANCE_EVENT_MOCKS: FinanceHubEvent[] = [
       { id: "up", label: "Up", poolPercent: 72, odds: 1.32 },
       { id: "down", label: "Down", poolPercent: 28, odds: 3.1 },
     ],
-  },
+  }),
 ];
 
-export function toFinanceHubItems(events: FinanceHubEvent[]): Extract<
-  PredictionsHubItem,
-  { kind: "finance" }
->[] {
-  return events.map((event) => ({ kind: "finance", event }));
-}
-
-export const PREDICTIONS_HUB_FINANCE_CARD_MOCKS = toFinanceHubItems(
-  PREDICTIONS_HUB_FINANCE_EVENT_MOCKS,
-);
+export const PREDICTIONS_HUB_FINANCE_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_FINANCE_EVENT_MOCKS;
 
 const HUB_RANDOM_POOL_PARTICIPANT_MOCKS: RandomPoolUserInPool[] = [
   { username: "Mizori", amount: "$1000", avatarUrl: USDC_ICON_URL },
@@ -680,46 +681,46 @@ const HUB_RANDOM_POOL_PARTICIPANT_MOCKS: RandomPoolUserInPool[] = [
 
 /** Hub-only random reward pools (not used by legacy RandomRewardsPage). */
 export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
-  {
+  tagRandomPool({
     id: "hub-pool-live-1",
     title: "Random pool #1",
     iconUrl: INLINE_HINT_ICON_URL,
-    status: "live",
+    status: { kind: "live" },
     tvl: "$100,00",
     expectedYield: "$1000",
     usersIn: 101,
     progressPercent: 45,
     remainingTime: { days: 1, hours: 24, minutes: 54, seconds: 3 },
-    hubDetail: {
+    detail: {
       participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS,
       walletBalance: "5000",
     },
-  },
-  {
+  }),
+  tagRandomPool({
     id: "hub-pool-live-2",
     title: "Random pool #2",
-    status: "live",
+    status: { kind: "live" },
     tvl: "50.000$",
     expectedYield: "$5000",
     usersIn: 120,
     progressPercent: 72,
     remainingTime: { days: 0, hours: 3, minutes: 45, seconds: 8 },
-    hubDetail: {
+    detail: {
       participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS.slice(0, 3),
       walletBalance: "12000",
     },
-  },
-  {
+  }),
+  tagRandomPool({
     id: "hub-pool-ended-neutral",
     title: "Random pool #3",
-    status: "ended",
+    status: { kind: "ended" },
     tvl: "100.000$",
     earnings: "$1000",
     usersWon: 3,
     usersInPool: 101,
     progressPercent: 100,
     userWon: false,
-    hubDetail: {
+    detail: {
       participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS,
       winners: [
         { username: "Mizori", amount: "$333,33", avatarUrl: USDC_ICON_URL },
@@ -727,18 +728,18 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
         { username: "Tazumi", amount: "$333,34" },
       ],
     },
-  },
-  {
+  }),
+  tagRandomPool({
     id: "hub-pool-ended-won",
     title: "Random pool #4",
-    status: "ended",
+    status: { kind: "ended" },
     tvl: "100.000$",
     earnings: "$1000",
     usersWon: 3,
     usersInPool: 54,
     progressPercent: 100,
     userWon: true,
-    hubDetail: {
+    detail: {
       participants: HUB_RANDOM_POOL_PARTICIPANT_MOCKS.slice(0, 4),
       winners: [
         { username: "Mizori", amount: "$333,33", avatarUrl: USDC_ICON_URL },
@@ -746,21 +747,13 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
         { username: "Tazumi", amount: "$333,34" },
       ],
     },
-  },
+  }),
 ];
 
-export function toRandomRewardHubItems(pools: RandomPool[]): Extract<
-  PredictionsHubItem,
-  { kind: "random-reward" }
->[] {
-  return pools.map((pool) => ({ kind: "random-reward", pool }));
-}
+export const PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS: PredictionsHubListItem[] =
+  PREDICTIONS_HUB_RANDOM_POOL_MOCKS;
 
-export const PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS = toRandomRewardHubItems(
-  PREDICTIONS_HUB_RANDOM_POOL_MOCKS,
-);
-
-export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubItem[] = [
+export const PREDICTIONS_HUB_CARD_MOCKS: PredictionsHubListItem[] = [
   ...PREDICTIONS_HUB_CRYPTO_CARD_MOCKS,
   ...PREDICTIONS_HUB_ESPORTS_CARD_MOCKS,
   ...PREDICTIONS_HUB_SPORT_CARD_MOCKS,
@@ -781,21 +774,13 @@ const TIME_FILTER_MS: Record<CryptoPredictionTimeFilterId, number | null> = {
   "1w": 7 * 24 * 60 * 60_000,
 };
 
-function hubItemEndsAtMs(item: PredictionsHubItem): number | null {
-  switch (item.kind) {
-    case "crypto":
-      return new Date(item.prediction.endsAt).getTime();
-    case "politics":
-    case "finance":
-    case "tech":
-      return new Date(item.event.endsAt).getTime();
-    default:
-      return null;
-  }
+function hubItemEndsAtMs(item: PredictionsHubListItem): number | null {
+  if (item.endsAt == null) return null;
+  return new Date(item.endsAt).getTime();
 }
 
 function matchesHubTimeFilter(
-  item: PredictionsHubItem,
+  item: PredictionsHubListItem,
   timeId: CryptoPredictionTimeFilterId,
   nowMs: number,
 ): boolean {
@@ -811,53 +796,45 @@ function matchesHubTimeFilter(
 }
 
 function matchesHubMarketTypeFilter(
-  item: PredictionsHubItem,
+  item: PredictionsHubListItem,
   filters: PredictionsHubFilterState,
 ): boolean {
   if (filters.marketTypeId === "all") return true;
-  if (item.kind === "crypto") {
-    return item.prediction.predictionType === filters.marketTypeId;
+  if (isCryptoPredictionCard(item)) {
+    return getCryptoMarketType(item.predictionType) === filters.marketTypeId;
   }
-  if (item.kind === "finance") {
+  if (item.predictionType === "finance") {
     return filters.marketTypeId === "up_down";
   }
   return true;
 }
 
 function matchesHubEsportsGameFilter(
-  item: PredictionsHubItem,
+  item: PredictionsHubListItem,
   filters: PredictionsHubFilterState,
 ): boolean {
   if (filters.esportsGameId == null) return true;
-  if (item.kind !== "esports") return true;
-  return item.match.gameId === filters.esportsGameId;
+  if (item.predictionType !== "esports") return true;
+  return item.gameId === filters.esportsGameId;
 }
 
 function matchesHubSportDisciplineFilter(
-  item: PredictionsHubItem,
+  item: PredictionsHubListItem,
   filters: PredictionsHubFilterState,
 ): boolean {
   if (filters.sportDisciplineId == null) return true;
-  if (item.kind !== "sport") return true;
-  return item.match.disciplineId === filters.sportDisciplineId;
-}
-
-function isKindAllowedForCategory(
-  kind: PredictionsHubItem["kind"],
-  categoryId: PredictionsHubFilterState["categoryId"],
-): boolean {
-  const allowedKinds = PREDICTIONS_HUB_ITEMS_BY_CATEGORY[categoryId] as readonly PredictionsHubItem["kind"][];
-  return allowedKinds.includes(kind);
+  if (item.predictionType !== "sport") return true;
+  return item.disciplineId === filters.sportDisciplineId;
 }
 
 /** Applies hub filter state to mock feed items (hub page only). */
 export function filterPredictionsHubCardMocks(
-  items: PredictionsHubItem[],
+  items: PredictionsHubListItem[],
   filters: PredictionsHubFilterState,
   nowMs = Date.now(),
-): PredictionsHubItem[] {
+): PredictionsHubListItem[] {
   return items
-    .filter((item) => isKindAllowedForCategory(item.kind, filters.categoryId))
+    .filter((item) => predictionTypeMatchesHubCategory(item.predictionType, filters.categoryId))
     .filter((item) => matchesHubMarketTypeFilter(item, filters))
     .filter((item) => matchesHubEsportsGameFilter(item, filters))
     .filter((item) => matchesHubSportDisciplineFilter(item, filters))
@@ -867,11 +844,14 @@ export function filterPredictionsHubCardMocks(
 export function getPredictionsHubCardMocks(
   filters: PredictionsHubFilterState,
   nowMs = Date.now(),
-): PredictionsHubItem[] {
+): PredictionsHubListItem[] {
   return filterPredictionsHubCardMocks(PREDICTIONS_HUB_CARD_MOCKS, filters, nowMs);
 }
 
 /** Resolves a hub feed item by id (mocks until API). */
-export function findPredictionsHubItemById(id: string): PredictionsHubItem | undefined {
+export function findPredictionsHubItemById(id: string): PredictionsHubListItem | undefined {
   return PREDICTIONS_HUB_CARD_MOCKS.find((item) => getPredictionsHubItemId(item) === id);
 }
+
+/** @deprecated Use `PredictionsHubListItem`. */
+export type PredictionsHubItem = PredictionsHubListItem;

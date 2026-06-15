@@ -29,9 +29,9 @@ export function EsportsMatchDrawerOutcomeCard({
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <EsportsMatchDrawerTeamInline team={match.team1} />
+          <EsportsMatchDrawerTeamInline team={match.participantA} />
           <span className="text-main-darkPurple/50 shrink-0 text-xs font-medium">—</span>
-          <EsportsMatchDrawerTeamInline team={match.team2} />
+          <EsportsMatchDrawerTeamInline team={match.participantB} />
         </div>
         <div className="relative h-6 w-6 shrink-0">
           {gameIconUrl ? (

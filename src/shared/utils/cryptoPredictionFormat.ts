@@ -29,7 +29,7 @@ export function getCryptoDrawerInfoLines(
   prediction: CryptoPrediction,
   selectedOutcomeLabel: string
 ): { primaryQuestion: string; secondaryMuted: string } {
-  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt);
+  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt ?? "");
   const tail = stripLeadingAssetSymbol(prediction.title, prediction.assetSymbol);
   const topic = tail.length > 0 ? tail : prediction.title.trim();
   const symbol = prediction.assetSymbol.trim();
@@ -46,7 +46,7 @@ export function getCryptoAboveBelowDrawerInfoLines(
   strike: CryptoStrikeBinary,
   side: "yes" | "no",
 ): { primaryQuestion: string; secondaryMuted: string } {
-  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt);
+  const dateStr = formatCryptoDrawerEndDate(prediction.endsAt ?? "");
   const symbol = prediction.assetSymbol.trim();
   const symPrefix = symbol ? `$${symbol} ` : "";
   const sideLabel = side === "yes" ? "Yes" : "No";
@@ -128,6 +128,10 @@ export function getCryptoPredictionStatusFooter(status: CryptoPredictionStatus):
         showLiveDot: false,
         text: summary ? `Ended · ${summary}` : "Ended",
       };
+    }
+    case "finished": {
+      const t = status.label?.trim();
+      return { showLiveDot: false, text: t && t.length > 0 ? t : "Finished" };
     }
     default: {
       const _exhaustive: never = status;

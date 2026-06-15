@@ -27,9 +27,9 @@ export function SportMatchDrawerOutcomeCard({
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
-          <SportMatchDrawerTeamInline team={match.team1} />
+          <SportMatchDrawerTeamInline team={match.participantA} />
           <span className="text-main-darkPurple/50 shrink-0 text-xs font-medium">—</span>
-          <SportMatchDrawerTeamInline team={match.team2} />
+          <SportMatchDrawerTeamInline team={match.participantB} />
         </div>
         <SportMatchHubDisciplineIcon disciplineId={match.disciplineId} />
       </div>

@@ -1,6 +1,16 @@
 "use client";
 
 import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
+import {
+  getPredictionsHubItemKind,
+  isCryptoPredictionCard,
+  isEsportsPredictionCard,
+  isFinancePredictionCard,
+  isPoliticsPredictionCard,
+  isRandomRewardsPredictionCard,
+  isSportPredictionCard,
+  isTechPredictionCard,
+} from "@/shared/types/predictions";
 import type { EsportsMatchDrawerSide, SportMatchDrawerSide } from "@/components/PredictionsPage/drawers";
 import { CryptoPredictionHubCard } from "./CryptoPredictionHubCard";
 import { PredictionsHubCardLink } from "./PredictionsHubCardLink";
@@ -34,33 +44,39 @@ function renderPredictionsHubCard(
   onFinancePickOutcome?: (outcomeId: string) => void,
   onTechPickOutcome?: (outcomeId: string) => void,
 ) {
-  switch (item.kind) {
+  switch (getPredictionsHubItemKind(item)) {
     case "crypto":
-      return (
-        <CryptoPredictionHubCard prediction={item.prediction} onPickOutcome={onCryptoPickOutcome} />
-      );
+      return isCryptoPredictionCard(item) ? (
+        <CryptoPredictionHubCard prediction={item} onPickOutcome={onCryptoPickOutcome} />
+      ) : null;
     case "esports":
-      return <EsportsMatchHubCard match={item.match} onPickTeam={onEsportsPickTeam} />;
+      return isEsportsPredictionCard(item) ? (
+        <EsportsMatchHubCard match={item} onPickTeam={onEsportsPickTeam} />
+      ) : null;
     case "random-reward":
-      return (
+      return isRandomRewardsPredictionCard(item) ? (
         <RandomRewardHubCard
-          pool={item.pool}
+          pool={item}
           onJoin={onRandomRewardJoin}
           onClaim={onRandomRewardClaim}
         />
-      );
+      ) : null;
     case "sport":
-      return <SportMatchHubCard match={item.match} onPickTeam={onSportPickTeam} />;
+      return isSportPredictionCard(item) ? (
+        <SportMatchHubCard match={item} onPickTeam={onSportPickTeam} />
+      ) : null;
     case "politics":
-      return (
-        <PoliticsEventHubCard event={item.event} onPickOutcome={onPoliticsPickOutcome} />
-      );
+      return isPoliticsPredictionCard(item) ? (
+        <PoliticsEventHubCard event={item} onPickOutcome={onPoliticsPickOutcome} />
+      ) : null;
     case "finance":
-      return (
-        <FinanceEventHubCard event={item.event} onPickOutcome={onFinancePickOutcome} />
-      );
+      return isFinancePredictionCard(item) ? (
+        <FinanceEventHubCard event={item} onPickOutcome={onFinancePickOutcome} />
+      ) : null;
     case "tech":
-      return <TechEventHubCard event={item.event} onPickOutcome={onTechPickOutcome} />;
+      return isTechPredictionCard(item) ? (
+        <TechEventHubCard event={item} onPickOutcome={onTechPickOutcome} />
+      ) : null;
   }
 }
 

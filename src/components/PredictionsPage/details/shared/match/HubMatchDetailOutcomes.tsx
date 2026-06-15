@@ -27,8 +27,8 @@ export function HubMatchDetailOutcomes({
   team2PoolPercent,
   onPickTeam,
 }: HubMatchDetailOutcomesProps) {
-  const { team1, team2 } = match;
-  const disabled = !match.isBettingAvailable;
+  const { participantA, participantB } = match;
+  const disabled = !match.isTradingOpen;
 
   return (
     <section className="bg-main-lightGray flex flex-col gap-3 rounded-[10px] p-3">
@@ -57,10 +57,10 @@ export function HubMatchDetailOutcomes({
             aria-hidden
           />
           <span className="text-main-darkPurple relative min-w-0 truncate text-xs font-semibold">
-            {team1.name}
+            {participantA.name}
           </span>
           <span className="text-main-darkPurple relative shrink-0 text-sm font-semibold tabular-nums">
-            {formatEsportsOdds(team1.odds)}
+            {formatEsportsOdds(participantA.odds)}
           </span>
         </button>
 
@@ -76,10 +76,10 @@ export function HubMatchDetailOutcomes({
             aria-hidden
           />
           <span className="text-main-darkPurple relative min-w-0 truncate text-xs font-semibold">
-            {team2.name}
+            {participantB.name}
           </span>
           <span className="text-main-darkPurple relative shrink-0 text-sm font-semibold tabular-nums">
-            {formatEsportsOdds(team2.odds)}
+            {formatEsportsOdds(participantB.odds)}
           </span>
         </button>
       </div>

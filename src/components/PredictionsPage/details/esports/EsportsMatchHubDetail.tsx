@@ -12,7 +12,7 @@ interface EsportsMatchHubDetailProps {
 }
 
 export function EsportsMatchHubDetail({ match, onPickTeam }: EsportsMatchHubDetailProps) {
-  const detail = match.esportsDetail;
+  const detail = match.detail;
 
   if (!detail) {
     return (
@@ -24,15 +24,15 @@ export function EsportsMatchHubDetail({ match, onPickTeam }: EsportsMatchHubDeta
     <div className="flex flex-col gap-4">
       <EsportsMatchDetailMatchCard match={match} displayTitle={detail.displayTitle} />
       <EsportsMatchDetailProbabilityChart
-        volumeLabel={detail.volumeLabel}
+        volumeLabel={detail.volumeLabel ?? ""}
         points={detail.chartPoints}
-        team1={match.team1}
-        team2={match.team2}
+        team1={match.participantA}
+        team2={match.participantB}
       />
       <EsportsMatchDetailOutcomes
         match={match}
-        team1PoolPercent={detail.team1PoolPercent}
-        team2PoolPercent={detail.team2PoolPercent}
+        team1PoolPercent={detail.participantAPoolPercent}
+        team2PoolPercent={detail.participantBPoolPercent}
         onPickTeam={onPickTeam}
       />
       <EsportsMatchDetailResolution match={match} />

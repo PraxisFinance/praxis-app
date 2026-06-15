@@ -35,6 +35,16 @@ export function HubMatchDetailProbabilityChart({
   team1,
   team2,
 }: HubMatchDetailProbabilityChartProps) {
+  const chartData = useMemo(
+    () =>
+      points.map((point) => ({
+        timeLabel: point.timeLabel,
+        participantAPercent: point.participantAPercent,
+        participantBPercent: point.participantBPercent,
+      })),
+    [points],
+  );
+
   const { topTeam, bottomTeam } = useMemo(() => {
     const lastPoint = points[points.length - 1];
     if (!lastPoint) {
@@ -46,24 +56,24 @@ export function HubMatchDetailProbabilityChart({
 
     const team1Snapshot = buildTeamSnapshot(
       team1.name,
-      lastPoint.team1Percent,
+      lastPoint.participantAPercent,
       HUB_MATCH_DETAIL_TEAM1_COLOR,
     );
     const team2Snapshot = buildTeamSnapshot(
       team2.name,
-      lastPoint.team2Percent,
+      lastPoint.participantBPercent,
       HUB_MATCH_DETAIL_TEAM2_COLOR,
     );
 
-    if (lastPoint.team1Percent >= lastPoint.team2Percent) {
+    if (lastPoint.participantAPercent >= lastPoint.participantBPercent) {
       return { topTeam: team1Snapshot, bottomTeam: team2Snapshot };
     }
     return { topTeam: team2Snapshot, bottomTeam: team1Snapshot };
   }, [points, team1.name, team2.name]);
 
   const chartConfig = {
-    team1Percent: { label: team1.name, color: HUB_MATCH_DETAIL_TEAM1_COLOR },
-    team2Percent: { label: team2.name, color: HUB_MATCH_DETAIL_TEAM2_COLOR },
+    participantAPercent: { label: team1.name, color: HUB_MATCH_DETAIL_TEAM1_COLOR },
+    participantBPercent: { label: team2.name, color: HUB_MATCH_DETAIL_TEAM2_COLOR },
   } satisfies ChartConfig;
 
   return (
@@ -78,7 +88,7 @@ export function HubMatchDetailProbabilityChart({
       </p>
 
       <ChartContainer config={chartConfig} className="h-[160px] w-full">
-        <LineChart data={points} margin={{ top: 4, right: 4, bottom: 0, left: -16 }}>
+        <LineChart data={chartData} margin={{ top: 4, right: 4, bottom: 0, left: -16 }}>
           <CartesianGrid vertical={false} stroke="#dad8e6" strokeDasharray="3 3" />
           <XAxis
             dataKey="timeLabel"
@@ -99,7 +109,7 @@ export function HubMatchDetailProbabilityChart({
           />
           <Line
             type="monotone"
-            dataKey="team1Percent"
+            dataKey="participantAPercent"
             stroke={HUB_MATCH_DETAIL_TEAM1_COLOR}
             strokeWidth={2}
             dot={false}
@@ -107,7 +117,7 @@ export function HubMatchDetailProbabilityChart({
           />
           <Line
             type="monotone"
-            dataKey="team2Percent"
+            dataKey="participantBPercent"
             stroke={HUB_MATCH_DETAIL_TEAM2_COLOR}
             strokeWidth={2}
             dot={false}

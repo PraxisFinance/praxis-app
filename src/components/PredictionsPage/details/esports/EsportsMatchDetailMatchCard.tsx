@@ -20,9 +20,9 @@ interface EsportsMatchDetailMatchCardProps {
 export function EsportsMatchDetailMatchCard({ match, displayTitle }: EsportsMatchDetailMatchCardProps) {
   const game = ESPORTS_GAMES.find((entry) => entry.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
-  const { team1, team2 } = match;
+  const { participantA, participantB } = match;
   const statusLine = getEsportsMatchStatusLine(match.status);
-  const hasScores = team1.score !== undefined && team2.score !== undefined;
+  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
 
   return (
     <section className="bg-main-lightGray relative flex flex-col gap-4 rounded-[10px] p-3">
@@ -45,7 +45,7 @@ export function EsportsMatchDetailMatchCard({ match, displayTitle }: EsportsMatc
 
       <div className="flex w-full items-stretch gap-2">
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <EsportsMatchHubTeamBlock name={team1.name} logoUrl={team1.logoUrl} />
+          <EsportsMatchHubTeamBlock name={participantA.name} logoUrl={participantA.logoUrl} />
         </div>
 
         <div className="flex min-w-0 shrink flex-col items-center justify-center gap-2 self-stretch px-1">
@@ -69,15 +69,15 @@ export function EsportsMatchDetailMatchCard({ match, displayTitle }: EsportsMatc
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <EsportsMatchHubScoreBox value={hasScores ? team1.score : undefined} />
-                <EsportsMatchHubScoreBox value={hasScores ? team2.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
               </div>
             </>
           )}
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center justify-center">
-          <EsportsMatchHubTeamBlock name={team2.name} logoUrl={team2.logoUrl} />
+          <EsportsMatchHubTeamBlock name={participantB.name} logoUrl={participantB.logoUrl} />
         </div>
       </div>
     </section>

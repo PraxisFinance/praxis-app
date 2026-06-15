@@ -61,8 +61,8 @@ export function FinanceEventDetailOutcomes({
       </div>
 
       <CryptoPredictionUpDownDetailPoolSplit
-        left={{ id: up.id, label: up.label, odds: up.odds ?? 0, poolPercent: up.poolPercent }}
-        right={{ id: down.id, label: down.label, odds: down.odds ?? 0, poolPercent: down.poolPercent }}
+        left={{ id: up.id, label: up.label, odds: up.odds ?? 0, poolPercent: up.poolPercent ?? 0 }}
+        right={{ id: down.id, label: down.label, odds: down.odds ?? 0, poolPercent: down.poolPercent ?? 0 }}
       />
     </section>
   );

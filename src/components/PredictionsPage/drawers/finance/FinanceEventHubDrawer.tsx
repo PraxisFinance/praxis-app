@@ -67,7 +67,7 @@ function FinanceEventHubDrawerBody({
       header={
         <PredictionsDrawerHeader
           trailing={
-            <PredictionsDrawerHeaderImage imageUrl={event.logoUrl} imageFit="contain" />
+            <PredictionsDrawerHeaderImage imageUrl={event.imageUrl} imageFit="contain" />
           }
         />
       }

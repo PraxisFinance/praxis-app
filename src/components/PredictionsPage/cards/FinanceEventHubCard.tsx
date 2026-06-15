@@ -14,12 +14,12 @@ interface FinanceEventHubCardProps {
 export function FinanceEventHubCard({ event, onPickOutcome }: FinanceEventHubCardProps) {
   const [up, down] = event.outcomes;
   const disabled = !event.isTradingOpen;
-  const endLine = getFinanceEventEndLine(event.endsAt);
+  const endLine = getFinanceEventEndLine(event.endsAt ?? "");
 
   return (
     <article className="bg-main-lightGray flex w-full flex-col gap-3 rounded-[10px] p-3">
       <FinanceEventHubCardHeader
-        logoUrl={event.logoUrl}
+        logoUrl={event.imageUrl}
         title={event.title}
         endLine={endLine}
         volumeLabel={event.volumeLabel}

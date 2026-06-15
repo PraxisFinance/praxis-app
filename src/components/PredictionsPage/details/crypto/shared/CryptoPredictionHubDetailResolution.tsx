@@ -5,6 +5,7 @@ import type {
   CryptoPrediction,
   CryptoPredictionHubMarketDetail,
 } from "@/shared/types/cryptoPrediction";
+import { getCryptoMarketType } from "@/shared/types/predictions";
 
 interface CryptoPredictionHubDetailResolutionProps {
   prediction: CryptoPrediction;
@@ -16,12 +17,13 @@ export function CryptoPredictionHubDetailResolution({
   detail,
 }: CryptoPredictionHubDetailResolutionProps) {
   const asset = detail.resolutionAssetLabel;
+  const marketType = getCryptoMarketType(prediction.predictionType);
 
   return (
     <section className="flex flex-col gap-3">
       <SectionHeader className="text-main-darkPurple text-xl">Resolution</SectionHeader>
       <div className="text-main-darkPurple space-y-3 text-sm leading-relaxed">
-        {prediction.predictionType === "up_down" ? (
+        {marketType === "up_down" ? (
           <>
             <p>
               This market will resolve to &ldquo;Up&rdquo; if the Close price for{" "}
@@ -36,7 +38,7 @@ export function CryptoPredictionHubDetailResolution({
           </>
         ) : null}
 
-        {prediction.predictionType === "above_below" ? (
+        {marketType === "above_below" ? (
           <>
             <p>
               Each strike resolves to &ldquo;Yes&rdquo; if the Close price for{" "}
@@ -50,7 +52,7 @@ export function CryptoPredictionHubDetailResolution({
           </>
         ) : null}
 
-        {prediction.predictionType === "price_range" ? (
+        {prediction.predictionType === "crypto_price_range" ? (
           <>
             <p>
               This market will resolve to &ldquo;Inside range&rdquo; if the Close price for{" "}
@@ -65,7 +67,7 @@ export function CryptoPredictionHubDetailResolution({
           </>
         ) : null}
 
-        {prediction.predictionType === "hit" ? (
+        {prediction.predictionType === "crypto_hit" ? (
           <>
             <p>
               This market will resolve to &ldquo;Hit&rdquo; if the price of{" "}

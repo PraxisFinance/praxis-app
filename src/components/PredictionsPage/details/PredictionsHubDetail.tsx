@@ -2,6 +2,18 @@
 
 import type { PredictionsHubItem } from "@/shared/types/predictionsHubItem";
 import {
+  getPredictionsHubItemKind,
+  isCryptoPredictionCard,
+  isEsportsPredictionCard,
+  isFinancePredictionCard,
+  isPoliticsPredictionCard,
+  isRandomRewardsPredictionCard,
+  isRandomRewardsLiveCard,
+  isRandomRewardsEndedCard,
+  isSportPredictionCard,
+  isTechPredictionCard,
+} from "@/shared/types/predictions";
+import {
   usePredictionsHubCryptoDrawer,
   usePredictionsHubEsportsDrawer,
   usePredictionsHubRandomRewardClaimDrawer,
@@ -34,64 +46,64 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
   const openFinanceDrawer = usePredictionsHubFinanceDrawer();
   const openTechDrawer = usePredictionsHubTechDrawer();
 
-  switch (item.kind) {
+  switch (getPredictionsHubItemKind(item)) {
     case "crypto":
-      return (
+      return isCryptoPredictionCard(item) ? (
         <CryptoPredictionHubDetail
-          prediction={item.prediction}
-          onPickOutcome={(outcomeId) => openCryptoDrawer(item.prediction, outcomeId)}
+          prediction={item}
+          onPickOutcome={(outcomeId) => openCryptoDrawer(item, outcomeId)}
         />
-      );
+      ) : null;
     case "esports":
-      return (
+      return isEsportsPredictionCard(item) ? (
         <EsportsMatchHubDetail
-          match={item.match}
-          onPickTeam={(side) => openEsportsDrawer(item.match, side)}
+          match={item}
+          onPickTeam={(side) => openEsportsDrawer(item, side)}
         />
-      );
+      ) : null;
     case "random-reward":
-      return (
+      return isRandomRewardsPredictionCard(item) ? (
         <RandomRewardHubDetail
-          pool={item.pool}
+          pool={item}
           onJoin={() => {
-            if (item.pool.status === "live") {
-              openRandomRewardJoinDrawer(item.pool);
+            if (isRandomRewardsLiveCard(item)) {
+              openRandomRewardJoinDrawer(item);
             }
           }}
           onClaim={() => {
-            if (item.pool.status === "ended" && item.pool.userWon) {
-              openRandomRewardClaimDrawer(item.pool);
+            if (isRandomRewardsEndedCard(item) && item.userWon) {
+              openRandomRewardClaimDrawer(item);
             }
           }}
         />
-      );
+      ) : null;
     case "sport":
-      return (
+      return isSportPredictionCard(item) ? (
         <SportMatchHubDetail
-          match={item.match}
-          onPickTeam={(side) => openSportDrawer(item.match, side)}
+          match={item}
+          onPickTeam={(side) => openSportDrawer(item, side)}
         />
-      );
+      ) : null;
     case "politics":
-      return (
+      return isPoliticsPredictionCard(item) ? (
         <PoliticsEventHubDetail
-          event={item.event}
-          onPickOutcome={(outcomeId) => openPoliticsDrawer(item.event, outcomeId)}
+          event={item}
+          onPickOutcome={(outcomeId) => openPoliticsDrawer(item, outcomeId)}
         />
-      );
+      ) : null;
     case "finance":
-      return (
+      return isFinancePredictionCard(item) ? (
         <FinanceEventHubDetail
-          event={item.event}
-          onPickOutcome={(outcomeId) => openFinanceDrawer(item.event, outcomeId)}
+          event={item}
+          onPickOutcome={(outcomeId) => openFinanceDrawer(item, outcomeId)}
         />
-      );
+      ) : null;
     case "tech":
-      return (
+      return isTechPredictionCard(item) ? (
         <TechEventHubDetail
-          event={item.event}
-          onPickOutcome={(outcomeId) => openTechDrawer(item.event, outcomeId)}
+          event={item}
+          onPickOutcome={(outcomeId) => openTechDrawer(item, outcomeId)}
         />
-      );
+      ) : null;
   }
 }

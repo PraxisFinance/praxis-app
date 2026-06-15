@@ -5,6 +5,7 @@ import type {
   RandomPoolRemainingTime,
   RandomPoolUserInPool,
 } from "@/shared/types/randomPool";
+import { isRandomRewardsLiveCard } from "@/shared/types/predictions";
 import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 const YT_DECIMALS = 6;
@@ -43,9 +44,10 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
 
     return {
       id: state.id,
+      predictionType: "random_reward",
       title,
       iconUrl: YT_ICON_URL,
-      status: "live",
+      status: { kind: "live" },
       tvl,
       expectedYield: formatRYDAmount(totalPrize, YT_DECIMALS),
       usersIn: state.participantCount,
@@ -61,9 +63,10 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
 
   return {
     id: state.id,
+    predictionType: "random_reward",
     title,
     iconUrl: YT_ICON_URL,
-    status: "ended",
+    status: { kind: "ended" },
     tvl,
     earnings: formatRYDAmount(totalPrize, YT_DECIMALS),
     usersWon: state.numWinners,
@@ -95,9 +98,9 @@ export function filterRydPools(
 ): RandomPool[] {
   switch (filter) {
     case "live":
-      return pools.filter((p) => p.status === "live");
+      return pools.filter((p) => p.status.kind === "live");
     case "ended":
-      return pools.filter((p) => p.status === "ended");
+      return pools.filter((p) => p.status.kind === "ended");
     case "1h":
     case "12h":
     case "1d":
@@ -105,7 +108,7 @@ export function filterRydPools(
       const maxSec = { "1h": 3_600, "12h": 43_200, "1d": 86_400, "1w": 604_800 }[filter];
       return pools.filter(
         (p) =>
-          p.status === "live" &&
+          isRandomRewardsLiveCard(p) &&
           p.remainingTime.days * 86_400 +
             p.remainingTime.hours * 3_600 +
             p.remainingTime.minutes * 60 +

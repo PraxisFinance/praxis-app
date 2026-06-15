@@ -5,6 +5,17 @@ import {
   type PredictionsHubItem,
 } from "@/shared/types/predictionsHubItem";
 import {
+  isCryptoPredictionCard,
+  isEsportsPredictionCard,
+  isFinancePredictionCard,
+  isPoliticsPredictionCard,
+  isRandomRewardsPredictionCard,
+  isRandomRewardsLiveCard,
+  isRandomRewardsEndedCard,
+  isSportPredictionCard,
+  isTechPredictionCard,
+} from "@/shared/types/predictions";
+import {
   usePredictionsHubCryptoDrawer,
   usePredictionsHubEsportsDrawer,
   usePredictionsHubRandomRewardClaimDrawer,
@@ -45,46 +56,48 @@ export function PredictionsHubItemsList({
           key={getPredictionsHubItemKey(item)}
           item={item}
           onCryptoPickOutcome={
-            item.kind === "crypto"
-              ? (outcomeId) => openCryptoDrawer(item.prediction, outcomeId)
+            isCryptoPredictionCard(item)
+              ? (outcomeId) => openCryptoDrawer(item, outcomeId)
               : undefined
           }
           onEsportsPickTeam={
-            item.kind === "esports" ? (side) => openEsportsDrawer(item.match, side) : undefined
+            isEsportsPredictionCard(item)
+              ? (side) => openEsportsDrawer(item, side)
+              : undefined
           }
           onRandomRewardJoin={
-            item.kind === "random-reward"
+            isRandomRewardsPredictionCard(item)
               ? () => {
-                  if (item.pool.status === "live") {
-                    openRandomRewardJoinDrawer(item.pool);
+                  if (isRandomRewardsLiveCard(item)) {
+                    openRandomRewardJoinDrawer(item);
                   }
                 }
               : undefined
           }
           onRandomRewardClaim={
-            item.kind === "random-reward"
+            isRandomRewardsPredictionCard(item)
               ? () => {
-                  if (item.pool.status === "ended" && item.pool.userWon) {
-                    openRandomRewardClaimDrawer(item.pool);
+                  if (isRandomRewardsEndedCard(item) && item.userWon) {
+                    openRandomRewardClaimDrawer(item);
                   }
                 }
               : undefined
           }
           onSportPickTeam={
-            item.kind === "sport" ? (side) => openSportDrawer(item.match, side) : undefined
+            isSportPredictionCard(item) ? (side) => openSportDrawer(item, side) : undefined
           }
           onPoliticsPickOutcome={
-            item.kind === "politics"
-              ? (outcomeId) => openPoliticsDrawer(item.event, outcomeId)
+            isPoliticsPredictionCard(item)
+              ? (outcomeId) => openPoliticsDrawer(item, outcomeId)
               : undefined
           }
           onFinancePickOutcome={
-            item.kind === "finance"
-              ? (outcomeId) => openFinanceDrawer(item.event, outcomeId)
+            isFinancePredictionCard(item)
+              ? (outcomeId) => openFinanceDrawer(item, outcomeId)
               : undefined
           }
           onTechPickOutcome={
-            item.kind === "tech" ? (outcomeId) => openTechDrawer(item.event, outcomeId) : undefined
+            isTechPredictionCard(item) ? (outcomeId) => openTechDrawer(item, outcomeId) : undefined
           }
         />
       ))}

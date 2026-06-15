@@ -12,7 +12,7 @@ interface TechEventHubDetailProps {
 }
 
 export function TechEventHubDetail({ event, onPickOutcome }: TechEventHubDetailProps) {
-  const detail = event.techDetail;
+  const detail = event.detail;
 
   if (!detail) {
     return (
@@ -22,10 +22,10 @@ export function TechEventHubDetail({ event, onPickOutcome }: TechEventHubDetailP
 
   return (
     <div className="flex flex-col gap-4">
-      <TechEventDetailTitleCard thumbnailUrl={event.thumbnailUrl} title={event.title} />
+      <TechEventDetailTitleCard thumbnailUrl={event.imageUrl} title={event.title} />
       <TechEventDetailProbabilityChart points={detail.chartPoints} />
       <TechEventDetailOutcomes event={event} onPickOutcome={onPickOutcome} />
-      <TechEventDetailResolution paragraphs={detail.resolutionParagraphs} />
+      <TechEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
     </div>
   );
 }

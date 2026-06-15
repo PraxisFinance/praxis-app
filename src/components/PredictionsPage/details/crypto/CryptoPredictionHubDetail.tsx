@@ -16,29 +16,25 @@ export function CryptoPredictionHubDetail({
   onPickOutcome,
 }: CryptoPredictionHubDetailProps) {
   switch (prediction.predictionType) {
-    case "up_down":
+    case "crypto_up_down":
       return (
         <CryptoPredictionUpDownHubDetail prediction={prediction} onPickOutcome={onPickOutcome} />
       );
-    case "above_below":
+    case "crypto_above_below":
       return (
         <CryptoPredictionAboveBelowHubDetail
           prediction={prediction}
           onPickOutcome={onPickOutcome}
         />
       );
-    case "price_range":
+    case "crypto_price_range":
       return (
         <CryptoPredictionPriceRangeHubDetail
           prediction={prediction}
           onPickOutcome={onPickOutcome}
         />
       );
-    case "hit":
+    case "crypto_hit":
       return <CryptoPredictionHitHubDetail prediction={prediction} onPickOutcome={onPickOutcome} />;
-    default: {
-      const _exhaustive: never = prediction;
-      return _exhaustive;
-    }
   }
 }

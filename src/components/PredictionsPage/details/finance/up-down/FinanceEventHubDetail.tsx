@@ -12,9 +12,13 @@ interface FinanceEventHubDetailProps {
 }
 
 export function FinanceEventHubDetail({ event, onPickOutcome }: FinanceEventHubDetailProps) {
-  const detail = event.financeDetail;
+  const detail = event.detail;
 
-  if (!detail) {
+  if (
+    detail == null ||
+    detail.baselinePriceLabel == null ||
+    detail.priceChartPoints == null
+  ) {
     return (
       <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this market.</p>
     );
@@ -22,7 +26,7 @@ export function FinanceEventHubDetail({ event, onPickOutcome }: FinanceEventHubD
 
   return (
     <div className="flex flex-col gap-4">
-      <CryptoPredictionUpDownDetailTitle iconUrl={event.logoUrl} title={event.title} />
+      <CryptoPredictionUpDownDetailTitle iconUrl={event.imageUrl} title={event.title} />
       <CryptoPredictionUpDownPriceChart
         baselinePriceLabel={detail.baselinePriceLabel}
         points={detail.priceChartPoints}

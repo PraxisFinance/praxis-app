@@ -1,12 +1,12 @@
 "use client";
 
-import type { CryptoBinaryOutcome } from "@/shared/types/cryptoPrediction";
+import type { PredictionBinaryOutcomes } from "@/shared/types/predictions";
 import { Button } from "@/components/ui/button";
 import { stopHubCardLinkNavigation } from "../stopHubCardLinkNavigation";
 import { CryptoPredictionHubPoolSplit } from "./CryptoPredictionHubPoolSplit";
 
 interface CryptoPredictionHubBinaryOutcomesBlockProps {
-  outcomes: [CryptoBinaryOutcome, CryptoBinaryOutcome];
+  outcomes: PredictionBinaryOutcomes;
   disabled: boolean;
   onOutcomePick?: (outcomeId: string) => void;
 }
