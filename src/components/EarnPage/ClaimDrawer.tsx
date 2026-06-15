@@ -32,7 +32,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   const principalAmount = item?.yourDeposit ?? "";
   const yieldAmount = item?.yieldGenerated ?? "";
 
-  const { refetch: refetchBalances } = useWalletBalances();
+  const { refetchAfterDelay } = useWalletBalances();
   const { claim, status, errorMessage, reset, isPending } = useVaultClaimBoth(
     vaultAddress,
     principalAmount,
@@ -50,8 +50,8 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   }, [open, reset]);
 
   useEffect(() => {
-    if (isSuccess) refetchBalances();
-  }, [isSuccess, refetchBalances]);
+    if (isSuccess) void refetchAfterDelay();
+  }, [isSuccess, refetchAfterDelay]);
 
   if (!item) return null;
 

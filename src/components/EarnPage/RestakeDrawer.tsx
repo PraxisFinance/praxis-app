@@ -40,7 +40,7 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
   const yieldAmount = item?.yieldGenerated ?? "";
   const hasYield = Number(yieldAmount) > 0;
 
-  const { raw, refetch: refetchBalances } = useWalletBalances();
+  const { raw, refetch: refetchBalances, refetchAfterDelay } = useWalletBalances();
 
   const {
     withdraw,
@@ -95,9 +95,9 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
   // Refetch balances whenever any transaction succeeds
   useEffect(() => {
     if (withdrawStatus === "success" || redeemStatus === "success" || depositStatus === "success") {
-      void refetchBalances();
+      void refetchAfterDelay();
     }
-  }, [withdrawStatus, redeemStatus, depositStatus, refetchBalances]);
+  }, [withdrawStatus, redeemStatus, depositStatus, refetchAfterDelay]);
 
   if (!item) return null;
 
@@ -125,8 +125,8 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
       await withdraw();
       // Step 2: Claim yield (YT) from source vault (always, toggle only affects deposit amount)
       if (hasYield) await redeemYield();
-      // Step 3: Refresh wallet balance so deposit hook sees the new funds
-      await refetchBalances();
+      // Step 3: Wait for RPC to reflect new balance, then refresh so deposit hook sees updated funds
+      await refetchAfterDelay();
       // Step 4: Deposit into target vault
       await deposit();
     } finally {

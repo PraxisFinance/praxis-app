@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useAccount, useReadContracts } from "wagmi";
 import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
@@ -75,6 +75,20 @@ export function useWalletBalances() {
   const ptBalance = data?.[1]?.status === "success" ? (data[1].result as bigint) : BigInt(0);
   const ytBalance = data?.[2]?.status === "success" ? (data[2].result as bigint) : BigInt(0);
 
+  // RPC nodes can lag behind the chain state even after a receipt is confirmed.
+  // Waiting a short period before re-reading avoids getting stale balances.
+  const POST_TX_REFETCH_DELAY_MS = 2000;
+
+  const refetchAfterDelay = useCallback(
+    (delay = POST_TX_REFETCH_DELAY_MS) =>
+      new Promise<void>((resolve) => {
+        setTimeout(() => {
+          void refetch().then(() => resolve());
+        }, delay);
+      }),
+    [refetch]
+  );
+
   return {
     address,
     isConnected,
@@ -83,5 +97,6 @@ export function useWalletBalances() {
     isLoading,
     error,
     refetch,
+    refetchAfterDelay,
   };
 }
