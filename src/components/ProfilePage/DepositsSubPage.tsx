@@ -13,13 +13,14 @@ import { useDepositsStore } from "@/stores/depositsStore";
 import {
   userPositionToEarnPosition,
   earnPositionToAvailableItem,
+  vaultStateToAvailableItem,
 } from "@/shared/utils/earnMappers";
 import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
 
 export function DepositsSubPage() {
   const { address } = useAccount();
   //const { vaults, loading, fetchAll, fetchUserDataForAllVaults, getUserPositions } = useDepositsStore();
-  const { vaults, loading, fetchAll, getUserPositions } = useDepositsStore();
+  const { vaults, loading, fetchAll, getUserPositions, getActiveVaults } = useDepositsStore();
   const [selectedAvailableItem, setSelectedAvailableItem] = useState<EarnAvailableItem | null>(
     null,
   );
@@ -40,6 +41,13 @@ export function DepositsSubPage() {
   //     fetchUserDataForAllVaults(address);
   //   }
   // }, [address, vaultCount, fetchUserDataForAllVaults]);
+
+  const mostRecentActiveVault = useMemo(() => {
+    const actives = getActiveVaults();
+    if (!actives.length) return null;
+    const sorted = [...actives].sort((a, b) => Number(b.maturity - a.maturity));
+    return vaultStateToAvailableItem(sorted[0]);
+  }, [vaults, getActiveVaults]);
 
   const positions = useMemo(() => {
     return getUserPositions().map((pos) => {
@@ -112,6 +120,7 @@ export function DepositsSubPage() {
       />
       <RestakeDrawer
         item={selectedRestakePosition}
+        targetVault={mostRecentActiveVault}
         open={restakeDrawerOpen}
         onOpenChange={setRestakeDrawerOpen}
       />

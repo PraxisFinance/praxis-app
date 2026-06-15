@@ -1,22 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AlertIcon } from "@/components/icons/base/alertIcon";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
+import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
-import { RequestResultForm, type RequestResultStatus } from "@/components/ui/RequestResultForm";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 import { Switch } from "@/components/ui/Switch";
 import {
   RESTAKE_YIELD_IN_PRINCIPAL_NOTE,
   RESTAKE_YIELD_TO_WALLET_NOTE,
 } from "@/shared/constants/earn";
-import type { EarnPosition } from "@/shared/types/earn";
+import type { EarnAvailableItem, EarnPosition } from "@/shared/types/earn";
+import { useVaultDeposit, useVaultRedeemYield, useVaultWithdraw } from "@/hooks/useVault";
+import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface RestakeDrawerProps {
   item: EarnPosition | null;
+  targetVault: EarnAvailableItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -26,58 +30,127 @@ function formatPoolLifetimeDisplay(lifetime: string): string {
   return lifetime.replace(/ \d+s$/, "");
 }
 
-function pickRandomResult(): RequestResultStatus {
-  return Math.random() < 0.5 ? "success" : "failed";
-}
-
-const RESTAKE_RESULT_COPY: Record<
-  RequestResultStatus,
-  { title: string; description: string }
-> = {
-  success: {
-    title: "Restake complete",
-    description: "Your deposit has been restaked in the new pool.",
-  },
-  failed: {
-    title: "Restake failed",
-    description: "Something went wrong. Please try again later.",
-  },
-};
-
-export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) {
+export function RestakeDrawer({ item, targetVault, open, onOpenChange }: RestakeDrawerProps) {
   const [withdrawYield, setWithdrawYield] = useState(false);
-  const [outcome, setOutcome] = useState<RequestResultStatus | null>(null);
+  const [amount, setAmount] = useState("");
+  const [restaking, setRestaking] = useState(false);
 
+  const vaultAddress: `0x${string}` = item?.vaultAddress ?? "0x0";
+  const principalAmount = item?.yourDeposit ?? "";
+  const yieldAmount = item?.yieldGenerated ?? "";
+  const hasYield = Number(yieldAmount) > 0;
+
+  const { raw, refetch: refetchBalances } = useWalletBalances();
+
+  const {
+    withdraw,
+    status: withdrawStatus,
+    errorMessage: withdrawError,
+    reset: resetWithdraw,
+    isPending: isWithdrawing,
+  } = useVaultWithdraw(vaultAddress, principalAmount);
+
+  const {
+    redeemYield,
+    status: redeemStatus,
+    errorMessage: redeemError,
+    reset: resetRedeem,
+    isPending: isRedeeming,
+  } = useVaultRedeemYield(vaultAddress, yieldAmount);
+
+  const {
+    deposit,
+    status: depositStatus,
+    errorMessage: depositError,
+    reset: resetDeposit,
+    isPending: isDepositing,
+    buyIn,
+    totalCost,
+  } = useVaultDeposit(targetVault?.vaultAddress ?? "0x0", amount, raw.usdc);
+
+  // Suggested max deposit: principal + yield when toggle OFF, principal only when toggle ON
+  const suggestedAmount = useMemo(() => {
+    const p = parseFloat(principalAmount || "0") || 0;
+    const y = parseFloat(yieldAmount || "0") || 0;
+    const total = withdrawYield ? p : p + y;
+    return total > 0 ? String(Math.round(total * 1_000_000) / 1_000_000) : "";
+  }, [withdrawYield, principalAmount, yieldAmount]);
+
+  // Pre-populate amount when suggested value changes (toggle or item change)
+  useEffect(() => {
+    setAmount(suggestedAmount);
+  }, [suggestedAmount]);
+
+  // Reset all state when drawer closes
   useEffect(() => {
     if (!open) {
       setWithdrawYield(false);
-      setOutcome(null);
+      setRestaking(false);
+      resetWithdraw();
+      resetRedeem();
+      resetDeposit();
     }
-  }, [open]);
+  }, [open, resetWithdraw, resetRedeem, resetDeposit]);
+
+  // Refetch balances whenever any transaction succeeds
+  useEffect(() => {
+    if (withdrawStatus === "success" || redeemStatus === "success" || depositStatus === "success") {
+      void refetchBalances();
+    }
+  }, [withdrawStatus, redeemStatus, depositStatus, refetchBalances]);
 
   if (!item) return null;
 
-  const yieldNote = withdrawYield ? RESTAKE_YIELD_TO_WALLET_NOTE : RESTAKE_YIELD_IN_PRINCIPAL_NOTE;
   const currencySuffix = ` ${item.depositCurrency}`;
+  const yieldNote = withdrawYield ? RESTAKE_YIELD_TO_WALLET_NOTE : RESTAKE_YIELD_IN_PRINCIPAL_NOTE;
+  const isPending = restaking || isWithdrawing || isRedeeming || isDepositing;
+  const isSuccess = depositStatus === "success";
+  const errorMessage = withdrawError ?? redeemError ?? depositError;
+
+  const canSubmit =
+    !isPending && !!targetVault && !!amount && Number(amount) > 0 && Number(principalAmount) > 0;
 
   function handleClose() {
-    setOutcome(null);
+    resetWithdraw();
+    resetRedeem();
+    resetDeposit();
     onOpenChange(false);
   }
 
-  function handleRestake() {
-    setOutcome(pickRandomResult());
+  async function handleRestake() {
+    if (!canSubmit || !item || !targetVault) return;
+    setRestaking(true);
+    try {
+      // Step 1: Claim principal (PT) from source vault
+      await withdraw();
+      // Step 2: Claim yield (YT) from source vault (always, toggle only affects deposit amount)
+      if (hasYield) await redeemYield();
+      // Step 3: Refresh wallet balance so deposit hook sees the new funds
+      await refetchBalances();
+      // Step 4: Deposit into target vault
+      await deposit();
+    } finally {
+      setRestaking(false);
+    }
   }
 
-  if (outcome) {
-    const copy = RESTAKE_RESULT_COPY[outcome];
+  const buttonLabel = isWithdrawing
+    ? "Claiming principal…"
+    : isRedeeming
+      ? "Claiming yield…"
+      : depositStatus === "approving"
+        ? "Approving USDC…"
+        : isDepositing
+          ? "Depositing…"
+          : "Restake";
 
+  if (isSuccess) {
     return (
       <DrawerShell open={open} onOpenChange={onOpenChange}>
         <RequestResultForm
-          title={copy.title}
-          status={outcome}
-          description={copy.description}
+          title="Restake complete"
+          status="success"
+          description="Your deposit has been restaked in the new pool."
         />
         <Button variant="primary" size="action" onClick={handleClose}>
           Done
@@ -90,28 +163,29 @@ export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) 
     <DrawerShell open={open} onOpenChange={onOpenChange}>
       <AppDrawerHeading
         variant="plain"
-        title="Restake your deposit from ended vault"
-        description="Withdraw your cryptocurrency from ended pool."
+        title="Restake your deposit"
+        description="Claim from your ended vault and deposit into the latest active pool."
       />
 
+      {/* Source vault */}
       <div className="flex flex-col gap-3">
+        <span className="text-main-darkPurple text-sm font-semibold leading-5">From pool</span>
         <InfoRow
           variant="inline"
-          label="Pool Information:"
+          label="Pool:"
           value={
             <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
           }
         />
-
         <div className="flex flex-col gap-1.5">
           <InfoRow
             variant="inline"
-            label="Your deposit(PT):"
+            label="Your deposit (PT):"
             value={`${item.yourDeposit}${currencySuffix}`}
           />
           <InfoRow
             variant="inline"
-            label="Yield generated(YT):"
+            label="Yield generated (YT):"
             value={`${item.yieldGenerated}${currencySuffix}`}
           />
           <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
@@ -124,10 +198,62 @@ export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) 
         </div>
       </div>
 
+      {/* Target vault */}
+      {targetVault ? (
+        <div className="flex flex-col gap-3">
+          <span className="text-main-darkPurple text-sm font-semibold leading-5">Into pool</span>
+          <InfoRow
+            variant="inline"
+            label="Pool:"
+            value={
+              <PoolHeader
+                iconUrl={targetVault.depositCurrencyIconUrl}
+                name={targetVault.queueName}
+                emphasized
+              />
+            }
+          />
+          <div className="flex flex-col gap-1.5">
+            <InfoRow
+              variant="inline"
+              label="Deposits:"
+              value={`${targetVault.depositsAmount} ${targetVault.depositCurrency}`}
+            />
+            <InfoRow
+              variant="inline"
+              label="Liquidity:"
+              value={`${targetVault.liquidityAmount} ${targetVault.depositCurrency}`}
+            />
+            <InfoRow variant="inline" label="Yield APY:" value={`${targetVault.yieldApyPercent}%`} />
+            <InfoRow variant="inline" label="Pool lifetime:" value={targetVault.poolLifetime} />
+          </div>
+        </div>
+      ) : (
+        <p className="text-red-500 text-xs px-1">No active pool available to restake into.</p>
+      )}
+
+      {/* Amount input */}
+      <div className="flex flex-col gap-2">
+        <span className="text-main-darkPurple text-sm font-semibold leading-5">Deposit amount</span>
+        <InputWithMax
+          value={amount}
+          onChange={setAmount}
+          maxValue={suggestedAmount}
+          disabled={isPending}
+        />
+        {amount && Number(amount) > 0 && targetVault && (
+          <div className="flex flex-col gap-1 px-1 pt-1">
+            <InfoRow label="Buy-in cost:" value={`${buyIn} ${item.depositCurrency}`} />
+            <InfoRow label="Total cost:" value={`${totalCost} ${item.depositCurrency}`} />
+          </div>
+        )}
+      </div>
+
+      {/* Yield destination toggle */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-4">
           <span className="text-main-darkPurple text-sm font-normal leading-5">
-            Withdraw yield(YT)
+            Withdraw yield (YT) to wallet
           </span>
           <Switch checked={withdrawYield} onCheckedChange={setWithdrawYield} />
         </div>
@@ -143,8 +269,15 @@ export function RestakeDrawer({ item, open, onOpenChange }: RestakeDrawerProps) 
         </div>
       </div>
 
-      <Button variant="primary" size="action" onClick={handleRestake}>
-        Restake
+      {errorMessage && <p className="text-red-500 text-xs px-1">{errorMessage}</p>}
+
+      <Button
+        variant="primary"
+        size="action"
+        onClick={() => void handleRestake()}
+        disabled={isPending || !canSubmit}
+      >
+        {buttonLabel}
       </Button>
     </DrawerShell>
   );
