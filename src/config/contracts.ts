@@ -1,3 +1,23 @@
+export const mockUsdcAbi = [
+  {
+    type: "function",
+    name: "claim",
+    inputs: [
+      { name: "deadline", type: "uint256" },
+      { name: "signature", type: "bytes" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "hasClaimed",
+    inputs: [{ name: "", type: "address" }],
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "view",
+  },
+] as const;
+
 export const testnetMintAbi = [
   {
     type: "function",
