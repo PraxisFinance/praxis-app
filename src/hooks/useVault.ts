@@ -2,8 +2,14 @@
 
 import { useState, useCallback } from "react";
 import { useAccount, useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import { readContract, waitForTransactionReceipt } from "wagmi/actions";
-import { erc20Abi } from "viem";
+import {
+  readContract,
+  waitForTransactionReceipt,
+  sendCalls,
+  waitForCallsStatus,
+  getCapabilities,
+} from "wagmi/actions";
+import { erc20Abi, encodeFunctionData } from "viem";
 import { baseSepolia } from "wagmi/chains";
 import { config } from "@/config/wagmi";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
@@ -269,5 +275,142 @@ export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: 
     errorMessage,
     reset,
     isPending: status === "redeeming",
+  };
+}
+
+// ── Claim Both (batched) ───────────────────────────────────────────────
+
+export type ClaimBothStatus = "idle" | "claiming" | "success" | "error";
+
+interface ClaimBothOptions {
+  principal: boolean;
+  yield: boolean;
+}
+
+export function useVaultClaimBoth(
+  vaultAddress: `0x${string}`,
+  principalAmountInput: string,
+  yieldAmountInput: string
+) {
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
+  const { writeContractAsync } = useWriteContract();
+  const [status, setStatus] = useState<ClaimBothStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const ptAmount = parseTokenAmount(principalAmountInput, TOKEN_DECIMALS.USDC);
+  const ytAmount = parseTokenAmount(yieldAmountInput, TOKEN_DECIMALS.YT);
+
+  const claim = useCallback(
+    async (opts: ClaimBothOptions) => {
+      if (!address) {
+        setErrorMessage("Wallet not connected");
+        setStatus("error");
+        return;
+      }
+
+      const wantPrincipal = opts.principal && ptAmount > BigInt(0);
+      const wantYield = opts.yield && ytAmount > BigInt(0);
+
+      if (!wantPrincipal && !wantYield) return;
+
+      try {
+        setErrorMessage(null);
+        await switchChainAsync({ chainId: baseSepolia.id });
+        setStatus("claiming");
+
+        if (wantPrincipal && wantYield) {
+          // Try atomic batch (EIP-5792); fall back to sequential if unsupported.
+          let useBatch = false;
+          try {
+            const capabilities = await getCapabilities(config);
+            useBatch = capabilities?.[baseSepolia.id]?.atomicBatch?.supported ?? false;
+          } catch {
+            // Wallet doesn't support capability queries (e.g. injected EOA wallet).
+          }
+
+          if (useBatch) {
+            const id = await sendCalls(config, {
+              calls: [
+                {
+                  to: vaultAddress,
+                  data: encodeFunctionData({
+                    abi: praxisVaultAbi,
+                    functionName: "withdraw",
+                    args: [ptAmount, address],
+                  }),
+                },
+                {
+                  to: vaultAddress,
+                  data: encodeFunctionData({
+                    abi: praxisVaultAbi,
+                    functionName: "redeemYield",
+                    args: [ytAmount, address],
+                  }),
+                },
+              ],
+              chainId: baseSepolia.id,
+            });
+            await waitForCallsStatus(config, id);
+          } else {
+            const withdrawTx = await writeContractAsync({
+              address: vaultAddress,
+              abi: praxisVaultAbi,
+              functionName: "withdraw",
+              args: [ptAmount, address],
+              chainId: baseSepolia.id,
+            });
+            await waitForTransactionReceipt(config, { hash: withdrawTx });
+
+            const redeemTx = await writeContractAsync({
+              address: vaultAddress,
+              abi: praxisVaultAbi,
+              functionName: "redeemYield",
+              args: [ytAmount, address],
+              chainId: baseSepolia.id,
+            });
+            await waitForTransactionReceipt(config, { hash: redeemTx });
+          }
+        } else if (wantPrincipal) {
+          const tx = await writeContractAsync({
+            address: vaultAddress,
+            abi: praxisVaultAbi,
+            functionName: "withdraw",
+            args: [ptAmount, address],
+            chainId: baseSepolia.id,
+          });
+          await waitForTransactionReceipt(config, { hash: tx });
+        } else {
+          const tx = await writeContractAsync({
+            address: vaultAddress,
+            abi: praxisVaultAbi,
+            functionName: "redeemYield",
+            args: [ytAmount, address],
+            chainId: baseSepolia.id,
+          });
+          await waitForTransactionReceipt(config, { hash: tx });
+        }
+
+        setStatus("success");
+      } catch (err) {
+        setStatus("error");
+        setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
+      }
+    },
+    [address, chainId, switchChainAsync, vaultAddress, ptAmount, ytAmount, writeContractAsync]
+  );
+
+  const reset = useCallback(() => {
+    setStatus("idle");
+    setErrorMessage(null);
+  }, []);
+
+  return {
+    claim,
+    status,
+    errorMessage,
+    reset,
+    isPending: status === "claiming",
   };
 }

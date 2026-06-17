@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { InfoRow } from "@/components/ui/InfoRow";
+import { InputWithMax } from "@/components/ui/InputWithMax";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 
 import type { EarnPosition } from "@/shared/types/earn";
@@ -24,15 +25,17 @@ function formatPoolLifetimeDisplay(lifetime: string): string {
 }
 
 export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps) {
-  const withdrawAmount = item?.yourDeposit ?? "";
+  const [amount, setAmount] = useState("");
+  const maxWithdrawAmount = item?.yourDeposit ?? "";
   const { refetch: refetchBalances } = useWalletBalances();
   const { withdraw, status, errorMessage, reset, isPending } = useVaultWithdraw(
     item?.vaultAddress ?? "0x0",
-    withdrawAmount
+    amount
   );
 
   useEffect(() => {
     if (!open) {
+      setAmount("");
       reset();
     }
   }, [open, reset]);
@@ -50,12 +53,16 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
   }
 
   function handleClose() {
+    setAmount("");
     reset();
     onOpenChange(false);
   }
 
   const buttonLabel =
     status === "withdrawing" ? "Withdrawing…" : status === "success" ? "Done" : "Withdraw";
+
+  const exceedsDeposit =
+    amount !== "" && Number(amount) > 0 && Number(amount) > Number(maxWithdrawAmount);
 
   const currencySuffix = ` ${item.depositCurrency}`;
 
@@ -97,6 +104,31 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
         </div>
       </div>
 
+      <div className="flex flex-col gap-2">
+        <span className="text-main-darkPurple text-lg font-bold leading-6">Amount</span>
+
+        <InputWithMax
+          value={amount}
+          onChange={setAmount}
+          maxValue={maxWithdrawAmount}
+          disabled={isPending}
+        />
+
+        <div className="flex items-center justify-between px-1">
+          <span className="text-main-darkPurple text-xs font-normal leading-4">
+            Available: {maxWithdrawAmount}
+            {currencySuffix}
+          </span>
+        </div>
+
+        {exceedsDeposit && (
+          <span className="text-red-500 text-xs px-1">
+            Amount exceeds your deposit of {maxWithdrawAmount}
+            {currencySuffix}
+          </span>
+        )}
+      </div>
+
       <div className="flex items-start gap-2">
         <span
           className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple text-main-darkPurple"
@@ -120,7 +152,7 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
           variant="destructiveBrand"
           size="action"
           onClick={handleWithdraw}
-          disabled={isPending || !withdrawAmount || Number(withdrawAmount) <= 0}
+          disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
         >
           {buttonLabel}
         </Button>

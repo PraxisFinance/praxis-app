@@ -36,6 +36,13 @@ export function EarnPage() {
     [vaults, getActiveVaults],
   );
 
+  const mostRecentActiveVault = useMemo(() => {
+    const actives = getActiveVaults();
+    if (!actives.length) return null;
+    const sorted = [...actives].sort((a, b) => Number(b.maturity - a.maturity));
+    return vaultStateToAvailableItem(sorted[0]);
+  }, [vaults, getActiveVaults]);
+
   const myPositions = useMemo(() => {
     return getUserPositions().map((pos) => {
       const vault = vaults[pos.vault_id]?.state ?? null;
@@ -126,6 +133,7 @@ export function EarnPage() {
       />
       <RestakeDrawer
         item={selectedRestakePosition}
+        targetVault={mostRecentActiveVault}
         open={restakeDrawerOpen}
         onOpenChange={setRestakeDrawerOpen}
       />

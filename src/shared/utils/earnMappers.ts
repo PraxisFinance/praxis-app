@@ -22,7 +22,7 @@ function formatTimeLeft(maturitySec: bigint): string {
   const diff = maturityMs - nowMs;
   if (diff <= 0) return "Ended";
 
-  const d = Math.floor(diff / (86_400_000));
+  const d = Math.floor(diff / 86_400_000);
   const h = Math.floor((diff % 86_400_000) / 3_600_000);
   const m = Math.floor((diff % 3_600_000) / 60_000);
   const s = Math.floor((diff % 60_000) / 1000);
@@ -71,7 +71,7 @@ export function vaultStateToAvailableItem(vault: VaultState): EarnAvailableItem 
 
 export function userPositionToEarnPosition(
   pos: UserPosition,
-  vault: VaultState | null,
+  vault: VaultState | null
 ): EarnPosition {
   const nowSec = BigInt(Math.floor(Date.now() / 1000));
   const isMatured = vault ? vault.maturity <= nowSec : false;

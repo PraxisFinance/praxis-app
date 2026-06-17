@@ -20,7 +20,7 @@ interface DepositDrawerProps {
 
 export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) {
   const [amount, setAmount] = useState("");
-  const { balances, raw, refetch: refetchBalances } = useWalletBalances();
+  const { balances, raw, refetchAfterDelay } = useWalletBalances();
   const { deposit, status, errorMessage, reset, buyIn, totalCost, insufficientBalance, isPending } =
     useVaultDeposit(item?.vaultAddress ?? "0x0", amount, raw.usdc);
 
@@ -33,9 +33,9 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
 
   useEffect(() => {
     if (status === "success") {
-      refetchBalances();
+      void refetchAfterDelay();
     }
-  }, [status, refetchBalances]);
+  }, [status, refetchAfterDelay]);
 
   if (!item) return null;
 

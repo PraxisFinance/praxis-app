@@ -10,7 +10,7 @@ import { PoolHeader } from "@/components/ui/PoolHeader";
 import { Switch } from "@/components/ui/Switch";
 import { CLAIM_PT_YT_NOTE } from "@/shared/constants/earn";
 import type { EarnPosition } from "@/shared/types/earn";
-import { useVaultRedeemYield, useVaultWithdraw } from "@/hooks/useVault";
+import { useVaultClaimBoth } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 
 interface ClaimDrawerProps {
@@ -32,43 +32,30 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   const principalAmount = item?.yourDeposit ?? "";
   const yieldAmount = item?.yieldGenerated ?? "";
 
-  const { refetch: refetchBalances } = useWalletBalances();
-  const {
-    withdraw,
-    status: withdrawStatus,
-    errorMessage: withdrawError,
-    reset: resetWithdraw,
-    isPending: isWithdrawing,
-  } = useVaultWithdraw(vaultAddress, principalAmount);
-  const {
-    redeemYield,
-    status: redeemStatus,
-    errorMessage: redeemError,
-    reset: resetRedeem,
-    isPending: isRedeeming,
-  } = useVaultRedeemYield(vaultAddress, yieldAmount);
+  const { refetchAfterDelay } = useWalletBalances();
+  const { claim, status, errorMessage, reset, isPending } = useVaultClaimBoth(
+    vaultAddress,
+    principalAmount,
+    yieldAmount,
+  );
+
+  const isSuccess = status === "success";
 
   useEffect(() => {
     if (!open) {
       setWithdrawPrincipal(true);
       setWithdrawYield(true);
-      resetWithdraw();
-      resetRedeem();
+      reset();
     }
-  }, [open, resetWithdraw, resetRedeem]);
+  }, [open, reset]);
 
   useEffect(() => {
-    if (withdrawStatus === "success" || redeemStatus === "success") {
-      refetchBalances();
-    }
-  }, [withdrawStatus, redeemStatus, refetchBalances]);
+    if (isSuccess) void refetchAfterDelay();
+  }, [isSuccess, refetchAfterDelay]);
 
   if (!item) return null;
 
   const currencySuffix = ` ${item.depositCurrency}`;
-  const isPending = isWithdrawing || isRedeeming;
-  const isSuccess = withdrawStatus === "success" || redeemStatus === "success";
-  const errorMessage = withdrawError ?? redeemError;
 
   const canClaimPrincipal =
     withdrawPrincipal && principalAmount && Number(principalAmount) > 0;
@@ -79,31 +66,27 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
     (!withdrawPrincipal || canClaimPrincipal) &&
     (!withdrawYield || canClaimYield);
 
+  function handleTogglePrincipal(checked: boolean) {
+    setWithdrawPrincipal(checked);
+    reset();
+  }
+
+  function handleToggleYield(checked: boolean) {
+    setWithdrawYield(checked);
+    reset();
+  }
+
   function handleClose() {
-    resetWithdraw();
-    resetRedeem();
+    reset();
     onOpenChange(false);
   }
 
   async function handleClaim() {
     if (!canSubmit) return;
-
-    if (withdrawPrincipal && canClaimPrincipal) {
-      await withdraw();
-    }
-
-    if (withdrawYield && canClaimYield) {
-      await redeemYield();
-    }
+    await claim({ principal: withdrawPrincipal, yield: withdrawYield });
   }
 
-  const buttonLabel = isWithdrawing
-    ? "Claiming…"
-    : isRedeeming
-      ? "Claiming…"
-      : isSuccess
-        ? "Done"
-        : "Claim Funds";
+  const buttonLabel = isPending ? "Claiming…" : isSuccess ? "Done" : "Claim Funds";
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
@@ -148,13 +131,13 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
           <span className="text-main-darkPurple text-sm font-normal leading-5">
             Withdraw principal(PT)
           </span>
-          <Switch checked={withdrawPrincipal} onCheckedChange={setWithdrawPrincipal} />
+          <Switch checked={withdrawPrincipal} onCheckedChange={handleTogglePrincipal} />
         </div>
         <div className="flex items-center justify-between gap-4">
           <span className="text-main-darkPurple text-sm font-normal leading-5">
             Withdraw yield(YT)
           </span>
-          <Switch checked={withdrawYield} onCheckedChange={setWithdrawYield} />
+          <Switch checked={withdrawYield} onCheckedChange={handleToggleYield} />
         </div>
 
         <div className="flex items-start gap-2">
