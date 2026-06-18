@@ -2,16 +2,26 @@
 
 import { useCallback, useState } from "react";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { getBalance, waitForTransactionReceipt } from "wagmi/actions";
 import { config } from "@/config/wagmi";
 import { mockUsdcAbi } from "@/config/contracts";
 import { TOKEN_ADDRESSES } from "@/config/tokens";
-import { ensureAppChain } from "@/lib/ensureAppChain";
+import { APP_CHAIN_ID, ensureAppChain } from "@/lib/ensureAppChain";
 import { useAuth } from "./useAuth";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
-export type MintTestnetStatus = "idle" | "signing" | "minting" | "success" | "error";
+// Minimum native balance (wei) the wallet needs to cover gas for the claim tx.
+// Below this we ask the backend gas faucet to top the wallet up first.
+const MIN_GAS_WEI = BigInt(100_000_000_000_000); // 0.0001 ETH
+
+export type MintTestnetStatus =
+  | "idle"
+  | "funding"
+  | "signing"
+  | "minting"
+  | "success"
+  | "error";
 
 export function useMintTestnetUsdc(onSuccess?: () => void) {
   const { address, chainId } = useAccount();
@@ -30,9 +40,34 @@ export function useMintTestnetUsdc(onSuccess?: () => void) {
 
     try {
       setErrorMessage(null);
-      setStatus("signing");
 
       await ensureAppChain(chainId, switchChainAsync);
+
+      // The claim tx below needs native ETH for gas. A fresh wallet has none,
+      // so top it up via the (no-auth) backend gas faucet before anything that
+      // would otherwise open the wallet and fail. The faucet endpoint resolves
+      // only once the funding tx is confirmed on-chain.
+      const { value: nativeBalance } = await getBalance(config, {
+        address,
+        chainId: APP_CHAIN_ID,
+      });
+
+      if (nativeBalance < MIN_GAS_WEI) {
+        setStatus("funding");
+
+        const fundRes = await fetch(`${BACKEND_URL}/faucet/eth`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ address }),
+        });
+
+        if (!fundRes.ok) {
+          const body = (await fundRes.json().catch(() => ({}))) as { message?: string };
+          throw new Error(body.message ?? "Failed to fund wallet with gas");
+        }
+      }
+
+      setStatus("signing");
 
       // Authenticate and obtain a backend EIP-712 signature.
       const token = await getToken();
@@ -81,6 +116,6 @@ export function useMintTestnetUsdc(onSuccess?: () => void) {
     status,
     errorMessage,
     reset,
-    isPending: status === "signing" || status === "minting",
+    isPending: status === "funding" || status === "signing" || status === "minting",
   };
 }
