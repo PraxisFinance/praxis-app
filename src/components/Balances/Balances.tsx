@@ -15,7 +15,7 @@ import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
 
 export function Balances() {
   const [open, setOpen] = useState(false);
-  const { balances, raw, isLoading, refetch, isConnected } = useWalletBalances();
+  const { balances, raw, isLoading, refetchAfterDelay, isConnected } = useWalletBalances();
 
   const allZero =
     !isLoading &&
@@ -24,7 +24,7 @@ export function Balances() {
     raw.pt === BigInt(0) &&
     raw.yt === BigInt(0);
 
-  const { mint, isPending } = useMintTestnetUsdc(refetch);
+  const { mint, isPending } = useMintTestnetUsdc(refetchAfterDelay);
 
   return (
     <section>
@@ -46,15 +46,14 @@ export function Balances() {
         ))}
       </div>
 
-      {allZero && (
+      {allZero && !isPending && (
         <Button
           variant="outline"
           size="sm"
           className="mt-2"
           onClick={mint}
-          disabled={isPending}
         >
-          {isPending ? "Topping up…" : "Top up testnet balance"}
+          Top up testnet balance
         </Button>
       )}
 
