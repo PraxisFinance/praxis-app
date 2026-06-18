@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
-import { TOKEN_ADDRESSES } from "@/config/tokens";
 import { useDepositsStore, type VaultState } from "@/stores/depositsStore";
 import {
   pickActiveVaultId,
@@ -13,8 +12,8 @@ interface ActiveVaultState {
   activeVaultId: string | null;
   latestVaultId: string | null;
   activeVault: VaultState | null;
-  activePtAddress: `0x${string}`;
-  activeYtAddress: `0x${string}`;
+  activePtAddress: `0x${string}` | null;
+  activeYtAddress: `0x${string}` | null;
   isStale: boolean;
 
   setUserAddress: (address: string | null) => void;
@@ -24,14 +23,14 @@ interface ActiveVaultState {
   getActiveVault: () => VaultState | null;
 }
 
-function vaultPtAddress(vault: VaultState | null): `0x${string}` {
+function vaultPtAddress(vault: VaultState | null): `0x${string}` | null {
   if (vault?.pt) return vault.pt as `0x${string}`;
-  return TOKEN_ADDRESSES.PT;
+  return null;
 }
 
-function vaultYtAddress(vault: VaultState | null): `0x${string}` {
+function vaultYtAddress(vault: VaultState | null): `0x${string}` | null {
   if (vault?.yt) return vault.yt as `0x${string}`;
-  return TOKEN_ADDRESSES.YT;
+  return null;
 }
 
 function collectUserPositions() {
@@ -53,8 +52,8 @@ export const useActiveVaultStore = create<ActiveVaultState>()(
     activeVaultId: null,
     latestVaultId: null,
     activeVault: null,
-    activePtAddress: TOKEN_ADDRESSES.PT,
-    activeYtAddress: TOKEN_ADDRESSES.YT,
+    activePtAddress: null,
+    activeYtAddress: null,
     isStale: false,
 
     setUserAddress: (address) => {

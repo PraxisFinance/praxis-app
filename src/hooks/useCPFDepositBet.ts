@@ -21,11 +21,17 @@ export function useCPFDepositBet(cpfAddress: `0x${string}`, cpfPoolId: bigint, a
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { yt } = useActiveVault();
-  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.YT);
+  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.USDC);
 
   const placeBet = useCallback(async () => {
     if (!address) {
       setErrorMessage("Wallet not connected");
+      setStatus("error");
+      return;
+    }
+
+    if (!yt) {
+      setErrorMessage("No active vault");
       setStatus("error");
       return;
     }

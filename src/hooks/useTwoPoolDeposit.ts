@@ -36,6 +36,12 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
       return;
     }
 
+    if (!yt) {
+      setErrorMessage("No active vault");
+      setStatus("error");
+      return;
+    }
+
     if (amount === BigInt(0)) {
       setErrorMessage("Enter an amount");
       setStatus("error");

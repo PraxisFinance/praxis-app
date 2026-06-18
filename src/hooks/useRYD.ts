@@ -28,12 +28,18 @@ export function useRYDDeposit(
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { yt } = useActiveVault();
 
-  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.YT);
+  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.USDC);
   const insufficientBalance = amount > BigInt(0) && amount > ytBalance;
 
   const deposit = useCallback(async () => {
     if (!address) {
       setErrorMessage("Wallet not connected");
+      setStatus("error");
+      return;
+    }
+
+    if (!yt) {
+      setErrorMessage("No active vault");
       setStatus("error");
       return;
     }
@@ -46,7 +52,7 @@ export function useRYDDeposit(
 
     if (amount > ytBalance) {
       setErrorMessage(
-        `Insufficient YT balance. Need ${formatTokenBalance(amount, TOKEN_DECIMALS.YT)} YT but you only have ${formatTokenBalance(ytBalance, TOKEN_DECIMALS.YT)} YT.`
+        `Insufficient YT balance. Need ${formatTokenBalance(amount, TOKEN_DECIMALS.USDC)} YT but you only have ${formatTokenBalance(ytBalance, TOKEN_DECIMALS.USDC)} YT.`
       );
       setStatus("error");
       return;
@@ -125,7 +131,7 @@ export function useRYDWithdraw(rydAddress: `0x${string}`, amountInput: string) {
   const [status, setStatus] = useState<RYDWithdrawStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.YT);
+  const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.USDC);
 
   const withdraw = useCallback(async () => {
     if (!address) {
@@ -442,9 +448,9 @@ export function useRYDOnChainState(rydAddress: `0x${string}`) {
     userDeposit: userDeposit ?? BigInt(0),
     userIsWinner: userIsWinner ?? false,
     userHasClaimed: userHasClaimed ?? false,
-    totalDepositsFormatted: formatTokenBalance(totalDeposits ?? BigInt(0), TOKEN_DECIMALS.YT),
-    minDepositFormatted: formatTokenBalance(minDeposit ?? BigInt(0), TOKEN_DECIMALS.YT),
-    prizePerWinnerFormatted: formatTokenBalance(prizePerWinner ?? BigInt(0), TOKEN_DECIMALS.YT),
-    userDepositFormatted: formatTokenBalance(userDeposit ?? BigInt(0), TOKEN_DECIMALS.YT),
+    totalDepositsFormatted: formatTokenBalance(totalDeposits ?? BigInt(0), TOKEN_DECIMALS.USDC),
+    minDepositFormatted: formatTokenBalance(minDeposit ?? BigInt(0), TOKEN_DECIMALS.USDC),
+    prizePerWinnerFormatted: formatTokenBalance(prizePerWinner ?? BigInt(0), TOKEN_DECIMALS.USDC),
+    userDepositFormatted: formatTokenBalance(userDeposit ?? BigInt(0), TOKEN_DECIMALS.USDC),
   };
 }

@@ -225,7 +225,7 @@ export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: 
   const [status, setStatus] = useState<RedeemYieldStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const ytAmount = parseTokenAmount(ytAmountInput, TOKEN_DECIMALS.YT);
+  const ytAmount = parseTokenAmount(ytAmountInput, TOKEN_DECIMALS.USDC);
 
   const redeemYield = useCallback(async () => {
     if (!address) {
@@ -300,7 +300,7 @@ export function useVaultClaimBoth(
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const ptAmount = parseTokenAmount(principalAmountInput, TOKEN_DECIMALS.USDC);
-  const ytAmount = parseTokenAmount(yieldAmountInput, TOKEN_DECIMALS.YT);
+  const ytAmount = parseTokenAmount(yieldAmountInput, TOKEN_DECIMALS.USDC);
 
   const claim = useCallback(
     async (opts: ClaimBothOptions) => {

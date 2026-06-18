@@ -21,7 +21,7 @@ export function useWalletBalances() {
   const { pt, yt } = useActiveVault();
 
   const contracts = useMemo(() => {
-    if (!address) return [];
+    if (!address || !pt || !yt) return [];
     return [
       {
         address: TOKEN_ADDRESSES.USDC,
@@ -50,7 +50,7 @@ export function useWalletBalances() {
   const { data, isLoading, error, refetch } = useReadContracts({
     contracts,
     query: {
-      enabled: isConnected && !!address,
+      enabled: isConnected && !!address && !!pt && !!yt,
     },
   });
 
@@ -61,7 +61,7 @@ export function useWalletBalances() {
       const result = data?.[i];
       const raw =
         result?.status === "success" ? (result.result as bigint) : BigInt(0);
-      const formatted = formatTokenBalance(raw, TOKEN_DECIMALS[key]);
+      const formatted = formatTokenBalance(raw, TOKEN_DECIMALS.USDC);
 
       return {
         label: BALANCE_LABELS[key].label,

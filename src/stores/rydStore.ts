@@ -437,9 +437,9 @@ export const useRYDStore = create<RYDStoreState>((set, get) => ({
         snapshots = data.snapshots;
       }
 
-      const scopedRows = rydStates.filter(
-        (raw) => raw.yt.toLowerCase() === activeYt.toLowerCase()
-      );
+      const scopedRows = activeYt
+        ? rydStates.filter((raw) => raw.yt.toLowerCase() === activeYt.toLowerCase())
+        : [];
 
       const nextRyds: Record<string, RYDData> = {};
       for (const raw of scopedRows) {
