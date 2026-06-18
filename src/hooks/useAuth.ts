@@ -13,15 +13,16 @@ const JWT_STORAGE_KEY = "praxis_auth_token";
 interface StoredToken {
   token: string;
   expiresAt: number;
+  address: string;
 }
 
-function getStoredToken(): string | null {
+function getStoredToken(currentAddress: string): string | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(JWT_STORAGE_KEY);
     if (!raw) return null;
-    const { token, expiresAt } = JSON.parse(raw) as StoredToken;
-    if (Date.now() > expiresAt) {
+    const { token, expiresAt, address } = JSON.parse(raw) as StoredToken;
+    if (Date.now() > expiresAt || address.toLowerCase() !== currentAddress.toLowerCase()) {
       localStorage.removeItem(JWT_STORAGE_KEY);
       return null;
     }
@@ -31,9 +32,9 @@ function getStoredToken(): string | null {
   }
 }
 
-function storeToken(token: string): void {
+function storeToken(token: string, address: string): void {
   const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
-  localStorage.setItem(JWT_STORAGE_KEY, JSON.stringify({ token, expiresAt }));
+  localStorage.setItem(JWT_STORAGE_KEY, JSON.stringify({ token, expiresAt, address }));
 }
 
 export function useAuth() {
@@ -42,10 +43,10 @@ export function useAuth() {
   const { signMessageAsync } = useSignMessage();
 
   const getToken = useCallback(async (): Promise<string> => {
-    const stored = getStoredToken();
-    if (stored) return stored;
-
     if (!address) throw new Error("Wallet not connected");
+
+    const stored = getStoredToken(address);
+    if (stored) return stored;
 
     await ensureAppChain(chainId, switchChainAsync);
 
@@ -74,7 +75,7 @@ export function useAuth() {
     if (!verifyRes.ok) throw new Error("Authentication failed");
 
     const { accessToken } = (await verifyRes.json()) as { accessToken: string };
-    storeToken(accessToken);
+    storeToken(accessToken, address);
     return accessToken;
   }, [address, chainId, switchChainAsync, signMessageAsync]);
 
