@@ -51,7 +51,7 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
 
   if (!pool) return null;
 
-  const ytBalanceFormatted = formatTokenBalance(raw.yt, TOKEN_DECIMALS.YT);
+  const ytBalanceFormatted = formatTokenBalance(raw.yt, TOKEN_DECIMALS.USDC);
   const canDeposit = !!pool && !isPending && !insufficientBalance && amount !== "";
 
   return (
