@@ -32,7 +32,10 @@ export function EarnPage() {
   const [restakeDrawerOpen, setRestakeDrawerOpen] = useState(false);
 
   const availableItems = useMemo(
-    () => getActiveVaults().map(vaultStateToAvailableItem),
+    () =>
+      [...getActiveVaults()]
+        .sort((a, b) => Number(b.maturity - a.maturity))
+        .map(vaultStateToAvailableItem),
     [vaults, getActiveVaults],
   );
 
