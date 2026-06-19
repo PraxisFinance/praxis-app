@@ -20,29 +20,6 @@ interface ActiveVaultState {
   setActiveVault: (vaultId: string) => void;
   clearOverride: () => void;
   recompute: () => void;
-  getActiveVault: () => VaultState | null;
-}
-
-function vaultPtAddress(vault: VaultState | null): `0x${string}` | null {
-  if (vault?.pt) return vault.pt as `0x${string}`;
-  return null;
-}
-
-function vaultYtAddress(vault: VaultState | null): `0x${string}` | null {
-  if (vault?.yt) return vault.yt as `0x${string}`;
-  return null;
-}
-
-function collectUserPositions() {
-  return Object.values(useDepositsStore.getState().vaults)
-    .map((vault) => vault.userPosition)
-    .filter((position): position is NonNullable<typeof position> => position !== null);
-}
-
-function collectVaultStates() {
-  return Object.values(useDepositsStore.getState().vaults)
-    .map((vault) => vault.state)
-    .filter((state): state is VaultState => state !== null);
 }
 
 export const useActiveVaultStore = create<ActiveVaultState>()(
@@ -72,14 +49,19 @@ export const useActiveVaultStore = create<ActiveVaultState>()(
     },
 
     recompute: () => {
-      const vaultStates = collectVaultStates();
+      const depositsState = useDepositsStore.getState();
+
+      const vaultStates = Object.values(depositsState.vaults)
+        .map((vault) => vault.state)
+        .filter((state): state is VaultState => state !== null);
+
+      const userPositions = Object.values(depositsState.vaults)
+        .map((vault) => vault.userPosition)
+        .filter((position): position is NonNullable<typeof position> => position !== null);
+
       const latestVault = pickLatestVault(vaultStates);
       const latestVaultId = latestVault?.id ?? null;
-      const activeVaultId = pickActiveVaultId(
-        vaultStates,
-        collectUserPositions(),
-        get().manualOverrideId
-      );
+      const activeVaultId = pickActiveVaultId(vaultStates, userPositions, get().manualOverrideId);
 
       const activeVault =
         activeVaultId !== null
@@ -90,14 +72,12 @@ export const useActiveVaultStore = create<ActiveVaultState>()(
         activeVaultId,
         latestVaultId,
         activeVault,
-        activePtAddress: vaultPtAddress(activeVault),
-        activeYtAddress: vaultYtAddress(activeVault),
+        activePtAddress: activeVault?.pt ? (activeVault.pt as `0x${string}`) : null,
+        activeYtAddress: activeVault?.yt ? (activeVault.yt as `0x${string}`) : null,
         isStale:
           activeVaultId !== null && latestVaultId !== null && activeVaultId !== latestVaultId,
       });
     },
-
-    getActiveVault: () => get().activeVault,
   }))
 );
 

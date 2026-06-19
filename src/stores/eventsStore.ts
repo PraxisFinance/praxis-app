@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 import { trpcClient } from "@/lib/trpc/vanillaClient";
 import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
+import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -596,8 +597,6 @@ export const useEventsStore = create<EventsState>((set, get) => ({
 }));
 
 // ── Helpers ──────────────────────────────────────────────────────────
-
-const USDC_DECIMALS = 6;
 
 /** Implied odds ratio for inFavor side (0–1). */
 export function impliedOdds(pool: CPFPoolState): { favor: number; against: number } {
