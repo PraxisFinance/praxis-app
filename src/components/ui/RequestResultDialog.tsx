@@ -37,9 +37,12 @@ export function RequestResultDialog({
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-[1px]" />
-        <Dialog.Viewport className="fixed inset-0 z-[90] flex items-center justify-center p-5">
-          <Dialog.Popup className="flex w-full max-w-sm flex-col gap-6 rounded-3xl bg-main-lightGray p-6 outline-none">
+        {/* vaul (Radix Dialog) sets `pointer-events: none` on <body> while the
+            underlying drawer is open. Re-enable it here so this dialog, which
+            renders in a sibling portal, stays interactive. */}
+        <Dialog.Backdrop className="pointer-events-auto fixed inset-0 z-[80] bg-black/50 backdrop-blur-[1px]" />
+        <Dialog.Viewport className="pointer-events-none fixed inset-0 z-[90] flex items-center justify-center p-5">
+          <Dialog.Popup className="pointer-events-auto flex w-full max-w-sm flex-col gap-6 rounded-3xl bg-main-lightGray p-6 outline-none">
             <RequestResultForm status={status} title={title} description={description} />
             <Button variant="primary" size="action" onClick={onClose}>
               {closeLabel}
