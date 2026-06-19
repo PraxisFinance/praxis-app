@@ -13,7 +13,13 @@ import { ensureAppChain } from "@/lib/ensureAppChain";
 
 export type CPFDepositBetStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
-export function useCPFDepositBet(cpfAddress: `0x${string}`, cpfPoolId: bigint, amountInput: string, inFavor: boolean) {
+export function useCPFDepositBet(
+  cpfAddress: `0x${string}`,
+  cpfPoolId: bigint,
+  amountInput: string,
+  inFavor: boolean,
+  minTokensOut: bigint = 0n,
+) {
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
@@ -76,8 +82,8 @@ export function useCPFDepositBet(cpfAddress: `0x${string}`, cpfPoolId: bigint, a
       const betTx = await writeContractAsync({
         address: cpfAddress,
         abi: praxisCPFAbi,
-        functionName: "depositBet",
-        args: [cpfPoolId, amount, inFavor],
+        functionName: "buy",
+        args: [cpfPoolId, amount, inFavor, minTokensOut],
       });
 
       await waitForTransactionReceipt(config, { hash: betTx });
@@ -87,7 +93,7 @@ export function useCPFDepositBet(cpfAddress: `0x${string}`, cpfPoolId: bigint, a
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, switchChainAsync, writeContractAsync, yt]);
+  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, minTokensOut, switchChainAsync, writeContractAsync, yt]);
 
   const reset = useCallback(() => {
     setStatus("idle");

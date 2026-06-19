@@ -34,13 +34,14 @@ export const testnetMintAbi = [
 export const praxisCPFAbi = [
   {
     type: "function",
-    name: "depositBet",
+    name: "buy",
     inputs: [
       { name: "poolId", type: "uint256" },
       { name: "amount", type: "uint256" },
       { name: "inFavor", type: "bool" },
+      { name: "minTokensOut", type: "uint256" },
     ],
-    outputs: [{ name: "balance", type: "uint256" }],
+    outputs: [{ name: "tokensOut", type: "uint256" }],
     stateMutability: "nonpayable",
   },
   { type: "error", name: "PraxisCPF_InsufficientAmount", inputs: [] },
@@ -49,7 +50,14 @@ export const praxisCPFAbi = [
     name: "PraxisCPF_PoolNotOpen",
     inputs: [{ name: "state", type: "uint8" }],
   },
-  { type: "error", name: "PraxisCPF_PositionAlreadyClaimed", inputs: [] },
+  {
+    type: "error",
+    name: "PraxisCPF_SlippageExceeded",
+    inputs: [
+      { name: "tokensOut", type: "uint256" },
+      { name: "minTokensOut", type: "uint256" },
+    ],
+  },
 ] as const;
 
 export const praxisVaultAbi = [
