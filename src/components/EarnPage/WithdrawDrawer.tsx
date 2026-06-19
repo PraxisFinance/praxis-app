@@ -13,6 +13,7 @@ import { useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { AlertIcon } from "../icons/base/alertIcon";
 import { WITHDRAW_PRINCIPAL_NOTE } from "@/shared/constants/earn";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 
 interface WithdrawDrawerProps {
   item: EarnPosition | null;
@@ -68,6 +69,19 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
+      {status === "error" && (
+        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
+          <RequestResultForm
+            status="failed"
+            title="Withdrawal Failed"
+            description={errorMessage ?? "Something went wrong. Please try again."}
+          />
+          <Button variant="destructiveBrand" size="action" onClick={reset}>
+            Close
+          </Button>
+        </div>
+      )}
+
       <AppDrawerHeading
         variant="plain"
         title="Claim your deposit from ended vault"
@@ -140,8 +154,6 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
           {WITHDRAW_PRINCIPAL_NOTE}
         </p>
       </div>
-
-      {errorMessage && <p className="text-red-500 text-xs px-1">{errorMessage}</p>}
 
       {status === "success" ? (
         <Button variant="destructiveBrand" size="action" onClick={handleClose}>

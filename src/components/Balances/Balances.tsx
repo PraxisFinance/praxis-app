@@ -12,6 +12,7 @@ import { BALANCE_INFO } from "@/shared/constants/balances";
 import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 
 export function Balances() {
   const [open, setOpen] = useState(false);
@@ -24,7 +25,7 @@ export function Balances() {
     raw.pt === BigInt(0) &&
     raw.yt === BigInt(0);
 
-  const { mint, isPending } = useMintTestnetUsdc(refetchAfterDelay);
+  const { mint, isPending, status, errorMessage, reset } = useMintTestnetUsdc(refetchAfterDelay);
 
   return (
     <section>
@@ -46,16 +47,27 @@ export function Balances() {
         ))}
       </div>
 
-      {allZero && !isPending && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="mt-2"
-          onClick={mint}
-        >
+      {allZero && !isPending && status !== "error" && (
+        <Button variant="outline" size="sm" className="mt-2" onClick={mint}>
           Top up testnet balance
         </Button>
       )}
+
+      <DrawerShell
+        open={status === "error"}
+        onOpenChange={(isOpen) => {
+          if (!isOpen) reset();
+        }}
+      >
+        <RequestResultForm
+          status="failed"
+          title="Mint Failed"
+          description={errorMessage ?? "Could not mint testnet USDC. Please try again."}
+        />
+        <Button variant="outline" size="action" onClick={reset}>
+          Close
+        </Button>
+      </DrawerShell>
 
       <DrawerShell open={open} onOpenChange={setOpen}>
         <AppDrawerHeading title="About balance" />

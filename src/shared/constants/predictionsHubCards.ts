@@ -679,7 +679,10 @@ const HUB_RANDOM_POOL_PARTICIPANT_MOCKS: RandomPoolUserInPool[] = [
   { username: "Yoshiko", amount: "$3000" },
 ];
 
-/** Hub-only random reward pools (not used by legacy RandomRewardsPage). */
+/**
+ * @deprecated Real RYD data is now sourced from `useRYDStore` via `rydDataToRandomPool`.
+ * Kept for Storybook / test fixtures only.
+ */
 export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
   tagRandomPool({
     id: "hub-pool-live-1",
@@ -750,6 +753,7 @@ export const PREDICTIONS_HUB_RANDOM_POOL_MOCKS: RandomPool[] = [
   }),
 ];
 
+/** @deprecated Real RYD data is now sourced from `useRYDStore` via `rydDataToRandomPool`. */
 export const PREDICTIONS_HUB_RANDOM_REWARD_CARD_MOCKS: PredictionsHubListItem[] =
   PREDICTIONS_HUB_RANDOM_POOL_MOCKS;
 

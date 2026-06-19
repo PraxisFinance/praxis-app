@@ -11,6 +11,7 @@ import type { EarnAvailableItem } from "@/shared/types/earn";
 import { getBalanceValueByIconUrl } from "@/shared/constants/balances";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useVaultDeposit } from "@/hooks/useVault";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 
 interface DepositDrawerProps {
   item: EarnAvailableItem | null;
@@ -62,6 +63,19 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
+      {status === "error" && (
+        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
+          <RequestResultForm
+            status="failed"
+            title="Deposit Failed"
+            description={errorMessage ?? "Something went wrong. Please try again."}
+          />
+          <Button variant="success" size="action" onClick={reset}>
+            Close
+          </Button>
+        </div>
+      )}
+
       <AppDrawerHeading
         title="Deposit your cryptocurrency"
         description="Deposit cryptocurrency from your wallet into the vault to start earn."
@@ -113,10 +127,6 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
           </div>
         )}
       </div>
-
-      {errorMessage && (
-        <p className="text-red-500 text-xs px-1">{errorMessage}</p>
-      )}
 
       {status === "success" ? (
         <Button variant="success" size="action" onClick={handleClose}>

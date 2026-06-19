@@ -105,6 +105,7 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
   const yieldNote = withdrawYield ? RESTAKE_YIELD_TO_WALLET_NOTE : RESTAKE_YIELD_IN_PRINCIPAL_NOTE;
   const isPending = restaking || isWithdrawing || isRedeeming || isDepositing;
   const isSuccess = depositStatus === "success";
+  const isError = withdrawStatus === "error" || redeemStatus === "error" || depositStatus === "error";
   const errorMessage = withdrawError ?? redeemError ?? depositError;
 
   const canSubmit =
@@ -161,6 +162,27 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
+      {isError && (
+        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
+          <RequestResultForm
+            status="failed"
+            title="Restake Failed"
+            description={errorMessage ?? "Something went wrong. Please try again."}
+          />
+          <Button
+            variant="primary"
+            size="action"
+            onClick={() => {
+              resetWithdraw();
+              resetRedeem();
+              resetDeposit();
+            }}
+          >
+            Close
+          </Button>
+        </div>
+      )}
+
       <AppDrawerHeading
         variant="plain"
         title="Restake your deposit"
@@ -268,8 +290,6 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
           <p className="text-main-darkPurple/70 text-xs font-normal leading-4">{yieldNote}</p>
         </div>
       </div>
-
-      {errorMessage && <p className="text-red-500 text-xs px-1">{errorMessage}</p>}
 
       <Button
         variant="primary"
