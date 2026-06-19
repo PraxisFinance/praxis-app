@@ -11,6 +11,7 @@ import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { formatTokenBalance } from "@/shared/utils/format";
 import { TOKEN_DECIMALS } from "@/config/tokens";
 import type { RandomPoolLive } from "@/shared/types/randomPool";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 
 const STATUS_LABELS: Record<string, string> = {
   approving: "Approving…",
@@ -56,6 +57,19 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
 
   return (
     <DrawerShell open={open} onOpenChange={onOpenChange}>
+      {status === "error" && (
+        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
+          <RequestResultForm
+            status="failed"
+            title="Deposit Failed"
+            description={errorMessage ?? "Something went wrong. Please try again."}
+          />
+          <Button variant="primary" size="action" className="h-8 text-white" onClick={reset}>
+            Close
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-6">
         <AppDrawerHeading title="Make a prediction" titleClassName="decoration-main-darkPurple" />
 
@@ -79,8 +93,6 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
             placeholder="Deposit amount"
           />
         </div>
-
-        {errorMessage ? <p className="text-xs text-red-500">{errorMessage}</p> : null}
 
         <Button
           variant="primary"

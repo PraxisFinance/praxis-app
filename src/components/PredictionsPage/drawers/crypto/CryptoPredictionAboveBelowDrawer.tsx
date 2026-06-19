@@ -5,6 +5,8 @@ import type { CryptoPredictionAboveBelow } from "@/shared/types/cryptoPrediction
 import { getCryptoAboveBelowDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
 import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
 import { DrawerShell } from "@/components/ui/DrawerShell";
+import { Button } from "@/components/ui/button";
+import { RequestResultForm } from "@/components/ui/RequestResultForm";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
@@ -75,7 +77,7 @@ function CryptoPredictionAboveBelowDrawerBody({
   const selectedPoolPercent = selectedOutcome.poolPercent;
 
   const inFavor = side === "yes";
-  const { placeBet, isPending, errorMessage, status } = useCPFDepositBet(
+  const { placeBet, isPending, errorMessage, status, reset } = useCPFDepositBet(
     prediction.cpfAddress,
     prediction.cpfPoolId,
     amount,
@@ -94,30 +96,44 @@ function CryptoPredictionAboveBelowDrawerBody({
   const disabled = !isAvailable || isPending;
 
   return (
-    <PredictionsDrawerTemplate
-      header={
-        <PredictionsDrawerHeader
-          trailing={<CryptoPredictionDrawerIcon iconUrl={prediction.iconUrl} />}
+    <>
+      {status === "error" && (
+        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
+          <RequestResultForm
+            status="failed"
+            title="Bet Failed"
+            description={errorMessage ?? "Something went wrong. Please try again."}
+          />
+          <Button variant="primary" size="action" onClick={reset}>
+            Close
+          </Button>
+        </div>
+      )}
+      <PredictionsDrawerTemplate
+        header={
+          <PredictionsDrawerHeader
+            trailing={<CryptoPredictionDrawerIcon iconUrl={prediction.iconUrl} />}
+          />
+        }
+      >
+        <CryptoPredictionDrawerOutcomeCard
+          primaryLine={primaryQuestion}
+          secondaryLine={secondaryMuted}
+          poolPercent={selectedPoolPercent}
         />
-      }
-    >
-      <CryptoPredictionDrawerOutcomeCard
-        primaryLine={primaryQuestion}
-        secondaryLine={secondaryMuted}
-        poolPercent={selectedPoolPercent}
-      />
 
-      <PredictionsDrawerPredictionForm
-        amount={amount}
-        onAmountChange={setAmount}
-        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-        priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
-        disabled={disabled}
-        unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-        errorMessage={errorMessage}
-        buttonLabel={buttonLabel}
-        onSubmit={() => void placeBet()}
-      />
-    </PredictionsDrawerTemplate>
+        <PredictionsDrawerPredictionForm
+          amount={amount}
+          onAmountChange={setAmount}
+          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+          priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
+          disabled={disabled}
+          unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
+          errorMessage={errorMessage}
+          buttonLabel={buttonLabel}
+          onSubmit={() => void placeBet()}
+        />
+      </PredictionsDrawerTemplate>
+    </>
   );
 }
