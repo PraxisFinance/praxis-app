@@ -29,8 +29,16 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
 
   const isLive = state.state === "Open" || state.state === "DrawRequested";
   const tvl = formatRYDAmount(state.totalDeposits, YT_DECIMALS);
-  const totalPrize = state.prizePerWinner * BigInt(state.numWinners);
   const title = contractMeta?.name ?? `YT RYD ${shortenAddress(state.id)}`;
+
+  // prizePerWinner is 0 while the pool is Open; derive per-winner yield from TVL instead.
+  const expectedYieldAmount =
+    state.numWinners > 0
+      ? state.totalDeposits / BigInt(state.numWinners)
+      : state.totalDeposits;
+
+  // For ended pools, use the actual settled prize total.
+  const totalPrize = state.prizePerWinner * BigInt(state.numWinners);
 
   // Prefer the ISO end-time from DB; fall back to the on-chain Unix-seconds value.
   const endsAt =
@@ -54,7 +62,7 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
       iconUrl: YT_ICON_URL,
       status: { kind: "live" },
       tvl,
-      expectedYield: formatRYDAmount(totalPrize, YT_DECIMALS),
+      expectedYield: formatRYDAmount(expectedYieldAmount, YT_DECIMALS),
       usersIn: state.participantCount,
       progressPercent,
       remainingTime: {
