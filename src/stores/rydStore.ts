@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 import { trpcClient } from "@/lib/trpc/vanillaClient";
 import { useActiveVaultStore } from "@/stores/activeVaultStore";
+import type { RandomPoolRemainingTime } from "@/shared/types/predictions";
 
 // ── Configuration ────────────────────────────────────────────────────
 
@@ -548,6 +549,24 @@ export const computeRYDProgressPercent = (
   if (duration <= 0) return 0;
   return Math.min(100, Math.max(0, ((nowMs - start) / duration) * 100));
 };
+
+/**
+ * Converts an on-chain Unix-seconds end-time to a countdown object.
+ * Returns all-zeroes when the pool has already expired.
+ */
+export function computeRYDRemainingTime(
+  endTimeSec: bigint,
+  nowMs = Date.now(),
+): RandomPoolRemainingTime {
+  const diffMs = Math.max(0, Number(endTimeSec) * 1000 - nowMs);
+  const totalSeconds = Math.floor(diffMs / 1000);
+  return {
+    days:    Math.floor(totalSeconds / 86400),
+    hours:   Math.floor((totalSeconds % 86400) / 3600),
+    minutes: Math.floor((totalSeconds % 3600) / 60),
+    seconds: totalSeconds % 60,
+  };
+}
 
 useActiveVaultStore.subscribe(
   (state) => state.activeYtAddress,

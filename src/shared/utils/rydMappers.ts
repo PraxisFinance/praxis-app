@@ -24,13 +24,17 @@ function calcRemainingTime(endTimeSec: bigint): RandomPoolRemainingTime & { tota
 }
 
 export function rydDataToRandomPool(data: RYDData): RandomPool | null {
-  const { state, userParticipation } = data;
+  const { state, contractMeta, userParticipation } = data;
   if (!state) return null;
 
   const isLive = state.state === "Open" || state.state === "DrawRequested";
   const tvl = formatRYDAmount(state.totalDeposits, YT_DECIMALS);
   const totalPrize = state.prizePerWinner * BigInt(state.numWinners);
-  const title = `YT RYD ${shortenAddress(state.id)}`;
+  const title = contractMeta?.name ?? `YT RYD ${shortenAddress(state.id)}`;
+
+  // Prefer the ISO end-time from DB; fall back to the on-chain Unix-seconds value.
+  const endsAt =
+    contractMeta?.endTime ?? new Date(Number(state.endTime) * 1000).toISOString();
 
   if (isLive) {
     const rt = calcRemainingTime(state.endTime);
@@ -45,6 +49,7 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
     return {
       id: state.id,
       predictionType: "random_reward",
+      endsAt,
       title,
       iconUrl: YT_ICON_URL,
       status: { kind: "live" },
@@ -64,6 +69,7 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
   return {
     id: state.id,
     predictionType: "random_reward",
+    endsAt,
     title,
     iconUrl: YT_ICON_URL,
     status: { kind: "ended" },
