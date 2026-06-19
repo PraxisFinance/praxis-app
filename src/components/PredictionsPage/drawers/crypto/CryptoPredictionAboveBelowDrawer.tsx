@@ -5,8 +5,7 @@ import type { CryptoPredictionAboveBelow } from "@/shared/types/cryptoPrediction
 import { getCryptoAboveBelowDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
 import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
 import { DrawerShell } from "@/components/ui/DrawerShell";
-import { Button } from "@/components/ui/button";
-import { RequestResultForm } from "@/components/ui/RequestResultForm";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
@@ -34,9 +33,7 @@ export function CryptoPredictionAboveBelowDrawer({
   onOpenChange,
 }: CryptoPredictionAboveBelowDrawerProps) {
   const parsed =
-    prediction && selectedOutcomeId
-      ? parseCryptoAboveBelowOutcomeId(selectedOutcomeId)
-      : null;
+    prediction && selectedOutcomeId ? parseCryptoAboveBelowOutcomeId(selectedOutcomeId) : null;
   const strike =
     prediction && parsed
       ? (prediction.strikes.find((row) => row.id === parsed.strikeId) ?? null)
@@ -51,6 +48,7 @@ export function CryptoPredictionAboveBelowDrawer({
           prediction={prediction}
           strike={strike}
           side={parsed.side}
+          onClose={() => onOpenChange(false)}
         />
       ) : null}
     </DrawerShell>
@@ -61,17 +59,19 @@ function CryptoPredictionAboveBelowDrawerBody({
   prediction,
   strike,
   side,
+  onClose,
 }: {
   prediction: CryptoPredictionAboveBelow;
   strike: NonNullable<CryptoPredictionAboveBelow["strikes"][number]>;
   side: "yes" | "no";
+  onClose: () => void;
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = prediction.isTradingOpen;
   const { primaryQuestion, secondaryMuted } = getCryptoAboveBelowDrawerInfoLines(
     prediction,
     strike,
-    side,
+    side
   );
   const selectedOutcome = side === "yes" ? strike.yes : strike.no;
   const selectedPoolPercent = selectedOutcome.poolPercent;
@@ -81,7 +81,7 @@ function CryptoPredictionAboveBelowDrawerBody({
     prediction.cpfAddress,
     prediction.cpfPoolId,
     amount,
-    inFavor,
+    inFavor
   );
 
   const buttonLabel =
@@ -95,20 +95,29 @@ function CryptoPredictionAboveBelowDrawerBody({
 
   const disabled = !isAvailable || isPending;
 
+  function handleSuccessClose() {
+    reset();
+    onClose();
+  }
+
   return (
     <>
-      {status === "error" && (
-        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
-          <RequestResultForm
-            status="failed"
-            title="Bet Failed"
-            description={errorMessage ?? "Something went wrong. Please try again."}
-          />
-          <Button variant="primary" size="action" onClick={reset}>
-            Close
-          </Button>
-        </div>
-      )}
+      <RequestResultDialog
+        open={status === "error"}
+        onClose={reset}
+        title="Bet Failed"
+        description={errorMessage ?? "Something went wrong. Please try again."}
+      />
+
+      <RequestResultDialog
+        open={status === "success"}
+        onClose={handleSuccessClose}
+        status="success"
+        title="Bet Placed"
+        description="Your prediction has been placed successfully."
+        closeLabel="Done"
+      />
+
       <PredictionsDrawerTemplate
         header={
           <PredictionsDrawerHeader

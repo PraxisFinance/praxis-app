@@ -6,7 +6,7 @@ import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { useRYDClaim } from "@/hooks/useRYD";
 import type { RandomPoolEnded } from "@/shared/types/randomPool";
-import { RequestResultForm } from "@/components/ui/RequestResultForm";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 
 const STATUS_LABELS: Record<string, string> = {
   claiming: "Claiming…",
@@ -18,7 +18,11 @@ export interface RandomRewardClaimDrawerProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function RandomRewardClaimDrawer({ pool, open, onOpenChange }: RandomRewardClaimDrawerProps) {
+export function RandomRewardClaimDrawer({
+  pool,
+  open,
+  onOpenChange,
+}: RandomRewardClaimDrawerProps) {
   const rydAddress = (pool?.id ?? "0x0") as `0x${string}`;
   const { claim, status, errorMessage, reset, isPending } = useRYDClaim(rydAddress);
 
@@ -28,58 +32,62 @@ export function RandomRewardClaimDrawer({ pool, open, onOpenChange }: RandomRewa
     }
   }, [open, pool?.id, pool, reset]);
 
-  useEffect(() => {
-    if (status === "success") {
-      onOpenChange(false);
-    }
-  }, [status, onOpenChange]);
-
   if (!pool) return null;
 
+  function handleSuccessClose() {
+    reset();
+    onOpenChange(false);
+  }
+
   return (
-    <DrawerShell open={open} onOpenChange={onOpenChange}>
-      {status === "error" && (
-        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
-          <RequestResultForm
-            status="failed"
-            title="Claim Failed"
-            description={errorMessage ?? "Something went wrong. Please try again."}
+    <>
+      <RequestResultDialog
+        open={status === "error"}
+        onClose={reset}
+        title="Claim Failed"
+        description={errorMessage ?? "Something went wrong. Please try again."}
+      />
+
+      <RequestResultDialog
+        open={status === "success"}
+        onClose={handleSuccessClose}
+        status="success"
+        title="Claim Successful"
+        description="Your rewards have been claimed to your wallet."
+        closeLabel="Done"
+      />
+
+      <DrawerShell open={open} onOpenChange={onOpenChange}>
+        <div className="flex flex-col gap-6">
+          <AppDrawerHeading
+            title="Claim rewards"
+            titleClassName="underline decoration-main-darkPurple underline-offset-4"
           />
-          <Button variant="primary" size="action" className="h-8 text-white" onClick={reset}>
-            Close
+
+          <div className="rounded-2xl bg-main-grayPurple/80 px-4 py-3">
+            <p className="text-main-darkPurple mb-2 text-base font-bold leading-5">{pool.title}</p>
+            <div className="text-main-darkPurple/90 flex flex-wrap gap-x-3 gap-y-1 text-xs leading-tight">
+              <span>TVL: {pool.tvl}</span>
+              <span>Earnings: {pool.earnings}</span>
+              <span>Users won: {pool.usersWon}</span>
+            </div>
+          </div>
+
+          <p className="text-main-darkPurple text-sm leading-snug">
+            Congratulations! You are among the winners — claim your rewards to your wallet.
+          </p>
+
+          <Button
+            variant="primary"
+            size="action"
+            className="h-8 text-white"
+            disabled={isPending}
+            onClick={claim}
+          >
+            {STATUS_LABELS[status] ?? "Claim rewards"}
           </Button>
         </div>
-      )}
-
-      <div className="flex flex-col gap-6">
-        <AppDrawerHeading
-          title="Claim rewards"
-          titleClassName="underline decoration-main-darkPurple underline-offset-4"
-        />
-
-        <div className="rounded-2xl bg-main-grayPurple/80 px-4 py-3">
-          <p className="text-main-darkPurple mb-2 text-base font-bold leading-5">{pool.title}</p>
-          <div className="text-main-darkPurple/90 flex flex-wrap gap-x-3 gap-y-1 text-xs leading-tight">
-            <span>TVL: {pool.tvl}</span>
-            <span>Earnings: {pool.earnings}</span>
-            <span>Users won: {pool.usersWon}</span>
-          </div>
-        </div>
-
-        <p className="text-main-darkPurple text-sm leading-snug">
-          Congratulations! You are among the winners — claim your rewards to your wallet.
-        </p>
-
-        <Button
-          variant="primary"
-          size="action"
-          className="h-8 text-white"
-          disabled={isPending}
-          onClick={claim}
-        >
-          {STATUS_LABELS[status] ?? "Claim rewards"}
-        </Button>
-      </div>
-    </DrawerShell>
+      </DrawerShell>
+    </>
   );
 }

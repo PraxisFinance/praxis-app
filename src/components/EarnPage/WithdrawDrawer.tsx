@@ -13,7 +13,7 @@ import { useVaultWithdraw } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { AlertIcon } from "../icons/base/alertIcon";
 import { WITHDRAW_PRINCIPAL_NOTE } from "@/shared/constants/earn";
-import { RequestResultForm } from "@/components/ui/RequestResultForm";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 
 interface WithdrawDrawerProps {
   item: EarnPosition | null;
@@ -68,107 +68,112 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
   const currencySuffix = ` ${item.depositCurrency}`;
 
   return (
-    <DrawerShell open={open} onOpenChange={onOpenChange}>
-      {status === "error" && (
-        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
-          <RequestResultForm
-            status="failed"
-            title="Withdrawal Failed"
-            description={errorMessage ?? "Something went wrong. Please try again."}
-          />
-          <Button variant="destructiveBrand" size="action" onClick={reset}>
-            Close
-          </Button>
-        </div>
-      )}
-
-      <AppDrawerHeading
-        variant="plain"
-        title="Claim your deposit from ended vault"
-        description="Withdraw your cryptocurrency from pool vault."
+    <>
+      <RequestResultDialog
+        open={status === "error"}
+        onClose={reset}
+        title="Withdrawal Failed"
+        description={errorMessage ?? "Something went wrong. Please try again."}
       />
 
-      <div className="flex flex-col gap-3">
-        <InfoRow
-          variant="inline"
-          label="Pool Information:"
-          value={
-            <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
-          }
+      <RequestResultDialog
+        open={status === "success"}
+        onClose={handleClose}
+        status="success"
+        title="Withdrawal Successful"
+        description="Your funds have been withdrawn to your wallet."
+        closeLabel="Done"
+      />
+
+      <DrawerShell open={open} onOpenChange={onOpenChange}>
+        <AppDrawerHeading
+          variant="plain"
+          title="Claim your deposit from ended vault"
+          description="Withdraw your cryptocurrency from pool vault."
         />
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-3">
           <InfoRow
             variant="inline"
-            label="Your deposit(PT):"
-            value={`${item.yourDeposit}${currencySuffix}`}
+            label="Pool Information:"
+            value={
+              <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
+            }
           />
-          <InfoRow
-            variant="inline"
-            label="Yield generated(YT):"
-            value={`${item.yieldGenerated}${currencySuffix}`}
-          />
-          <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
-          <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
-          <InfoRow
-            variant="inline"
-            label="Pool lifetime:"
-            value={formatPoolLifetimeDisplay(item.poolLifetime)}
-          />
-        </div>
-      </div>
 
-      <div className="flex flex-col gap-2">
-        <span className="text-main-darkPurple text-lg font-bold leading-6">Amount</span>
-
-        <InputWithMax
-          value={amount}
-          onChange={setAmount}
-          maxValue={maxWithdrawAmount}
-          disabled={isPending}
-        />
-
-        <div className="flex items-center justify-between px-1">
-          <span className="text-main-darkPurple text-xs font-normal leading-4">
-            Available: {maxWithdrawAmount}
-            {currencySuffix}
-          </span>
+          <div className="flex flex-col gap-1.5">
+            <InfoRow
+              variant="inline"
+              label="Your deposit(PT):"
+              value={`${item.yourDeposit}${currencySuffix}`}
+            />
+            <InfoRow
+              variant="inline"
+              label="Yield generated(YT):"
+              value={`${item.yieldGenerated}${currencySuffix}`}
+            />
+            <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
+            <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
+            <InfoRow
+              variant="inline"
+              label="Pool lifetime:"
+              value={formatPoolLifetimeDisplay(item.poolLifetime)}
+            />
+          </div>
         </div>
 
-        {exceedsDeposit && (
-          <span className="text-red-500 text-xs px-1">
-            Amount exceeds your deposit of {maxWithdrawAmount}
-            {currencySuffix}
+        <div className="flex flex-col gap-2">
+          <span className="text-main-darkPurple text-lg font-bold leading-6">Amount</span>
+
+          <InputWithMax
+            value={amount}
+            onChange={setAmount}
+            maxValue={maxWithdrawAmount}
+            disabled={isPending}
+          />
+
+          <div className="flex items-center justify-between px-1">
+            <span className="text-main-darkPurple text-xs font-normal leading-4">
+              Available: {maxWithdrawAmount}
+              {currencySuffix}
+            </span>
+          </div>
+
+          {exceedsDeposit && (
+            <span className="text-red-500 text-xs px-1">
+              Amount exceeds your deposit of {maxWithdrawAmount}
+              {currencySuffix}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-start gap-2">
+          <span
+            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple text-main-darkPurple"
+            aria-hidden
+          >
+            <AlertIcon className="h-3 w-3" />
           </span>
+          <p className="text-main-darkPurple/70 text-xs font-normal leading-4">
+            {WITHDRAW_PRINCIPAL_NOTE}
+          </p>
+        </div>
+
+        {status === "success" ? (
+          <Button variant="destructiveBrand" size="action" onClick={handleClose}>
+            {buttonLabel}
+          </Button>
+        ) : (
+          <Button
+            variant="destructiveBrand"
+            size="action"
+            onClick={handleWithdraw}
+            disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
+          >
+            {buttonLabel}
+          </Button>
         )}
-      </div>
-
-      <div className="flex items-start gap-2">
-        <span
-          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple text-main-darkPurple"
-          aria-hidden
-        >
-          <AlertIcon className="h-3 w-3" />
-        </span>
-        <p className="text-main-darkPurple/70 text-xs font-normal leading-4">
-          {WITHDRAW_PRINCIPAL_NOTE}
-        </p>
-      </div>
-
-      {status === "success" ? (
-        <Button variant="destructiveBrand" size="action" onClick={handleClose}>
-          {buttonLabel}
-        </Button>
-      ) : (
-        <Button
-          variant="destructiveBrand"
-          size="action"
-          onClick={handleWithdraw}
-          disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
-        >
-          {buttonLabel}
-        </Button>
-      )}
-    </DrawerShell>
+      </DrawerShell>
+    </>
   );
 }

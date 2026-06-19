@@ -12,7 +12,7 @@ import { CLAIM_PT_YT_NOTE } from "@/shared/constants/earn";
 import type { EarnPosition } from "@/shared/types/earn";
 import { useVaultClaimBoth } from "@/hooks/useVault";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
-import { RequestResultForm } from "@/components/ui/RequestResultForm";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 
 interface ClaimDrawerProps {
   item: EarnPosition | null;
@@ -37,7 +37,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   const { claim, status, errorMessage, reset, isPending } = useVaultClaimBoth(
     vaultAddress,
     principalAmount,
-    yieldAmount,
+    yieldAmount
   );
 
   const isSuccess = status === "success";
@@ -58,14 +58,11 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
 
   const currencySuffix = ` ${item.depositCurrency}`;
 
-  const canClaimPrincipal =
-    withdrawPrincipal && principalAmount && Number(principalAmount) > 0;
+  const canClaimPrincipal = withdrawPrincipal && principalAmount && Number(principalAmount) > 0;
   const canClaimYield = withdrawYield && yieldAmount && Number(yieldAmount) > 0;
   const hasSelection = withdrawPrincipal || withdrawYield;
   const canSubmit =
-    hasSelection &&
-    (!withdrawPrincipal || canClaimPrincipal) &&
-    (!withdrawYield || canClaimYield);
+    hasSelection && (!withdrawPrincipal || canClaimPrincipal) && (!withdrawYield || canClaimYield);
 
   function handleTogglePrincipal(checked: boolean) {
     setWithdrawPrincipal(checked);
@@ -90,95 +87,102 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   const buttonLabel = isPending ? "Claiming…" : isSuccess ? "Done" : "Claim Funds";
 
   return (
-    <DrawerShell open={open} onOpenChange={onOpenChange}>
-      {status === "error" && (
-        <div className="fixed bottom-0 left-0 right-0 z-[80] max-w-md mx-auto bg-main-lightGray rounded-t-3xl flex flex-col items-center justify-center gap-6 px-5 pb-10 pt-8">
-          <RequestResultForm
-            status="failed"
-            title="Claim Failed"
-            description={errorMessage ?? "Something went wrong. Please try again."}
-          />
-          <Button variant="success" size="action" onClick={reset}>
-            Close
-          </Button>
-        </div>
-      )}
-
-      <AppDrawerHeading
-        variant="plain"
-        title="Claim your deposit from ended vault"
-        description="Withdraw your cryptocurrency from ended pool."
+    <>
+      <RequestResultDialog
+        open={status === "error"}
+        onClose={reset}
+        title="Claim Failed"
+        description={errorMessage ?? "Something went wrong. Please try again."}
       />
 
-      <div className="flex flex-col gap-3">
-        <InfoRow
-          variant="inline"
-          label="Pool Information:"
-          value={
-            <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
-          }
+      <RequestResultDialog
+        open={status === "success"}
+        onClose={handleClose}
+        status="success"
+        title="Claim Successful"
+        description="Your funds have been claimed to your wallet."
+        closeLabel="Done"
+      />
+
+      <DrawerShell open={open} onOpenChange={onOpenChange}>
+        <AppDrawerHeading
+          variant="plain"
+          title="Claim your deposit from ended vault"
+          description="Withdraw your cryptocurrency from ended pool."
         />
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-3">
           <InfoRow
             variant="inline"
-            label="Your deposit(PT):"
-            value={`${item.yourDeposit}${currencySuffix}`}
+            label="Pool Information:"
+            value={
+              <PoolHeader iconUrl={item.depositCurrencyIconUrl} name={item.queueName} emphasized />
+            }
           />
-          <InfoRow
-            variant="inline"
-            label="Yield generated(YT):"
-            value={`${item.yieldGenerated}${currencySuffix}`}
-          />
-          <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
-          <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
-          <InfoRow
-            variant="inline"
-            label="Pool lifetime:"
-            value={formatPoolLifetimeDisplay(item.poolLifetime)}
-          />
-        </div>
-      </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-main-darkPurple text-sm font-normal leading-5">
-            Withdraw principal(PT)
-          </span>
-          <Switch checked={withdrawPrincipal} onCheckedChange={handleTogglePrincipal} />
-        </div>
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-main-darkPurple text-sm font-normal leading-5">
-            Withdraw yield(YT)
-          </span>
-          <Switch checked={withdrawYield} onCheckedChange={handleToggleYield} />
+          <div className="flex flex-col gap-1.5">
+            <InfoRow
+              variant="inline"
+              label="Your deposit(PT):"
+              value={`${item.yourDeposit}${currencySuffix}`}
+            />
+            <InfoRow
+              variant="inline"
+              label="Yield generated(YT):"
+              value={`${item.yieldGenerated}${currencySuffix}`}
+            />
+            <InfoRow variant="inline" label="Yield APY:" value={`${item.yieldApyPercent}%`} />
+            <InfoRow variant="inline" label="Deposit time:" value={item.depositTime} />
+            <InfoRow
+              variant="inline"
+              label="Pool lifetime:"
+              value={formatPoolLifetimeDisplay(item.poolLifetime)}
+            />
+          </div>
         </div>
 
-        <div className="flex items-start gap-2">
-          <span
-            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple"
-            aria-hidden
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-main-darkPurple text-sm font-normal leading-5">
+              Withdraw principal(PT)
+            </span>
+            <Switch checked={withdrawPrincipal} onCheckedChange={handleTogglePrincipal} />
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-main-darkPurple text-sm font-normal leading-5">
+              Withdraw yield(YT)
+            </span>
+            <Switch checked={withdrawYield} onCheckedChange={handleToggleYield} />
+          </div>
+
+          <div className="flex items-start gap-2">
+            <span
+              className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-main-grayPurple"
+              aria-hidden
+            >
+              <AlertIcon className="h-3 w-3" />
+            </span>
+            <p className="text-main-darkPurple/70 text-xs font-normal leading-4">
+              {CLAIM_PT_YT_NOTE}
+            </p>
+          </div>
+        </div>
+
+        {isSuccess ? (
+          <Button variant="success" size="action" onClick={handleClose}>
+            {buttonLabel}
+          </Button>
+        ) : (
+          <Button
+            variant="success"
+            size="action"
+            onClick={() => void handleClaim()}
+            disabled={isPending || !canSubmit}
           >
-            <AlertIcon className="h-3 w-3" />
-          </span>
-          <p className="text-main-darkPurple/70 text-xs font-normal leading-4">{CLAIM_PT_YT_NOTE}</p>
-        </div>
-      </div>
-
-      {isSuccess ? (
-        <Button variant="success" size="action" onClick={handleClose}>
-          {buttonLabel}
-        </Button>
-      ) : (
-        <Button
-          variant="success"
-          size="action"
-          onClick={() => void handleClaim()}
-          disabled={isPending || !canSubmit}
-        >
-          {buttonLabel}
-        </Button>
-      )}
-    </DrawerShell>
+            {buttonLabel}
+          </Button>
+        )}
+      </DrawerShell>
+    </>
   );
 }

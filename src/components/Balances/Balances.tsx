@@ -12,7 +12,7 @@ import { BALANCE_INFO } from "@/shared/constants/balances";
 import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
-import { RequestResultForm } from "@/components/ui/RequestResultForm";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 
 export function Balances() {
   const [open, setOpen] = useState(false);
@@ -31,7 +31,13 @@ export function Balances() {
     <section>
       <div className="flex items-center mb-2">
         <SectionHeader>Balances</SectionHeader>
-        <Button variant="ghost" size="icon-sm" onClick={() => setOpen(true)} className="p-1" aria-label="About balances">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setOpen(true)}
+          className="p-1"
+          aria-label="About balances"
+        >
           <HintIcon className="text-main-darkPurple h-3.5 w-3.5" aria-hidden />
         </Button>
       </div>
@@ -53,21 +59,21 @@ export function Balances() {
         </Button>
       )}
 
-      <DrawerShell
+      <RequestResultDialog
         open={status === "error"}
-        onOpenChange={(isOpen) => {
-          if (!isOpen) reset();
-        }}
-      >
-        <RequestResultForm
-          status="failed"
-          title="Mint Failed"
-          description={errorMessage ?? "Could not mint testnet USDC. Please try again."}
-        />
-        <Button variant="outline" size="action" onClick={reset}>
-          Close
-        </Button>
-      </DrawerShell>
+        onClose={reset}
+        title="Mint Failed"
+        description={errorMessage ?? "Could not mint testnet USDC. Please try again."}
+      />
+
+      <RequestResultDialog
+        open={status === "success"}
+        onClose={reset}
+        status="success"
+        title="Mint Successful"
+        description="Testnet USDC has been added to your wallet."
+        closeLabel="Done"
+      />
 
       <DrawerShell open={open} onOpenChange={setOpen}>
         <AppDrawerHeading title="About balance" />
