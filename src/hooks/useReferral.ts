@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
+import { useReferralsStore } from "@/stores/referralsStore";
 import type { ReferralStats, ReferrerInfo, BindResult } from "@/shared/types/api";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
@@ -23,6 +24,8 @@ export function useReferral() {
   const queryClient = useQueryClient();
   const [bindError, setBindError] = useState<string | null>(null);
 
+  const populate = useReferralsStore((s) => s.populate);
+
   const statsQuery = useQuery<ReferralStats, Error>({
     queryKey: ["referral-stats", address],
     queryFn: async () => {
@@ -35,6 +38,10 @@ export function useReferral() {
     },
     enabled: !!address,
   });
+
+  useEffect(() => {
+    if (statsQuery.data) populate(statsQuery.data);
+  }, [statsQuery.data, populate]);
 
   const referrerQuery = useQuery<ReferrerInfo, Error>({
     queryKey: ["referral-referrer", address],

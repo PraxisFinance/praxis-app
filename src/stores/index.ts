@@ -54,7 +54,12 @@ export {
   type HistoryItem,
 } from "./historyStore";
 
-export { useReferralsStore, loadMockReferrals, formatScore, type Referral } from "./referralsStore";
+export {
+  useReferralsStore,
+  formatScore,
+  type ReferralConnectionEntry,
+  type RefereeEntry,
+} from "./referralsStore";
 
 export {
   useLeaderboardStore,

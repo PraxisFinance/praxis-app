@@ -44,14 +44,19 @@ export interface CheckResult {
   xpGained: number;
 }
 
-export interface RefereeEntry {
+export interface ReferralConnectionEntry {
   address: string;
   status: "pending" | "qualified";
+  points: number | null;
+}
+
+export interface RefereeEntry extends ReferralConnectionEntry {
   createdAt: string; // ISO-8601
 }
 
 export interface ReferralStats {
   code: string;
+  referrer: ReferralConnectionEntry | null;
   referees: RefereeEntry[];
   pendingCount: number;
   qualifiedCount: number;
