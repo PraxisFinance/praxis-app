@@ -9,7 +9,7 @@ datasource db {
 
 model Event {
   id                  String      @id @default(uuid())
-  limitlessId         String?     @unique
+  sourceId            String?     @unique
   source              String
   title               String
   description         String?
@@ -33,6 +33,12 @@ model Event {
   logoPath            String?
   cpfAddress          String?
   resolutionStatus    String?
+  eventType           String?
+  category            String?
+  resolutionType      String?
+  sideALabel          String?
+  sideBLabel          String?
+  metadata            Json?
 }
 
 model Admin {
@@ -56,18 +62,21 @@ model RydContract {
 }
 
 model TwoPoolContract {
-  id          String   @id
-  address     String   @unique
-  name        String
-  description String?
-  vault       String
-  yt          String?
-  curve       String
-  targetRate  String
-  startTime   DateTime
-  endTime     DateTime
-  txHash      String?
-  createdAt   DateTime @default(now())
+  id            String   @id
+  address       String   @unique
+  name          String
+  description   String?
+  vault         String
+  yt            String?
+  curve         String
+  targetRate    String
+  startTime     DateTime
+  endTime       DateTime
+  txHash        String?
+  createdAt     DateTime @default(now())
+  alpha         String?
+  feePercentage String?
+  treasury      String?
 }
 
 model CacheMetadata {
@@ -77,67 +86,155 @@ model CacheMetadata {
 }
 
 model CachedMarket {
-  id                  Int    @id
+  id                  Int       @id
   tradeType           String
   volume              Float
   liquidity           Float
   expirationTimestamp Float
   data                Json
+  stableSlug          String?
+  createdAt           DateTime?
 
   @@index([expirationTimestamp])
   @@index([liquidity(sort: Desc)])
   @@index([tradeType])
   @@index([volume(sort: Desc)])
+  @@index([createdAt])
+  @@index([stableSlug])
+}
+
+model UserHistoryCache {
+  id                 String   @id @default(uuid())
+  userAddress        String   @unique
+  lastProcessedBlock BigInt
+  envioBlockAtSync   BigInt
+  schemaVersion      Int
+  portfolioJson      Json
+  touchedVaults      String[]
+  touchedRyds        String[]
+  touchedCpfPools    String[]
+  touchedTwoPools    String[]
+  updatedAt          DateTime @updatedAt
+}
+
+model UserActivity {
+  id           String  @id
+  userAddress  String
+  kind         String
+  productAddr  String
+  marketRef    String?
+  amountDelta  String
+  blockNumber  BigInt
+  blockTime    BigInt
+  metadataJson Json
+
+  @@index([userAddress, blockTime])
+  @@index([userAddress])
+}
+
+model UserPortfolioPoint {
+  id            String @id @default(uuid())
+  userAddress   String
+  bucketDate    String
+  bucketTs      BigInt
+  totalValue    String
+  breakdownJson Json
+
+  @@unique([userAddress, bucketDate])
+  @@index([userAddress, bucketTs])
+}
+
+model GasDrip {
+  id        String   @id
+  address   String   @unique
+  ip        String
+  txHash    String?
+  amountWei String
+  createdAt DateTime @default(now())
+
+  @@index([ip])
+}
+
+model GasFaucetClaim {
+  id        String   @id
+  address   String   @unique
+  ip        String
+  txHash    String?
+  amountWei String
+  createdAt DateTime @default(now())
+
+  @@index([ip])
+}
+
+model Referral {
+  id              String    @id
+  referrerAddress String
+  refereeAddress  String    @unique
+  code            String
+  status          String    @default("pending")
+  createdAt       DateTime  @default(now())
+  qualifiedAt     DateTime?
+
+  @@index([referrerAddress, status])
+}
+
+model ReferralCode {
+  code         String   @id
+  ownerAddress String   @unique
+  createdAt    DateTime @default(now())
+}
+
+model Subscription {
+  id                          String    @id
+  stableSlug                  String    @unique
+  title                       String
+  vault                       String?
+  cpfAddress                  String?
+  categories                  String[]  @default([])
+  tags                        String[]  @default([])
+  resolutionTypeTuple         String?
+  marketType                  String?
+  active                      Boolean   @default(true)
+  lastTriggeredAt             DateTime?
+  lastDeployedSourceId        Int?
+  lastCreatedEventId          String?
+  lastDeployTxHash            String?
+  lastError                   String?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime
+  lastDeployedMarketCreatedAt DateTime?
+  lastDeployedSlug            String?
+}
+
+model UserAchievementState {
+  id            String    @id
+  walletAddress String
+  achievementId String
+  status        String    @default("in_progress")
+  currentValue  Int       @default(0)
+  targetValue   Int?
+  xpAwarded     Int       @default(0)
+  completedAt   DateTime?
+  metadata      Json?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+
+  @@unique([walletAddress, achievementId])
+  @@index([walletAddress])
+}
+
+model WorkerState {
+  key                       String    @id
+  lastRunAt                 DateTime?
+  lastSuccessAt             DateTime?
+  lastError                 String?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime
+  lastSourceMarketCreatedAt DateTime?
 }
 
 enum EventStatus {
   open
   resolved
   cancelled
-}
-
-// Resumability cursor + live portfolio snapshot per user (Base only).
-model UserHistoryCache {
-  id                 String   @id @default(uuid())
-  userAddress        String   @unique // EIP-55 checksummed; use getAddress() on write
-  lastProcessedBlock BigInt
-  envioBlockAtSync   BigInt   // the Envio head at last sync
-  schemaVersion      Int      // bump this constant to force full recompute
-  portfolioJson      Json     // current per-product snapshot (small)
-  touchedVaults      String[] // lowercased contract addresses
-  touchedRyds        String[]
-  touchedCpfPools    String[] // `${cpfAddress}:${poolId}`
-  touchedTwoPools    String[]
-  updatedAt          DateTime @updatedAt
-}
-
-// Immutable, append-only activity rows.
-// id == Envio event id with chain prefix stripped: `${paddedBlock}_${paddedLogIndex}`
-// Envio raw format is `8453_${paddedBlock}_${paddedLogIndex}` — strip "8453_" on write.
-model UserActivity {
-  id           String @id
-  userAddress  String // EIP-55 checksummed
-  kind         String // ActivityKind values defined in src/shared/types/history.ts
-  productAddr  String
-  marketRef    String? // poolId / rydAddr / vaultAddr
-  amountDelta  String  // signed BigInt as string (+in / −out)
-  blockNumber  BigInt
-  blockTime    BigInt  // unix seconds from Envio block.timestamp
-  metadataJson Json    // event-specific extras (side, ytBurn, payout…)
-
-  @@index([userAddress, blockTime])
-  @@index([userAddress])
-}
-
-// Upsert-by-day portfolio value series.
-model UserPortfolioPoint {
-  id            String @id @default(uuid())
-  userAddress   String // EIP-55 checksummed
-  bucketDate    String // "YYYY-MM-DD" UTC
-  bucketTs      BigInt // unix seconds of bucket start (00:00 UTC)
-  totalValue    String // USDC 6dp as BigInt string
-  breakdownJson Json   // { vault, ryd, cpf, twoPool, freeYt, claimable }
-
-  @@unique([userAddress, bucketDate])
-  @@index([userAddress, bucketTs])
 }
