@@ -18,22 +18,56 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
         id: "core-first-deposit",
         title: "First deposit",
         description: "Make your first deposit to start earning yield.",
-        xpReward: 25,
+        xpReward: 50,
         status: "completed",
       },
       {
         id: "core-first-prediction",
         title: "First prediction",
         description: "Place your first prediction on any market.",
-        xpReward: 25,
-        status: "in_progress",
-        progress: { current: 0, total: 1 },
+        xpReward: 50,
+        status: "completed",
       },
       {
         id: "core-profile-ready",
         title: "Profile ready",
         description: "Connect wallet and complete your profile setup.",
-        xpReward: 15,
+        xpReward: 50,
+        status: "completed",
+      },
+      {
+        id: "core-first-withdraw",
+        title: "First withdraw",
+        description: "Withdraw funds from your balance.",
+        xpReward: 50,
+        status: "locked",
+      },
+      {
+        id: "core-yield-stake",
+        title: "Yield stake",
+        description: "Stake in an available yield pool.",
+        xpReward: 50,
+        status: "locked",
+      },
+      {
+        id: "core-random-reward",
+        title: "Random reward",
+        description: "Join a random reward pool.",
+        xpReward: 50,
+        status: "locked",
+      },
+      {
+        id: "core-leaderboard",
+        title: "Leaderboard debut",
+        description: "Appear on the leaderboard.",
+        xpReward: 50,
+        status: "locked",
+      },
+      {
+        id: "core-invite",
+        title: "Invite link",
+        description: "Share your invite link with a friend.",
+        xpReward: 50,
         status: "locked",
       },
     ],
@@ -46,14 +80,28 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
         id: "referal-first-friend",
         title: "Invite a friend",
         description: "Invite one friend who joins Praxis.",
-        xpReward: 50,
+        xpReward: 150,
+        status: "completed",
+      },
+      {
+        id: "referal-three-friends",
+        title: "Small circle",
+        description: "Invite three friends who join Praxis.",
+        xpReward: 250,
         status: "locked",
       },
       {
         id: "referal-five-friends",
         title: "Community builder",
         description: "Invite five friends who join Praxis.",
-        xpReward: 150,
+        xpReward: 250,
+        status: "locked",
+      },
+      {
+        id: "referal-ten-friends",
+        title: "Ambassador",
+        description: "Invite ten friends who join Praxis.",
+        xpReward: 300,
         status: "locked",
       },
     ],
@@ -168,6 +216,25 @@ export function getAchievementCategoryProgress(category: AchievementCategory): {
 } {
   const completed = category.achievements.filter((item) => item.status === "completed").length;
   return { completed, total: category.achievements.length };
+}
+
+export function getAchievementCategoryTotalXp(category: AchievementCategory): number {
+  return category.achievements.reduce((sum, item) => sum + item.xpReward, 0);
+}
+
+export function getAchievementCategoryCompletionPercent(category: AchievementCategory): number {
+  const { completed, total } = getAchievementCategoryProgress(category);
+  if (total <= 0) return 0;
+  return (completed / total) * 100;
+}
+
+export function formatAchievementCategoryPercent(value: number): string {
+  const rounded = Math.round(value * 10) / 10;
+  const hasFraction = Math.abs(rounded - Math.round(rounded)) > 0.01;
+  return `${rounded.toLocaleString("de-DE", {
+    minimumFractionDigits: hasFraction ? 1 : 0,
+    maximumFractionDigits: 1,
+  })}%`;
 }
 
 export function getAchievementItemProgressPercent(item: AchievementItem): number | null {

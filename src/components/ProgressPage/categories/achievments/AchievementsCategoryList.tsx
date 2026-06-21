@@ -6,7 +6,7 @@ import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
 import type { AchievementCategoryId } from "@/shared/types/achievements";
 
 export function AchievementsCategoryList() {
-  const [openCategoryId, setOpenCategoryId] = useState<AchievementCategoryId | null>("core-flow");
+  const [openCategoryId, setOpenCategoryId] = useState<AchievementCategoryId | null>(null);
 
   function toggleCategory(id: AchievementCategoryId) {
     setOpenCategoryId((prev) => (prev === id ? null : id));
