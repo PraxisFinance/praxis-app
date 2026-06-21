@@ -1,7 +1,17 @@
+import { ACHIEVEMENTS_COMMON_STATS_MOCK } from "@/shared/constants/achievements";
+import { AchievmentsCommonStats } from "./achievments/AchievmentsCommonStats";
+
 export function ProgressAchievementsPanel() {
+  const { level, currentXp, xpToNextLevel, description } = ACHIEVEMENTS_COMMON_STATS_MOCK;
+
   return (
-    <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-      No achievements yet. Complete quests and predictions to unlock badges.
-    </p>
+    <div className="flex flex-col gap-4">
+      <AchievmentsCommonStats
+        level={level}
+        currentXp={currentXp}
+        xpToNextLevel={xpToNextLevel}
+        description={description}
+      />
+    </div>
   );
 }

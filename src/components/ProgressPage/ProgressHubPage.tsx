@@ -29,7 +29,7 @@ export function ProgressHubPage({
 
   const sectionTitle = useMemo(() => {
     const activeCategory = PROGRESS_HUB_CATEGORY_FILTERS.find(
-      (category) => category.id === categoryId,
+      (category) => category.id === categoryId
     );
     return activeCategory?.title;
   }, [categoryId]);
@@ -37,7 +37,7 @@ export function ProgressHubPage({
   return (
     <div className="flex flex-col gap-6">
       <ProgressHubFilter value={categoryId} onChange={setCategoryId} />
-      {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null}
+      {/* {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null} */}
       {categoryId === "achievements" ? <ProgressAchievementsPanel /> : null}
       {categoryId === "leaderboard" ? <LeaderboardPage embedded /> : null}
       {categoryId === "history" ? <HistoryPage /> : null}
