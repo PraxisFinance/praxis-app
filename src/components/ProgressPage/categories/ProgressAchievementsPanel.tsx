@@ -1,5 +1,6 @@
 import { ACHIEVEMENTS_COMMON_STATS_MOCK } from "@/shared/constants/achievements";
 import { AchievmentsCommonStats } from "./achievments/AchievmentsCommonStats";
+import { AchievementsCategoryList } from "./achievments/AchievementsCategoryList";
 import { SectionHeader } from "@/components/ui";
 
 export function ProgressAchievementsPanel() {
@@ -14,6 +15,7 @@ export function ProgressAchievementsPanel() {
         description={description}
       />
       <SectionHeader>Achievements</SectionHeader>
+      <AchievementsCategoryList />
     </div>
   );
 }
