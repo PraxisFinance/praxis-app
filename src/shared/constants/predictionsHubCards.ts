@@ -832,7 +832,7 @@ function matchesHubSportDisciplineFilter(
 }
 
 /** Applies hub filter state to mock feed items (hub page only). */
-export function filterPredictionsHubCardMocks(
+export function filterPredictionsHubCards(
   items: PredictionsHubListItem[],
   filters: PredictionsHubFilterState,
   nowMs = Date.now(),
@@ -849,7 +849,7 @@ export function getPredictionsHubCardMocks(
   filters: PredictionsHubFilterState,
   nowMs = Date.now(),
 ): PredictionsHubListItem[] {
-  return filterPredictionsHubCardMocks(PREDICTIONS_HUB_CARD_MOCKS, filters, nowMs);
+  return filterPredictionsHubCards(PREDICTIONS_HUB_CARD_MOCKS, filters, nowMs);
 }
 
 /** Resolves a hub feed item by id (mocks until API). */

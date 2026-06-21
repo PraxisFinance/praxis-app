@@ -5,10 +5,7 @@ import { useAccount } from "wagmi";
 import { PredictionsHubItemsList } from "@/components/PredictionsPage/cards";
 import { PredictionsHubFilter } from "@/components/PredictionsPage/filters";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import {
-  filterPredictionsHubCardMocks,
-  PREDICTIONS_HUB_CARD_MOCKS,
-} from "@/shared/constants/predictionsHubCards";
+import { filterPredictionsHubCards } from "@/shared/constants/predictionsHubCards";
 import {
   applyPredictionsHubCategoryChange,
   createPredictionsHubFilterState,
@@ -18,16 +15,13 @@ import {
 } from "@/shared/constants/predictionsHubFilters";
 import { useRYDStore } from "@/stores/rydStore";
 import { rydDataToRandomPool } from "@/shared/utils/rydMappers";
-import type { PredictionsHubListItem } from "@/shared/types/predictions";
+import { useEventsStore, type CPFPoolState } from "@/stores/eventsStore";
+import { mapCPFPoolsToHubCards } from "@/shared/utils/cpfPoolMapper";
 
 export interface PredictionsHubPageProps {
   /** Preset category filter when the page opens or when the prop changes. */
   initialCategoryId?: PredictionsHubCategoryId;
 }
-
-const NON_RYD_MOCKS: PredictionsHubListItem[] = PREDICTIONS_HUB_CARD_MOCKS.filter(
-  (item) => item.predictionType !== "random_reward",
-);
 
 export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHubPageProps) {
   const [filters, setFilters] = useState<PredictionsHubFilterState>(() =>
@@ -42,19 +36,30 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
   }, [initialCategoryId]);
 
   const { address } = useAccount();
-  const { ryds, fetchAll } = useRYDStore();
 
+  const { ryds, fetchAll: fetchAllRyd } = useRYDStore();
   useEffect(() => {
-    void fetchAll(address);
-  }, [fetchAll, address]);
+    void fetchAllRyd(address);
+  }, [fetchAllRyd, address]);
+
+  const { pools, offchainByContractId, fetchAllPoolStates } = useEventsStore();
+  useEffect(() => {
+    void fetchAllPoolStates();
+  }, [fetchAllPoolStates]);
 
   const items = useMemo(() => {
+    const poolStates = Object.values(pools)
+      .map((p) => p.state)
+      .filter((s): s is CPFPoolState => s !== null);
+
+    const eventCards = mapCPFPoolsToHubCards(poolStates, offchainByContractId);
+
     const rydCards = Object.values(ryds)
       .map(rydDataToRandomPool)
       .filter((c): c is NonNullable<ReturnType<typeof rydDataToRandomPool>> => c !== null);
 
-    return filterPredictionsHubCardMocks([...NON_RYD_MOCKS, ...rydCards], filters);
-  }, [ryds, filters]);
+    return filterPredictionsHubCards([...eventCards, ...rydCards], filters);
+  }, [pools, offchainByContractId, ryds, filters]);
 
   const sectionTitle = useMemo(() => {
     const activeCategory = PREDICTIONS_HUB_CATEGORY_FILTERS.find(
