@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
+import { buildProgressHubRoute } from "@/lib/routes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
@@ -39,7 +40,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
           </span>
         </Badge>
 
-        <Button variant="iconPill" size="icon" onClick={() => router.push("/history")}>
+        <Button variant="iconPill" size="icon" onClick={() => router.push(buildProgressHubRoute("history"))}>
           <NotificationIcon className="w-4 h-4" />
         </Button>
 

@@ -3,7 +3,7 @@ import {
   EARN_ROUTE,
   HOW_IT_WORKS_ROUTE,
   INVITE_FRIENDS_ROUTE,
-  LEADERBOARD_ROUTE,
+  buildProgressHubRoute,
 } from "@/lib/routes";
 
 export const MENU_ITEMS: MenuItem[] = [
@@ -55,7 +55,7 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "leaderboard",
     type: "middle",
     backgroundImage: "/main/leaderboard.png",
-    redirectUrl: LEADERBOARD_ROUTE,
+    redirectUrl: buildProgressHubRoute("leaderboard"),
     redirectLabel: "Leaderboard",
   },
 ];

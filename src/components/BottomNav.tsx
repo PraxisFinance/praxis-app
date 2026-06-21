@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import {
   isPredictionsSectionPath,
   isProfileSectionPath,
+  isProgressSectionPath,
   PREDICTIONS_ROUTE,
+  PROGRESS_ROUTE,
 } from "@/lib/routes";
-import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "@/components/icons/navigation";
+import { HomeIcon, EarnIcon, PredictionsIcon, ProgressIcon, ProfileIcon } from "@/components/icons/navigation";
 
 interface NavItem {
   id: string;
@@ -20,7 +22,7 @@ const navItems: NavItem[] = [
   { id: "main", label: "Main", href: "/main", icon: HomeIcon },
   { id: "earn", label: "Earn", href: "/earn", icon: EarnIcon },
   { id: "predictions", label: "Predictions", href: PREDICTIONS_ROUTE, icon: PredictionsIcon },
-  { id: "history", label: "History", href: "/history", icon: HistoryIcon },
+  { id: "progress", label: "Progress", href: PROGRESS_ROUTE, icon: ProgressIcon },
   { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
@@ -35,9 +37,11 @@ export function BottomNav() {
             const isActive =
               item.id === "predictions"
                 ? isPredictionsSectionPath(pathname)
-                : item.id === "profile"
-                  ? isProfileSectionPath(pathname)
-                  : pathname === item.href;
+                : item.id === "progress"
+                  ? isProgressSectionPath(pathname)
+                  : item.id === "profile"
+                    ? isProfileSectionPath(pathname)
+                    : pathname === item.href;
             const Icon = item.icon;
             return (
               <Link
