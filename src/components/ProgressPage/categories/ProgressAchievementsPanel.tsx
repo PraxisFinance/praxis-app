@@ -1,5 +1,6 @@
 import { ACHIEVEMENTS_COMMON_STATS_MOCK } from "@/shared/constants/achievements";
 import { AchievmentsCommonStats } from "./achievments/AchievmentsCommonStats";
+import { SectionHeader } from "@/components/ui";
 
 export function ProgressAchievementsPanel() {
   const { level, currentXp, xpToNextLevel, description } = ACHIEVEMENTS_COMMON_STATS_MOCK;
@@ -12,6 +13,7 @@ export function ProgressAchievementsPanel() {
         xpToNextLevel={xpToNextLevel}
         description={description}
       />
+      <SectionHeader>Achievements</SectionHeader>
     </div>
   );
 }
