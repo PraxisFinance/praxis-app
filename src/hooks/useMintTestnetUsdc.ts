@@ -8,6 +8,7 @@ import { mockUsdcAbi } from "@/config/contracts";
 import { TOKEN_ADDRESSES } from "@/config/tokens";
 import { APP_CHAIN_ID, ensureAppChain } from "@/lib/ensureAppChain";
 import { useAuth } from "./useAuth";
+import { useTrackAchievement } from "./useTrackAchievement";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
@@ -28,6 +29,7 @@ export function useMintTestnetUsdc(onSuccess?: () => void) {
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const { getToken } = useAuth();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<MintTestnetStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -98,13 +100,14 @@ export function useMintTestnetUsdc(onSuccess?: () => void) {
 
       await waitForTransactionReceipt(config, { hash: tx });
 
+      trackAchievement("funds.claim");
       setStatus("success");
       onSuccess?.();
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, writeContractAsync, getToken, onSuccess]);
+  }, [address, chainId, switchChainAsync, writeContractAsync, getToken, onSuccess, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");

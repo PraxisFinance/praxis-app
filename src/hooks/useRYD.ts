@@ -10,6 +10,7 @@ import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { praxisRYDAbi } from "@/config/contracts";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
+import { useTrackAchievement } from "./useTrackAchievement";
 
 // ── Deposit YT into RYD ───────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ export function useRYDDeposit(
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<RYDDepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { yt } = useActiveVault();
@@ -97,12 +99,13 @@ export function useRYDDeposit(
 
       await waitForTransactionReceipt(config, { hash: depositTx });
 
+      trackAchievement("ryd.enter", depositTx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, rydAddress, amount, ytBalance, writeContractAsync, yt]);
+  }, [address, chainId, switchChainAsync, rydAddress, amount, ytBalance, writeContractAsync, yt, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -305,6 +308,7 @@ export function useRYDClaim(rydAddress: `0x${string}`) {
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<ClaimPrizeStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -331,12 +335,13 @@ export function useRYDClaim(rydAddress: `0x${string}`) {
 
       await waitForTransactionReceipt(config, { hash: tx });
 
+      trackAchievement("ryd.claim", tx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, rydAddress, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, rydAddress, writeContractAsync, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");

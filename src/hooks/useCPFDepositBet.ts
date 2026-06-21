@@ -10,6 +10,7 @@ import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
 import { ensureAppChain } from "@/lib/ensureAppChain";
+import { useTrackAchievement } from "./useTrackAchievement";
 
 export type CPFDepositBetStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
@@ -23,6 +24,7 @@ export function useCPFDepositBet(
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<CPFDepositBetStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -88,12 +90,13 @@ export function useCPFDepositBet(
 
       await waitForTransactionReceipt(config, { hash: betTx });
 
+      trackAchievement("cpf.predict", betTx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, minTokensOut, switchChainAsync, writeContractAsync, yt]);
+  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, minTokensOut, switchChainAsync, writeContractAsync, yt, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");

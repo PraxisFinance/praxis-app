@@ -15,6 +15,7 @@ import { config } from "@/config/wagmi";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { praxisVaultAbi } from "@/config/contracts";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
+import { useTrackAchievement } from "./useTrackAchievement";
 
 // ── Deposit ───────────────────────────────────────────────────────────
 
@@ -29,6 +30,7 @@ export function useVaultDeposit(
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<DepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -112,6 +114,7 @@ export function useVaultDeposit(
 
       await waitForTransactionReceipt(config, { hash: depositTx });
 
+      trackAchievement("vault.deposit", depositTx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -129,6 +132,7 @@ export function useVaultDeposit(
     buyInFormatted,
     totalCostFormatted,
     writeContractAsync,
+    trackAchievement,
   ]);
 
   const reset = useCallback(() => {
@@ -157,6 +161,7 @@ export function useVaultWithdraw(vaultAddress: `0x${string}`, amountInput: strin
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<WithdrawStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -192,12 +197,13 @@ export function useVaultWithdraw(vaultAddress: `0x${string}`, amountInput: strin
 
       await waitForTransactionReceipt(config, { hash: tx });
 
+      trackAchievement("vault.withdraw", tx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, vaultAddress, amount, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, vaultAddress, amount, writeContractAsync, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");
@@ -222,6 +228,7 @@ export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: 
   const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<RedeemYieldStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -257,12 +264,13 @@ export function useVaultRedeemYield(vaultAddress: `0x${string}`, ytAmountInput: 
 
       await waitForTransactionReceipt(config, { hash: tx });
 
+      trackAchievement("vault.withdraw", tx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, switchChainAsync, vaultAddress, ytAmount, writeContractAsync]);
+  }, [address, chainId, switchChainAsync, vaultAddress, ytAmount, writeContractAsync, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");

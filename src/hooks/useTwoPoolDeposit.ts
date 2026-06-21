@@ -11,6 +11,7 @@ import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { ensureAppChain } from "@/lib/ensureAppChain";
+import { useTrackAchievement } from "./useTrackAchievement";
 
 export type TwoPoolDepositStatus = "idle" | "approving" | "depositing" | "success" | "error";
 
@@ -22,6 +23,7 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const { trackAchievement } = useTrackAchievement();
   const [status, setStatus] = useState<TwoPoolDepositStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -83,12 +85,13 @@ export function useTwoPoolDeposit(pool: TwoPool, side: TwoPoolSide, amountInput:
 
       await waitForTransactionReceipt(config, { hash: depositTx });
 
+      trackAchievement("twopool.deposit", depositTx);
       setStatus("success");
     } catch (err) {
       setStatus("error");
       setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, amount, chainId, poolAddress, side, switchChainAsync, writeContractAsync, yt]);
+  }, [address, amount, chainId, poolAddress, side, switchChainAsync, writeContractAsync, yt, trackAchievement]);
 
   const reset = useCallback(() => {
     setStatus("idle");
