@@ -7,6 +7,9 @@ export const PROGRESS_HUB_CATEGORY_FILTERS = [
 
 export type ProgressHubCategoryId = (typeof PROGRESS_HUB_CATEGORY_FILTERS)[number]["id"];
 
+export const FIRST_PROGRESS_HUB_CATEGORY_ID: ProgressHubCategoryId =
+  PROGRESS_HUB_CATEGORY_FILTERS[0].id;
+
 export const DEFAULT_PROGRESS_HUB_CATEGORY_ID: ProgressHubCategoryId = "history";
 
 export function isProgressHubCategoryId(value: string): value is ProgressHubCategoryId {
