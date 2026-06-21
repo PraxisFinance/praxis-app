@@ -72,3 +72,17 @@ export interface BindResult {
   status: "pending" | "qualified";
   backwardXp: number;
 }
+
+/** Returned by GET /referrals/bind-params?code=:code — all data the frontend needs to produce an EIP-712 signature. */
+export interface BindParams {
+  /** Resolved wallet address of the referrer. */
+  referrerAddress: string;
+  /** Current EIP-712 nonce for the calling trader (from PraxisFeeRouter.nonces). */
+  nonce: string; // stringified bigint — safe across JSON
+  /** Unix timestamp (seconds) after which the signature is invalid. */
+  deadline: number;
+  /** PraxisFeeRouter contract address — required for the EIP-712 verifyingContract field. */
+  feeRouterAddress: string;
+  /** Chain ID the contract is deployed on. */
+  chainId: number;
+}

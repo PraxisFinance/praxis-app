@@ -15,11 +15,13 @@ import { shortenAddress } from "@/stores/rydStore";
 
 export function InviteFriendsPage() {
   const router = useRouter();
-  const { stats, statsLoading, bindCode, bindError } = useReferral();
+  const { stats, statsLoading, bindCode, resetBind, bindStatus, bindError } = useReferral();
 
   const [enteredReferralLink, setEnteredReferralLink] = useState("");
-  const [bindSuccess, setBindSuccess] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const isBindPending = bindStatus === "fetching-params" || bindStatus === "signing" || bindStatus === "binding";
+  const isBindSuccess = bindStatus === "success";
 
   const referralUrl = stats?.code ? `https://base.praxis.cc/r/${stats.code}` : "";
 
@@ -34,10 +36,12 @@ export function InviteFriendsPage() {
     const code = enteredReferralLink.trim().split("/").pop() ?? "";
     if (!code) return;
     const result = await bindCode(code);
-    if (result) {
-      setBindSuccess(true);
-      setEnteredReferralLink("");
-    }
+    if (result) setEnteredReferralLink("");
+  }
+
+  function handleBindInputChange(value: string) {
+    setEnteredReferralLink(value);
+    if (bindStatus === "error") resetBind();
   }
 
   const inputClassName =
@@ -110,18 +114,18 @@ export function InviteFriendsPage() {
           <div className="flex flex-row items-stretch gap-2">
             <Input
               value={enteredReferralLink}
-              onChange={(event) => setEnteredReferralLink(event.target.value)}
+              onChange={(event) => handleBindInputChange(event.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleBind()}
               placeholder="Enter referral link or code"
               className={inputClassName}
-              disabled={bindSuccess}
+              disabled={isBindSuccess || isBindPending}
             />
             <button
               type="button"
               className={actionButtonClassName}
               aria-label="Apply referral code"
               onClick={handleBind}
-              disabled={!enteredReferralLink.trim() || bindSuccess}
+              disabled={!enteredReferralLink.trim() || isBindSuccess || isBindPending}
             >
               <Check className="size-5 shrink-0" />
             </button>
@@ -132,13 +136,23 @@ export function InviteFriendsPage() {
               <span>{bindError}</span>
             </p>
           )}
-          {bindSuccess && (
+          {isBindPending && (
+            <p className="text-main-darkPurple/70 flex flex-row items-start gap-1.5 text-2xs leading-snug sm:text-xs">
+              <AlertCircle className="mt-0.5 size-3 shrink-0 animate-pulse" />
+              <span>
+                {bindStatus === "fetching-params" && "Resolving referral code…"}
+                {bindStatus === "signing" && "Check your wallet — sign to confirm…"}
+                {bindStatus === "binding" && "Registering on-chain…"}
+              </span>
+            </p>
+          )}
+          {isBindSuccess && (
             <p className="text-green-600 flex flex-row items-start gap-1.5 text-2xs leading-snug sm:text-xs">
               <Check className="mt-0.5 size-3 shrink-0" />
               <span>Referral code applied successfully!</span>
             </p>
           )}
-          {!bindError && !bindSuccess && (
+          {!bindError && !isBindPending && !isBindSuccess && (
             <p className="text-main-darkPurple/90 flex flex-row items-start gap-1.5 text-2xs leading-snug sm:text-xs">
               <AlertCircle className="mt-0.5 size-3 shrink-0" />
               <span>When using your friend&apos;s referral link, you and he receive bonuses.</span>

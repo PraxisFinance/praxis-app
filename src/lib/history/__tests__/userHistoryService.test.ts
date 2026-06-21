@@ -54,6 +54,7 @@ vi.mock("@/shared/api/userHistoryEnvio", async (importOriginal) => {
 
 import { getUserHistory } from "../userHistoryService";
 import type { UserDeltaResponse } from "@/shared/types/envioRaw";
+import { CURRENT_SCHEMA_VERSION } from "@/shared/types/history";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 
@@ -161,7 +162,7 @@ describe("getUserHistory — warm (same Envio head)", () => {
       userAddress: ADDRESS,
       lastProcessedBlock: BigInt(BLOCK_100),
       envioBlockAtSync: BigInt(BLOCK_100),
-      schemaVersion: 1,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       portfolioJson: { totalValueUsdc: "5000000" },
       touchedVaults: [],
       touchedRyds: [],
@@ -186,7 +187,7 @@ describe("getUserHistory — warm (same Envio head)", () => {
       userAddress: ADDRESS,
       lastProcessedBlock: BigInt(BLOCK_100),
       envioBlockAtSync: BigInt(BLOCK_100),
-      schemaVersion: 1,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       portfolioJson: { totalValueUsdc: "5000000" },
       touchedVaults: [],
       touchedRyds: [],
@@ -213,7 +214,7 @@ describe("getUserHistory — warm (same Envio head)", () => {
       userAddress: ADDRESS,
       lastProcessedBlock: BigInt(BLOCK_100),
       envioBlockAtSync: BigInt(BLOCK_100),
-      schemaVersion: 1,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       portfolioJson: { totalValueUsdc: "5000000" },
       touchedVaults: ["0xvault0000000000000000000000000000000001"],
       touchedRyds: [],
@@ -240,7 +241,7 @@ describe("getUserHistory — new blocks with one new event", () => {
       userAddress: ADDRESS,
       lastProcessedBlock: BigInt(BLOCK_100),
       envioBlockAtSync: BigInt(BLOCK_100),
-      schemaVersion: 1,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       portfolioJson: { totalValueUsdc: "0", lastBucketDate: "2025-01-01" },
       touchedVaults: [],
       touchedRyds: [],
@@ -301,7 +302,7 @@ describe("getUserHistory — Envio downtime with existing cache", () => {
       userAddress: ADDRESS,
       lastProcessedBlock: BigInt(BLOCK_100),
       envioBlockAtSync: BigInt(BLOCK_100),
-      schemaVersion: 1,
+      schemaVersion: CURRENT_SCHEMA_VERSION,
       portfolioJson: { totalValueUsdc: "3000000" },
       touchedVaults: [],
       touchedRyds: [],
