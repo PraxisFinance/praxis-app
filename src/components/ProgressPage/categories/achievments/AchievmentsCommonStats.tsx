@@ -39,7 +39,7 @@ export function AchievmentsCommonStats({
               <HintIcon className="size-3.5" />
             </button>
           </div>
-          <p className="text-text-6 text-main-darkPurple w-1/2">{description}</p>
+          <p className="text-text-6 text-main-darkPurple w-2/3">{description}</p>
         </div>
 
         <div className="flex w-full flex-col gap-1.5">
