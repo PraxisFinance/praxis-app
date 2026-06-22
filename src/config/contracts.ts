@@ -44,6 +44,40 @@ export const praxisCPFAbi = [
     outputs: [{ name: "tokensOut", type: "uint256" }],
     stateMutability: "nonpayable",
   },
+  {
+    type: "function",
+    name: "getPool",
+    inputs: [{ name: "poolId", type: "uint256" }],
+    outputs: [
+      {
+        type: "tuple",
+        components: [
+          { name: "poolId", type: "uint256" },
+          { name: "yesReserve", type: "uint256" },
+          { name: "noReserve", type: "uint256" },
+          { name: "totalLPShares", type: "uint256" },
+          { name: "yesPositionId", type: "uint256" },
+          { name: "noPositionId", type: "uint256" },
+          { name: "winningOutcome", type: "uint8" },
+          { name: "createdAt", type: "uint256" },
+          { name: "resolvedAt", type: "uint256" },
+          { name: "votingDeadline", type: "uint256" },
+          { name: "expiration", type: "uint256" },
+          { name: "conditionId", type: "bytes32" },
+          { name: "ctfAddress", type: "address" },
+          { name: "state", type: "uint8" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getStakeToken",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }],
+    stateMutability: "view",
+  },
   { type: "error", name: "PraxisCPF_InsufficientAmount", inputs: [] },
   {
     type: "error",
@@ -57,6 +91,22 @@ export const praxisCPFAbi = [
       { name: "tokensOut", type: "uint256" },
       { name: "minTokensOut", type: "uint256" },
     ],
+  },
+] as const;
+
+/** Gnosis Conditional Tokens Framework — used directly by CPF claim flow. */
+export const conditionalTokensAbi = [
+  {
+    type: "function",
+    name: "redeemPositions",
+    inputs: [
+      { name: "collateralToken", type: "address" },
+      { name: "parentCollectionId", type: "bytes32" },
+      { name: "conditionId", type: "bytes32" },
+      { name: "indexSets", type: "uint256[]" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
 ] as const;
 
@@ -168,6 +218,20 @@ export const twoPoolAbi = [
       { name: "minNet", type: "uint256" },
     ],
     outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "claimTrader",
+    inputs: [{ name: "side", type: "uint8" }],
+    outputs: [{ name: "ytOut", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "claimLP",
+    inputs: [],
+    outputs: [{ name: "ytOut", type: "uint256" }],
     stateMutability: "nonpayable",
   },
 ] as const;
