@@ -16,6 +16,7 @@ export function ProgressAchievementsPanel() {
       />
       <SectionHeader>Achievements</SectionHeader>
       <AchievementsCategoryList />
+      <SectionHeader>Multiple Achievements</SectionHeader>
     </div>
   );
 }

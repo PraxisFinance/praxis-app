@@ -1,6 +1,5 @@
 import type { MenuItem } from "@/shared/types/main";
 import { EARN_ROUTE, HOW_IT_WORKS_ROUTE, INVITE_FRIENDS_ROUTE } from "@/lib/routes";
-import { FIRST_PROGRESS_HUB_CATEGORY_ID } from "@/shared/constants/progressHubFilters";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -51,7 +50,7 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "progress",
     type: "middle",
     backgroundImage: "/main/leaderboard.png",
-    progressHubCategoryId: FIRST_PROGRESS_HUB_CATEGORY_ID,
+    progressHubCategoryId: "achievements",
     redirectLabel: "Play & Boost",
   },
 ];
