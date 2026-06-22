@@ -1,10 +1,5 @@
 import type { MenuItem } from "@/shared/types/main";
-import {
-  EARN_ROUTE,
-  HOW_IT_WORKS_ROUTE,
-  INVITE_FRIENDS_ROUTE,
-  LEADERBOARD_ROUTE,
-} from "@/lib/routes";
+import { EARN_ROUTE, HOW_IT_WORKS_ROUTE, INVITE_FRIENDS_ROUTE } from "@/lib/routes";
 
 export const MENU_ITEMS: MenuItem[] = [
   {
@@ -52,10 +47,10 @@ export const MENU_ITEMS: MenuItem[] = [
     redirectLabel: "Invite friends",
   },
   {
-    key: "leaderboard",
+    key: "progress",
     type: "middle",
     backgroundImage: "/main/leaderboard.png",
-    redirectUrl: LEADERBOARD_ROUTE,
-    redirectLabel: "Leaderboard",
+    progressHubCategoryId: "achievements",
+    redirectLabel: "Play & Boost",
   },
 ];

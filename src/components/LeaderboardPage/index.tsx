@@ -43,21 +43,23 @@ function LeaderboardUserRow({
   );
 }
 
-export function LeaderboardPage() {
+export function LeaderboardPage({ embedded = false }: { embedded?: boolean }) {
   const router = useRouter();
 
   return (
     <div className="flex min-h-full flex-col gap-5 pb-8">
-      <div className="flex flex-row flex-wrap items-center gap-2.5">
-        <Button variant="pillPrimary" size="pill" onClick={() => router.back()}>
-          <ArrowIcon className="h-4 w-4 rotate-180" />
-          Back
-        </Button>
+      {embedded ? null : (
+        <div className="flex flex-row flex-wrap items-center gap-2.5">
+          <Button variant="pillPrimary" size="pill" onClick={() => router.back()}>
+            <ArrowIcon className="h-4 w-4 rotate-180" />
+            Back
+          </Button>
 
-        <Button variant="pillSecondary" size="pill" onClick={() => router.push("/main")}>
-          Main menu
-        </Button>
-      </div>
+          <Button variant="pillSecondary" size="pill" onClick={() => router.push("/main")}>
+            Main menu
+          </Button>
+        </div>
+      )}
 
       <section className="bg-main-lightGray relative min-h-28 overflow-hidden rounded-lg px-3 py-4 sm:min-h-32 sm:px-4">
         <Image

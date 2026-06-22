@@ -4,9 +4,12 @@ import { isPredictionsHubCategoryId } from "@/shared/constants/predictionsHubFil
 
 export const MAIN_ROUTE = "/main";
 export const EARN_ROUTE = "/earn";
+export const PROGRESS_ROUTE = "/progress";
+/** @deprecated Use `PROGRESS_ROUTE` with `?category=history`. Kept for redirects. */
 export const HISTORY_ROUTE = "/history";
 export const HOW_IT_WORKS_ROUTE = "/how-it-works";
 export const INVITE_FRIENDS_ROUTE = "/invite-friends";
+/** @deprecated Use `buildProgressHubRoute("leaderboard")`. Kept for redirects. */
 export const LEADERBOARD_ROUTE = "/leaderboard";
 
 export const PREDICTIONS_ROUTE = "/predictions";
@@ -16,6 +19,18 @@ export const PREDICTIONS_HUB_CATEGORY_QUERY = "category";
 
 export function buildPredictionsHubRoute(categoryId: string): string {
   return `${PREDICTIONS_ROUTE}?${PREDICTIONS_HUB_CATEGORY_QUERY}=${encodeURIComponent(categoryId)}`;
+}
+
+/** Query key for hub category preset on `/progress`. */
+export const PROGRESS_HUB_CATEGORY_QUERY = "category";
+
+export function buildProgressHubRoute(categoryId: string): string {
+  return `${PROGRESS_ROUTE}?${PROGRESS_HUB_CATEGORY_QUERY}=${encodeURIComponent(categoryId)}`;
+}
+
+/** Any screen under the Progress section (bottom nav). */
+export function isProgressSectionPath(pathname: string): boolean {
+  return pathname === PROGRESS_ROUTE || pathname.startsWith(`${PROGRESS_ROUTE}/`);
 }
 
 /** Hub prediction detail: `/predictions/[id]`. */

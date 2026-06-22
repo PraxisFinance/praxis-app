@@ -23,6 +23,7 @@ export function FilterChipButton({
         isActive
           ? "bg-main-purple text-white"
           : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple",
+        "disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-main-lightGray",
         className,
       )}
       {...props}

@@ -1,7 +1,5 @@
 /** Temporary UI mocks until leaderboard is wired to the API. */
 
-export const LEADERBOARD_ROUTE = "/leaderboard";
-
 export const LEADERBOARD_YOUR_PLACE = {
   id: "you",
   name: "Mizori",
