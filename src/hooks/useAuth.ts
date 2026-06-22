@@ -4,7 +4,9 @@ import { useCallback } from "react";
 import { useAccount, useSignMessage, useSwitchChain } from "wagmi";
 import { createSiweMessage } from "viem/siwe";
 import { baseSepolia } from "wagmi/chains";
+import { toast } from "sonner";
 import { ensureAppChain } from "@/lib/ensureAppChain";
+import type { CheckResult } from "@/shared/types/api";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
 
@@ -35,6 +37,33 @@ function getStoredToken(currentAddress: string): string | null {
 function storeToken(token: string, address: string): void {
   const expiresAt = Date.now() + 24 * 60 * 60 * 1000;
   localStorage.setItem(JWT_STORAGE_KEY, JSON.stringify({ token, expiresAt, address }));
+}
+
+async function fireWalletConnectAchievement(token: string): Promise<void> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/achievements/check`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ trigger: "wallet.connect", payload: {} }),
+    });
+    if (!res.ok) return;
+    const result = (await res.json()) as CheckResult;
+    if (result.newlyCompleted.length > 0) {
+      const a = result.updated.find((u) => u.id === result.newlyCompleted[0]);
+      toast.success(a?.title ?? "Achievement unlocked!", {
+        description: a
+          ? `${a.description}${a.xpAwarded > 0 ? ` · +${a.xpAwarded} XP` : ""}`
+          : undefined,
+      });
+    } else if (result.xpGained > 0) {
+      toast.success(`+${result.xpGained} XP earned`);
+    }
+  } catch {
+    // Silently swallow — never break the auth flow
+  }
 }
 
 export function useAuth() {
@@ -76,6 +105,7 @@ export function useAuth() {
 
     const { accessToken } = (await verifyRes.json()) as { accessToken: string };
     storeToken(accessToken, address);
+    void fireWalletConnectAchievement(accessToken);
     return accessToken;
   }, [address, chainId, switchChainAsync, signMessageAsync]);
 

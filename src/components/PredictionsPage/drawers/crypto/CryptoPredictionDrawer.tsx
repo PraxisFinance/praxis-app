@@ -9,7 +9,7 @@ import type {
 } from "@/shared/types/cryptoPrediction";
 import type { PredictionOutcome } from "@/shared/types/predictions";
 import { getCryptoDrawerInfoLines } from "@/shared/utils/cryptoPredictionFormat";
-import { useCPFDepositBet } from "@/hooks/useCPFDepositBet";
+import { useCPF } from "@/hooks/useCPF";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
@@ -84,7 +84,7 @@ function CryptoPredictionDrawerBody({
   );
 
   const inFavor = selectedOutcome.id === prediction.outcomes[0].id;
-  const { placeBet, isPending, errorMessage, status, reset } = useCPFDepositBet(
+  const { placeBet, isBetPending, betError, betStatus, resetBet } = useCPF(
     prediction.cpfAddress,
     prediction.cpfPoolId,
     amount,
@@ -92,32 +92,32 @@ function CryptoPredictionDrawerBody({
   );
 
   const buttonLabel =
-    status === "approving"
+    betStatus === "approving"
       ? "Approving…"
-      : status === "depositing"
+      : betStatus === "depositing"
         ? "Placing bet…"
-        : status === "success"
+        : betStatus === "success"
           ? "Placed!"
           : undefined;
 
-  const disabled = !isAvailable || isPending;
+  const disabled = !isAvailable || isBetPending;
 
   function handleSuccessClose() {
-    reset();
+    resetBet();
     onClose();
   }
 
   return (
     <>
       <RequestResultDialog
-        open={status === "error"}
-        onClose={reset}
+        open={betStatus === "error"}
+        onClose={resetBet}
         title="Bet Failed"
-        description={errorMessage ?? "Something went wrong. Please try again."}
+        description={betError ?? "Something went wrong. Please try again."}
       />
 
       <RequestResultDialog
-        open={status === "success"}
+        open={betStatus === "success"}
         onClose={handleSuccessClose}
         status="success"
         title="Bet Placed"
@@ -145,7 +145,7 @@ function CryptoPredictionDrawerBody({
           priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
           disabled={disabled}
           unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-          errorMessage={errorMessage}
+          errorMessage={betError}
           buttonLabel={buttonLabel}
           onSubmit={() => void placeBet()}
         />

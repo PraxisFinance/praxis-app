@@ -3,6 +3,7 @@ import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 import { trpcClient } from "@/lib/trpc/vanillaClient";
 import { useActiveVaultStore } from "@/stores/activeVaultStore";
 import type { RandomPoolRemainingTime } from "@/shared/types/predictions";
+import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
 // ── Configuration ────────────────────────────────────────────────────
 
@@ -10,8 +11,6 @@ import type { RandomPoolRemainingTime } from "@/shared/types/predictions";
 const PARTICIPANTS_LIMIT = 100;
 /** Max daily snapshots pulled per RYD (most recent first). */
 const SNAPSHOTS_LIMIT = 30;
-/** Decimals of the deposit token (USDC). */
-const USDC_DECIMALS = 6;
 /** Basis points in one percent (10000 bps = 100%). */
 const BPS_PER_PERCENT = 100;
 
@@ -148,7 +147,6 @@ interface RYDStoreActions {
   getRYD: (id: string) => RYDData | undefined;
 
   fetchAll: (userAddress?: string) => Promise<void>;
-  fetchAllRYDStates: () => Promise<void>;
 
   reset: () => void;
 }
@@ -488,10 +486,6 @@ export const useRYDStore = create<RYDStore>((set, get) => ({
     }
   },
 
-  fetchAllRYDStates: async () => {
-    await get().fetchAll();
-  },
-
   reset: () => set({ ...initialState, ryds: {} }),
 }));
 
@@ -572,7 +566,7 @@ useActiveVaultStore.subscribe(
   (state) => state.activeYtAddress,
   (next, prev) => {
     if (next !== prev) {
-      void useRYDStore.getState().fetchAllRYDStates();
+      void useRYDStore.getState().fetchAll();
     }
   }
 );

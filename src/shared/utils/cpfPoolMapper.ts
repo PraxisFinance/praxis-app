@@ -4,8 +4,14 @@ import type {
   CryptoPrediction,
   CryptoPredictionStatus,
 } from "@/shared/types/cryptoPrediction";
+import type { EsportsPredictionCard } from "@/shared/types/esportsMatch";
+import type { FinancePredictionCard } from "@/shared/types/financeHubEvent";
+import { buildFinanceHubTitle } from "@/shared/types/financeHubEvent";
+import type { PredictionsHubListItem } from "@/shared/types/predictionsHubItem";
+import type { EsportsGameFilterId } from "@/shared/constants/esports";
 import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
 import { outcomeLabelsFromResolutionTypeTuple } from "@/shared/constants/resolutionTypeTuples";
+import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
 function poolPercents(stakeInFavor: bigint, stakeAgainst: bigint): [number, number] {
   const total = stakeInFavor + stakeAgainst;
@@ -17,6 +23,21 @@ function poolPercents(stakeInFavor: bigint, stakeAgainst: bigint): [number, numb
 function impliedOdds(percent: number): number {
   if (percent <= 0) return 99;
   return Math.round((100 / percent) * 100) / 100;
+}
+
+/** Formats total stake as a compact volume label, e.g. "$858.74K Vol." */
+function formatVolumeLabel(total: bigint, decimals = USDC_DECIMALS): string | undefined {
+  if (total === BigInt(0)) return undefined;
+  const usd = Number(total) / 10 ** decimals;
+  let compact: string;
+  if (usd >= 1_000_000) {
+    compact = `$${(usd / 1_000_000).toFixed(2)}M`;
+  } else if (usd >= 1_000) {
+    compact = `$${(usd / 1_000).toFixed(2)}K`;
+  } else {
+    compact = `$${usd.toFixed(2)}`;
+  }
+  return `${compact} Vol.`;
 }
 
 /**
@@ -114,6 +135,83 @@ export function resolveOffchainDataForPool(
   return null;
 }
 
+// ── Per-category mappers ─────────────────────────────────────────────
+
+function mapCPFPoolToEsportsCard(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): EsportsPredictionCard {
+  const meta = offchain?.metadata;
+  const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
+
+  const VALID_GAME_IDS: readonly EsportsGameFilterId[] = [
+    "dota2",
+    "csgo",
+    "lol",
+    "valorant",
+    "cod",
+  ];
+  const rawGameId = meta?.gameId;
+  const gameId: EsportsGameFilterId =
+    rawGameId != null && (VALID_GAME_IDS as readonly string[]).includes(rawGameId)
+      ? (rawGameId as EsportsGameFilterId)
+      : "dota2";
+
+  return {
+    id: pool.id,
+    predictionType: "esports",
+    status: deriveStatus(pool, offchain, nowMs),
+    endsAt: deriveEndsAt(pool, offchain),
+    isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
+    streamUrl: meta?.streamUrl,
+    gameId,
+    participantA: {
+      name: meta?.teamAName ?? "Team A",
+      logoUrl: meta?.teamALogoUrl ?? "",
+      odds: impliedOdds(favorPercent),
+    },
+    participantB: {
+      name: meta?.teamBName ?? "Team B",
+      logoUrl: meta?.teamBLogoUrl ?? "",
+      odds: impliedOdds(againstPercent),
+    },
+  };
+}
+
+function mapCPFPoolToFinanceCard(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): FinancePredictionCard {
+  const meta = offchain?.metadata;
+  const assetName = meta?.assetName ?? offchain?.title ?? "";
+  const assetTicker = meta?.assetTicker ?? "";
+  const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
+
+  const sideALabel = offchain?.sideALabel ?? "Up";
+  const sideBLabel = offchain?.sideBLabel ?? "Down";
+
+  return {
+    id: pool.id,
+    predictionType: "finance",
+    status: deriveStatus(pool, offchain, nowMs),
+    endsAt: deriveEndsAt(pool, offchain),
+    isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
+    title: offchain?.title ?? buildFinanceHubTitle(assetName, assetTicker),
+    imageUrl: offchain?.logoPath ?? "",
+    description: offchain?.description,
+    categories: offchain?.categories,
+    volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
+    assetName,
+    assetTicker,
+    outcomes: [
+      { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
+      { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },
+    ],
+  };
+}
+
 export function mapCPFPoolToCryptoPrediction(
   pool: CPFPoolState,
   offchain?: OffchainEventData | null,
@@ -122,8 +220,8 @@ export function mapCPFPoolToCryptoPrediction(
   const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
 
   const tupleLabels = outcomeLabelsFromResolutionTypeTuple(offchain?.resolutionTypeTuple);
-  const favorLabel = tupleLabels?.inFavor ?? "Yes";
-  const againstLabel = tupleLabels?.against ?? "No";
+  const favorLabel = tupleLabels?.inFavor ?? offchain?.sideALabel ?? "Yes";
+  const againstLabel = tupleLabels?.against ?? offchain?.sideBLabel ?? "No";
 
   const outcomes: [CryptoBinaryOutcome, CryptoBinaryOutcome] = [
     {
@@ -147,8 +245,9 @@ export function mapCPFPoolToCryptoPrediction(
     title: offchain?.title ?? `Pool #${pool.poolId}`,
     description: offchain?.description,
     categories: offchain?.categories,
-    assetSymbol: "",
+    assetSymbol: offchain?.metadata?.assetSymbol ?? "",
     iconUrl: offchain?.logoPath ?? "",
+    volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
     status: deriveStatus(pool, offchain, nowMs),
     endsAt: deriveEndsAt(pool, offchain),
     predictionType: "crypto_up_down",
@@ -157,16 +256,47 @@ export function mapCPFPoolToCryptoPrediction(
   };
 }
 
+/**
+ * Dispatches a CPF pool to the correct hub card type based on `offchain.category`.
+ * - `"esports"` → `EsportsPredictionCard`
+ * - `"finance"` → `FinancePredictionCard`
+ * - everything else → `CryptoPrediction` (`crypto_up_down`)
+ */
+export function mapCPFPoolToHubCard(
+  pool: CPFPoolState,
+  offchain?: OffchainEventData | null,
+  nowMs: number = Date.now()
+): PredictionsHubListItem {
+  const category = offchain?.category ?? null;
+
+  if (category === "esports") return mapCPFPoolToEsportsCard(pool, offchain, nowMs);
+  if (category === "finance") return mapCPFPoolToFinanceCard(pool, offchain, nowMs);
+  return mapCPFPoolToCryptoPrediction(pool, offchain, nowMs);
+}
+
+/** Maps a batch of CPF pools to typed hub cards, resolving offchain metadata for each. */
+export function mapCPFPoolsToHubCards(
+  pools: CPFPoolState[],
+  offchainByContractId: Record<string, OffchainEventData | undefined> = {},
+  nowMs: number = Date.now()
+): PredictionsHubListItem[] {
+  return pools.map((pool) =>
+    mapCPFPoolToHubCard(pool, resolveOffchainDataForPool(pool, offchainByContractId), nowMs)
+  );
+}
+
+/** @deprecated Use `mapCPFPoolsToHubCards`. */
 export function mapCPFPoolsToCryptoPredictions(
   pools: CPFPoolState[],
   offchainByContractId: Record<string, OffchainEventData | undefined> = {},
   nowMs: number = Date.now()
 ): CryptoPrediction[] {
-  return pools.map((pool) =>
-    mapCPFPoolToCryptoPrediction(
-      pool,
-      resolveOffchainDataForPool(pool, offchainByContractId),
-      nowMs
-    )
-  );
+  return pools
+    .map((pool) =>
+      mapCPFPoolToCryptoPrediction(
+        pool,
+        resolveOffchainDataForPool(pool, offchainByContractId),
+        nowMs
+      )
+    );
 }

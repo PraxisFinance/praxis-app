@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 import { buildMockVaultsRecord } from "@/shared/constants/earnMocks";
+import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
 // ── Envio-derived types ──────────────────────────────────────────────
 
@@ -97,14 +98,13 @@ function emptyVaultData(): VaultData {
 
 // ── Store ────────────────────────────────────────────────────────────
 
-interface DepositsState {
+interface DepositsStoreState {
   vaults: Record<string, VaultData>;
-  activeVaultId: string | null;
   loading: boolean;
   error: string | null;
+}
 
-  setActiveVault: (vaultId: string) => void;
-  getActiveVault: () => VaultData | undefined;
+interface DepositsStoreActions {
   getVault: (vaultId: string) => VaultData | undefined;
   getActiveVaults: () => VaultState[];
   getMaturedVaults: () => VaultState[];
@@ -119,11 +119,12 @@ interface DepositsState {
   reset: () => void;
 }
 
-const initialState = {
+type DepositsState = DepositsStoreState & DepositsStoreActions;
+
+const initialState: DepositsStoreState = {
   vaults: {} as Record<string, VaultData>,
-  activeVaultId: null as string | null,
   loading: false,
-  error: null as string | null,
+  error: null,
 };
 
 // ── GraphQL queries ──────────────────────────────────────────────────
@@ -461,7 +462,7 @@ function mapRedeem(raw: RawRedeem): RedeemYieldEvent {
   };
 }
 
-// ── Helper to patch a single vault entry ─────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────
 
 function patchVault(
   vaults: Record<string, VaultData>,
@@ -476,19 +477,42 @@ function nowSeconds(): bigint {
   return BigInt(Math.floor(Date.now() / 1000));
 }
 
-// ── Zustand store ────────────────────────────────────────────────────
+const DAILY_SNAPSHOTS_LIMIT = 30;
 
-const USDC_DECIMALS = 6;
+/**
+ * Builds the base vault record from raw state + snapshot arrays,
+ * capping snapshots per vault to DAILY_SNAPSHOTS_LIMIT.
+ * Extracted to eliminate the duplicate between the full-load and bootstrap branches.
+ */
+function buildVaultsFromStates(
+  rawStates: RawVaultState[],
+  rawSnapshots: RawSnapshot[],
+): Record<string, VaultData> {
+  const vaults: Record<string, VaultData> = {};
+
+  for (const raw of rawStates) {
+    vaults[raw.id] = { ...emptyVaultData(), state: mapVaultState(raw) };
+  }
+
+  for (const raw of rawSnapshots) {
+    const snap = mapSnapshot(raw);
+    const vault = vaults[snap.vault_id];
+    if (vault) vault.dailySnapshots.push(snap);
+  }
+
+  for (const vault of Object.values(vaults)) {
+    if (vault.dailySnapshots.length > DAILY_SNAPSHOTS_LIMIT) {
+      vault.dailySnapshots = vault.dailySnapshots.slice(0, DAILY_SNAPSHOTS_LIMIT);
+    }
+  }
+
+  return vaults;
+}
+
+// ── Zustand store ────────────────────────────────────────────────────
 
 export const useDepositsStore = create<DepositsState>((set, get) => ({
   ...initialState,
-
-  setActiveVault: (vaultId) => set({ activeVaultId: vaultId }),
-
-  getActiveVault: () => {
-    const { vaults, activeVaultId } = get();
-    return activeVaultId ? vaults[activeVaultId] : undefined;
-  },
 
   getVault: (vaultId) => get().vaults[vaultId],
 
@@ -515,79 +539,41 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
   fetchAll: async (userAddress) => {
     set({ loading: true, error: null });
     try {
-      const nextVaults: Record<string, VaultData> = {};
+      let nextVaults: Record<string, VaultData>;
 
       if (userAddress) {
         const data = await envioQuery<FullLoadResponse>(FULL_LOAD_QUERY, {
           address: userAddress.toLowerCase(),
         });
 
-        for (const raw of data.VaultState) {
-          nextVaults[raw.id] = { ...emptyVaultData(), state: mapVaultState(raw) };
-        }
-
-        for (const raw of data.VaultDailySnapshot) {
-          const snap = mapSnapshot(raw);
-          const vault = nextVaults[snap.vault_id];
-          if (vault) vault.dailySnapshots.push(snap);
-        }
-        for (const vault of Object.values(nextVaults)) {
-          if (vault.dailySnapshots.length > 30) vault.dailySnapshots = vault.dailySnapshots.slice(0, 30);
-        }
+        nextVaults = buildVaultsFromStates(data.VaultState, data.VaultDailySnapshot);
 
         for (const raw of data.UserPosition) {
           const pos = mapUserPosition(raw);
           const vault = nextVaults[pos.vault_id];
           if (vault) vault.userPosition = pos;
         }
-
         for (const raw of data.PraxisVault_Deposit) {
           const dep = mapDeposit(raw);
           const vault = nextVaults[dep.vault];
           if (vault) vault.deposits.push(dep);
         }
-
         for (const raw of data.PraxisVault_Withdraw) {
           const wd = mapWithdraw(raw);
           const vault = nextVaults[wd.vault];
           if (vault) vault.withdrawals.push(wd);
         }
-
         for (const raw of data.PraxisVault_RedeemYield) {
           const rd = mapRedeem(raw);
           const vault = nextVaults[rd.vault];
           if (vault) vault.redeems.push(rd);
         }
-
-        const activeId = get().activeVaultId;
-        set({
-          vaults: nextVaults,
-          activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
-          loading: false,
-        });
       } else {
         const data = await envioQuery<BootstrapResponse>(BOOTSTRAP_QUERY);
-
-        for (const raw of data.VaultState) {
-          nextVaults[raw.id] = { ...emptyVaultData(), state: mapVaultState(raw) };
-        }
-
-        for (const raw of data.VaultDailySnapshot) {
-          const snap = mapSnapshot(raw);
-          const vault = nextVaults[snap.vault_id];
-          if (vault) vault.dailySnapshots.push(snap);
-        }
-        for (const vault of Object.values(nextVaults)) {
-          if (vault.dailySnapshots.length > 30) vault.dailySnapshots = vault.dailySnapshots.slice(0, 30);
-        }
-
-        const activeId = get().activeVaultId;
-        set({
-          vaults: nextVaults,
-          activeVaultId: activeId && nextVaults[activeId] ? activeId : (data.VaultState[0]?.id ?? null),
-          loading: false,
-        });
+        nextVaults = buildVaultsFromStates(data.VaultState, data.VaultDailySnapshot);
       }
+
+      set({ vaults: nextVaults, loading: false });
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
@@ -663,16 +649,7 @@ export const useDepositsStore = create<DepositsState>((set, get) => ({
 
 export function loadMockDeposits(): void {
   const vaults = buildMockVaultsRecord();
-  const now = nowSeconds();
-  const firstActiveId =
-    Object.values(vaults).find((v) => v.state && v.state.maturity > now)?.state?.id ?? null;
-
-  useDepositsStore.setState({
-    vaults,
-    activeVaultId: firstActiveId,
-    loading: false,
-    error: null,
-  });
+  useDepositsStore.setState({ vaults, loading: false, error: null });
 }
 
 // ── Formatting helpers ───────────────────────────────────────────────
