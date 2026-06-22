@@ -1,8 +1,6 @@
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { Check, X } from "lucide-react";
+import { ACHIEVEMENT_ITEM_ICONS } from "@/components/icons/progress/achievements/items";
 import { cn } from "@/lib/utils";
-import {
-  getAchievementItemProgressPercent,
-} from "@/shared/constants/achievements";
 import type { AchievementItem } from "@/shared/types/achievements";
 
 export interface AchievementItemProps {
@@ -10,42 +8,38 @@ export interface AchievementItemProps {
 }
 
 export function AchievementItemRow({ item }: AchievementItemProps) {
-  const progressPercent = getAchievementItemProgressPercent(item);
-  const isLocked = item.status === "locked";
   const isCompleted = item.status === "completed";
+  const Icon = ACHIEVEMENT_ITEM_ICONS[item.iconId];
 
   return (
-    <div
-      className={cn(
-        "bg-main-white/70 flex flex-col gap-2 rounded-sm px-3 py-2.5",
-        isLocked && "opacity-50",
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-header-6 text-main-darkPurple">{item.title}</span>
-          <p className="text-text-6 text-main-darkPurple/70">{item.description}</p>
-        </div>
-        <span
-          className={cn(
-            "text-text-7 shrink-0 tabular-nums",
-            isCompleted ? "text-main-success" : "text-main-darkPurple",
-          )}
-        >
-          +{item.xpReward} XP
-        </span>
+    <div className="bg-main-white flex items-center gap-3 rounded-sm border border-main-grayPurple/60 px-3 py-2.5">
+      <span className="bg-main-lightGray text-main-purple flex size-10 shrink-0 items-center justify-center rounded-sm">
+        <Icon className="size-6" />
+      </span>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-header-6 text-main-darkPurple">{item.title}</span>
+        <p className="text-text-6 text-main-darkPurple/50">{item.description}</p>
       </div>
 
-      {progressPercent != null ? (
-        <div className="flex flex-col gap-1">
-          <ProgressBar value={progressPercent} variant="ended" className="bg-main-grayPurple/80 h-1.5" />
-          {item.progress != null ? (
-            <span className="text-text-8 text-main-darkPurple/70 tabular-nums">
-              {item.progress.current}/{item.progress.total}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
+      <div className="flex shrink-0 flex-col gap-0.5">
+        <span className="text-text-6 text-main-darkPurple">Points</span>
+        <span className="text-text-6 text-main-purple tabular-nums">{item.xpReward} XP</span>
+      </div>
+
+      <span
+        className={cn(
+          "flex size-10 shrink-0 items-center justify-center rounded-sm",
+          isCompleted ? "bg-main-success" : "bg-main-lightGray",
+        )}
+        aria-hidden
+      >
+        {isCompleted ? (
+          <Check className="size-4 text-white" strokeWidth={2.5} />
+        ) : (
+          <X className="text-main-darkPurple size-4" strokeWidth={2.5} />
+        )}
+      </span>
     </div>
   );
 }

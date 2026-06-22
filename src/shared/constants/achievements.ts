@@ -16,6 +16,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "core-first-deposit",
+        iconId: "deposit",
         title: "First deposit",
         description: "Make your first deposit to start earning yield.",
         xpReward: 50,
@@ -23,6 +24,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-first-prediction",
+        iconId: "prediction",
         title: "First prediction",
         description: "Place your first prediction on any market.",
         xpReward: 50,
@@ -30,6 +32,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-profile-ready",
+        iconId: "profile",
         title: "Profile ready",
         description: "Connect wallet and complete your profile setup.",
         xpReward: 50,
@@ -37,6 +40,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-first-withdraw",
+        iconId: "wallet",
         title: "First withdraw",
         description: "Withdraw funds from your balance.",
         xpReward: 50,
@@ -44,6 +48,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-yield-stake",
+        iconId: "yield",
         title: "Yield stake",
         description: "Stake in an available yield pool.",
         xpReward: 50,
@@ -51,13 +56,15 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-random-reward",
-        title: "Random reward",
-        description: "Join a random reward pool.",
+        iconId: "dice",
+        title: "Predict a random event",
+        description: "Minimum bet: 5 YT",
         xpReward: 50,
         status: "locked",
       },
       {
         id: "core-leaderboard",
+        iconId: "trophy",
         title: "Leaderboard debut",
         description: "Appear on the leaderboard.",
         xpReward: 50,
@@ -65,6 +72,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "core-invite",
+        iconId: "invite",
         title: "Invite link",
         description: "Share your invite link with a friend.",
         xpReward: 50,
@@ -78,6 +86,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "referal-first-friend",
+        iconId: "invite",
         title: "Invite a friend",
         description: "Invite one friend who joins Praxis.",
         xpReward: 150,
@@ -85,6 +94,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "referal-three-friends",
+        iconId: "invite",
         title: "Small circle",
         description: "Invite three friends who join Praxis.",
         xpReward: 250,
@@ -92,6 +102,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "referal-five-friends",
+        iconId: "invite",
         title: "Community builder",
         description: "Invite five friends who join Praxis.",
         xpReward: 250,
@@ -99,6 +110,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "referal-ten-friends",
+        iconId: "invite",
         title: "Ambassador",
         description: "Invite ten friends who join Praxis.",
         xpReward: 300,
@@ -111,21 +123,24 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     label: "Market Coverage",
     achievements: [
       {
-        id: "market-crypto",
-        title: "Crypto explorer",
-        description: "Make a prediction in the crypto category.",
-        xpReward: 20,
+        id: "market-random-event",
+        iconId: "dice",
+        title: "Predict a random event",
+        description: "Minimum bet: 5 YT",
+        xpReward: 25,
         status: "completed",
       },
       {
-        id: "market-esports",
-        title: "Esports fan",
-        description: "Make a prediction in the esports category.",
-        xpReward: 20,
+        id: "market-all-types",
+        iconId: "chart",
+        title: "Predict all 3 event types",
+        description: "Financial, sport, random",
+        xpReward: 75,
         status: "locked",
       },
       {
         id: "market-finance",
+        iconId: "finance",
         title: "Finance watcher",
         description: "Make a prediction in the finance category.",
         xpReward: 20,
@@ -139,6 +154,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "activity-week-streak",
+        iconId: "calendar",
         title: "Weekly streak",
         description: "Use the app on 7 consecutive days.",
         xpReward: 40,
@@ -147,6 +163,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "activity-month-streak",
+        iconId: "calendar",
         title: "Monthly streak",
         description: "Use the app on 30 consecutive days.",
         xpReward: 120,
@@ -160,6 +177,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "yield-first-stake",
+        iconId: "stake",
         title: "First stake",
         description: "Stake assets in an available yield pool.",
         xpReward: 30,
@@ -167,6 +185,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "yield-restake",
+        iconId: "yield",
         title: "Compound gains",
         description: "Restake rewards from a yield position.",
         xpReward: 35,
@@ -180,6 +199,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "perfomance-five-wins",
+        iconId: "target",
         title: "Sharp forecaster",
         description: "Win five resolved predictions.",
         xpReward: 60,
@@ -188,6 +208,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
       },
       {
         id: "perfomance-ten-wins",
+        iconId: "trophy",
         title: "Market master",
         description: "Win ten resolved predictions.",
         xpReward: 120,
@@ -201,6 +222,7 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     achievements: [
       {
         id: "bonus-launch",
+        iconId: "gift",
         title: "Launch bonus",
         description: "Claim the welcome bonus during the launch period.",
         xpReward: 100,
