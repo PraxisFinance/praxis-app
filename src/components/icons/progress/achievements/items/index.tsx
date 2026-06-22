@@ -9,6 +9,7 @@ import {
   User,
   Users,
   Wallet,
+  type LucideIcon,
 } from "lucide-react";
 import type { AchievementItemIconId } from "@/shared/types/achievements";
 import type { ProgressCategoryIconProps } from "@/components/icons/progress/progressIconProps";
@@ -19,10 +20,16 @@ function LucideAchievementIcon({
   icon: Icon,
   className,
 }: {
-  icon: ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   className?: string;
 }) {
   return <Icon className={className} strokeWidth={2} aria-hidden />;
+}
+
+function lucideAchievementIcon(icon: LucideIcon): ComponentType<ProgressCategoryIconProps> {
+  return function AchievementLucideIcon({ className }) {
+    return <LucideAchievementIcon icon={icon} className={className} />;
+  };
 }
 
 export const ACHIEVEMENT_ITEM_ICONS: Record<
@@ -31,18 +38,18 @@ export const ACHIEVEMENT_ITEM_ICONS: Record<
 > = {
   dice: DiceIcon,
   chart: ChartIcon,
-  deposit: ({ className }) => <LucideAchievementIcon icon={Wallet} className={className} />,
-  prediction: ({ className }) => <LucideAchievementIcon icon={LineChart} className={className} />,
-  profile: ({ className }) => <LucideAchievementIcon icon={User} className={className} />,
-  wallet: ({ className }) => <LucideAchievementIcon icon={Wallet} className={className} />,
-  yield: ({ className }) => <LucideAchievementIcon icon={Coins} className={className} />,
-  trophy: ({ className }) => <LucideAchievementIcon icon={Trophy} className={className} />,
-  invite: ({ className }) => <LucideAchievementIcon icon={Users} className={className} />,
-  crypto: ({ className }) => <LucideAchievementIcon icon={Coins} className={className} />,
-  esports: ({ className }) => <LucideAchievementIcon icon={Target} className={className} />,
-  finance: ({ className }) => <LucideAchievementIcon icon={LineChart} className={className} />,
-  calendar: ({ className }) => <LucideAchievementIcon icon={Calendar} className={className} />,
-  stake: ({ className }) => <LucideAchievementIcon icon={Coins} className={className} />,
-  target: ({ className }) => <LucideAchievementIcon icon={Target} className={className} />,
-  gift: ({ className }) => <LucideAchievementIcon icon={Gift} className={className} />,
+  deposit: lucideAchievementIcon(Wallet),
+  prediction: lucideAchievementIcon(LineChart),
+  profile: lucideAchievementIcon(User),
+  wallet: lucideAchievementIcon(Wallet),
+  yield: lucideAchievementIcon(Coins),
+  trophy: lucideAchievementIcon(Trophy),
+  invite: lucideAchievementIcon(Users),
+  crypto: lucideAchievementIcon(Coins),
+  esports: lucideAchievementIcon(Target),
+  finance: lucideAchievementIcon(LineChart),
+  calendar: lucideAchievementIcon(Calendar),
+  stake: lucideAchievementIcon(Coins),
+  target: lucideAchievementIcon(Target),
+  gift: lucideAchievementIcon(Gift),
 };
