@@ -4,49 +4,34 @@ import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
-import type {
-  AchievementPublic,
-  UserAchievementView,
-  UserAchievementsResponse,
-  CheckAchievementDto,
-  CheckResult,
-} from "@/shared/types/api";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
-
-async function parseApiError(res: Response): Promise<Error> {
-  try {
-    const body = (await res.json()) as { message?: string };
-    return new Error(body.message ?? res.statusText);
-  } catch {
-    return new Error(res.statusText);
-  }
-}
+import {
+  applyAchievementCheckResult,
+  postAchievementCheck,
+} from "@/hooks/progress/achievementCheck";
+import {
+  fetchAchievementsCatalogue,
+  fetchUserAchievements,
+  parseProgressApiError,
+  PROGRESS_QUERY_KEYS,
+} from "@/hooks/progress/progressApi";
+import type { CheckAchievementDto, CheckResult } from "@/shared/types/api";
 
 export function useAchievements() {
   const { address } = useAccount();
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
-  const definitionsQuery = useQuery<AchievementPublic[], Error>({
-    queryKey: ["achievements-catalogue"],
-    queryFn: async () => {
-      const res = await fetch(`${BACKEND_URL}/achievements`);
-      if (!res.ok) throw await parseApiError(res);
-      return res.json() as Promise<AchievementPublic[]>;
-    },
+  const definitionsQuery = useQuery({
+    queryKey: PROGRESS_QUERY_KEYS.achievementsCatalogue,
+    queryFn: fetchAchievementsCatalogue,
     staleTime: Infinity,
   });
 
-  const userQuery = useQuery<UserAchievementsResponse, Error>({
-    queryKey: ["achievements-me", address],
+  const userQuery = useQuery({
+    queryKey: PROGRESS_QUERY_KEYS.achievementsMe(address),
     queryFn: async () => {
       const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/achievements/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw await parseApiError(res);
-      return res.json() as Promise<UserAchievementsResponse>;
+      return fetchUserAchievements(token);
     },
     enabled: !!address,
   });
@@ -54,39 +39,15 @@ export function useAchievements() {
   const checkTrigger = useCallback(
     async (dto: CheckAchievementDto): Promise<CheckResult> => {
       const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/achievements/check`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(dto),
-      });
-      if (!res.ok) throw await parseApiError(res);
-      const result = (await res.json()) as CheckResult;
-
-      // Merge updated achievement views into the cached user data
-      queryClient.setQueryData<UserAchievementsResponse>(
-        ["achievements-me", address],
-        (prev) => {
-          if (!prev) return prev;
-          const updatedById = new Map(result.updated.map((a) => [a.id, a]));
-          return {
-            achievements: prev.achievements.map((a) =>
-              updatedById.has(a.id) ? (updatedById.get(a.id) as UserAchievementView) : a
-            ),
-            totalXp: prev.totalXp + result.xpGained,
-          };
-        }
-      );
-
+      const result = await postAchievementCheck(token, dto);
+      applyAchievementCheckResult(queryClient, address, result);
       return result;
     },
-    [address, getToken, queryClient]
+    [address, getToken, queryClient],
   );
 
   const refreshUserAchievements = useCallback(async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: ["achievements-me", address] });
+    await queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.achievementsMe(address) });
   }, [address, queryClient]);
 
   return {

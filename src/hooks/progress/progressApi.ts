@@ -1,6 +1,8 @@
 import type { AchievementHistoryApiResponse } from "@/stores/progress/achievement-history/types";
 import type {
   AchievementPublic,
+  CheckAchievementDto,
+  CheckResult,
   UserAchievementsResponse,
 } from "@/shared/types/api";
 
@@ -52,4 +54,20 @@ export async function fetchAchievementHistory(
   });
   if (!res.ok) throw await parseProgressApiError(res);
   return res.json() as Promise<AchievementHistoryApiResponse>;
+}
+
+export async function fetchAchievementCheck(
+  token: string,
+  dto: CheckAchievementDto,
+): Promise<CheckResult> {
+  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/check`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(dto),
+  });
+  if (!res.ok) throw await parseProgressApiError(res);
+  return res.json() as Promise<CheckResult>;
 }

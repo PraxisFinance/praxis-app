@@ -13,8 +13,10 @@ export type {
   AchievementHistorySlice,
   AchievementHistoryApiResponse,
   AchievementHistoryApiItem,
+  AchievementHistoryItem,
 } from "./achievement-history/types";
 export { DEFAULT_HISTORY_PAGE_SIZE } from "./achievement-history/types";
+export { selectAchievementHistoryItems } from "./achievement-history/selectors";
 
 export type {
   LeaderboardSlice,

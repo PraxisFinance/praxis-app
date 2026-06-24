@@ -18,8 +18,12 @@ export interface AchievementHistoryApiItem {
   completedAt: string;
 }
 
+export interface AchievementHistoryItem extends AchievementItem {
+  completedAt: string;
+}
+
 export interface AchievementHistorySliceState {
-  items: AchievementItem[];
+  items: AchievementHistoryItem[];
   page: number;
   pageSize: number;
   total: number | null;

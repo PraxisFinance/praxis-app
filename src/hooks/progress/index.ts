@@ -4,3 +4,9 @@ export { useProgressAchievementsSync } from "./useProgressAchievementsSync";
 export { useProgressHistorySync } from "./useProgressHistorySync";
 export { useProgressLeaderboardSync } from "./useProgressLeaderboardSync";
 export { PROGRESS_QUERY_KEYS } from "./progressApi";
+export {
+  applyAchievementCheckResult,
+  mergeCheckResultIntoUserAchievements,
+  postAchievementCheck,
+} from "./achievementCheck";
+export { showAchievementCheckToasts } from "./achievementCheckToasts";
