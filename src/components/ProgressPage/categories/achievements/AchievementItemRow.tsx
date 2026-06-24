@@ -3,11 +3,11 @@ import { ACHIEVEMENT_ITEM_ICONS } from "@/components/icons/progress/achievements
 import { cn } from "@/lib/utils";
 import type { AchievementItem } from "@/shared/types/achievements";
 
-export interface AchievementItemProps {
+export interface AchievementItemRowProps {
   item: AchievementItem;
 }
 
-export function AchievementItemRow({ item }: AchievementItemProps) {
+export function AchievementItemRow({ item }: AchievementItemRowProps) {
   const isCompleted = item.status === "completed";
   const Icon = ACHIEVEMENT_ITEM_ICONS[item.iconId];
 

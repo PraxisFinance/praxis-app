@@ -1,6 +1,11 @@
-import { redirect } from "next/navigation";
-import { buildProgressHubRoute } from "@/lib/routes";
+import { HistoryBoot } from "@/components/HistoryBoot";
+import { HistoryPage } from "@/components/HistoryPage";
 
 export default function Page() {
-  redirect(buildProgressHubRoute("history"));
+  return (
+    <>
+      <HistoryBoot />
+      <HistoryPage />
+    </>
+  );
 }

@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  isHistorySectionPath,
   isPredictionsSectionPath,
   isProfileSectionPath,
-  isProgressSectionPath,
-  buildProgressHubRoute,
+  HISTORY_ROUTE,
   PREDICTIONS_ROUTE,
 } from "@/lib/routes";
 import { HomeIcon, EarnIcon, PredictionsIcon, HistoryIcon, ProfileIcon } from "@/components/icons/navigation";
@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { id: "main", label: "Main", href: "/main", icon: HomeIcon },
   { id: "earn", label: "Earn", href: "/earn", icon: EarnIcon },
   { id: "predictions", label: "Predictions", href: PREDICTIONS_ROUTE, icon: PredictionsIcon },
-  { id: "history", label: "History", href: buildProgressHubRoute("history"), icon: HistoryIcon },
+  { id: "history", label: "History", href: HISTORY_ROUTE, icon: HistoryIcon },
   { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
@@ -38,7 +38,7 @@ export function BottomNav() {
               item.id === "predictions"
                 ? isPredictionsSectionPath(pathname)
                 : item.id === "history"
-                  ? isProgressSectionPath(pathname)
+                  ? isHistorySectionPath(pathname)
                   : item.id === "profile"
                     ? isProfileSectionPath(pathname)
                     : pathname === item.href;

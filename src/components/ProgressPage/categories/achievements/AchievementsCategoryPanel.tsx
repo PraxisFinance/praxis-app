@@ -2,7 +2,7 @@
 
 import type { ComponentType } from "react";
 import { ChevronDown } from "lucide-react";
-import { AchievementItemRow } from "@/components/ProgressPage/categories/achievments/AchievementItemRow";
+import { AchievementItemRow } from "@/components/ProgressPage/categories/achievements/AchievementItemRow";
 import {
   ActivityIcon,
   BonusIcon,

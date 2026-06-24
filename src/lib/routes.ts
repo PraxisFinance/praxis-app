@@ -5,7 +5,6 @@ import { isPredictionsHubCategoryId } from "@/shared/constants/predictionsHubFil
 export const MAIN_ROUTE = "/main";
 export const EARN_ROUTE = "/earn";
 export const PROGRESS_ROUTE = "/progress";
-/** @deprecated Use `PROGRESS_ROUTE` with `?category=history`. Kept for redirects. */
 export const HISTORY_ROUTE = "/history";
 export const HOW_IT_WORKS_ROUTE = "/how-it-works";
 export const INVITE_FRIENDS_ROUTE = "/invite-friends";
@@ -31,6 +30,11 @@ export function buildProgressHubRoute(categoryId: string): string {
 /** Any screen under the Progress section (bottom nav). */
 export function isProgressSectionPath(pathname: string): boolean {
   return pathname === PROGRESS_ROUTE || pathname.startsWith(`${PROGRESS_ROUTE}/`);
+}
+
+/** Actions history screen (bottom nav). */
+export function isHistorySectionPath(pathname: string): boolean {
+  return pathname === HISTORY_ROUTE;
 }
 
 /** Hub prediction detail: `/predictions/[id]`. */
