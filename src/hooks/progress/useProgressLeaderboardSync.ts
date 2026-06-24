@@ -3,19 +3,28 @@
 import { useEffect } from "react";
 import {
   LEADERBOARD_TOP_USERS,
+  LEADERBOARD_YOUR_PLACE,
 } from "@/shared/constants/leaderboard";
 import { useProgressStore } from "@/stores/progress/store";
 import type { ProgressLeaderboardEntry } from "@/stores/progress/leaderboard/types";
 
-const MOCK_PROGRESS_LEADERBOARD: ProgressLeaderboardEntry[] = LEADERBOARD_TOP_USERS.map(
+const MOCK_PROGRESS_LEADERBOARD_ENTRIES: ProgressLeaderboardEntry[] = LEADERBOARD_TOP_USERS.map(
   (user, index) => ({
-    id: `progress-lb-${index + 1}`,
+    id: user.id,
     rank: index + 1,
     name: user.name,
     address: `0x${String(index + 1).padStart(40, "0")}` as `0x${string}`,
     score: user.score,
   }),
 );
+
+const MOCK_PROGRESS_USER_ENTRY: ProgressLeaderboardEntry = {
+  id: LEADERBOARD_YOUR_PLACE.id,
+  rank: 0,
+  name: LEADERBOARD_YOUR_PLACE.name,
+  address: "0x0000000000000000000000000000000000000000",
+  score: LEADERBOARD_YOUR_PLACE.score,
+};
 
 /** Temporary mock hydration until the Progress leaderboard API is available. */
 export function useProgressLeaderboardSync() {
@@ -26,7 +35,8 @@ export function useProgressLeaderboardSync() {
     setLeaderboardLoading(true);
 
     hydrateLeaderboard({
-      entries: MOCK_PROGRESS_LEADERBOARD,
+      entries: MOCK_PROGRESS_LEADERBOARD_ENTRIES,
+      userEntry: MOCK_PROGRESS_USER_ENTRY,
       userRank: null,
     });
 

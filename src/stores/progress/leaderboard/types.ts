@@ -8,11 +8,13 @@ export interface ProgressLeaderboardEntry {
 
 export interface ProgressLeaderboardHydration {
   entries: ProgressLeaderboardEntry[];
+  userEntry: ProgressLeaderboardEntry | null;
   userRank: number | null;
 }
 
 export interface LeaderboardSliceState {
   entries: ProgressLeaderboardEntry[];
+  userEntry: ProgressLeaderboardEntry | null;
   userRank: number | null;
   loading: boolean;
   error: string | null;

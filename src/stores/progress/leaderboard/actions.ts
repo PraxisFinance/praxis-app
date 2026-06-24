@@ -8,6 +8,7 @@ import type {
 
 export const LEADERBOARD_INITIAL_STATE: LeaderboardSliceState = {
   entries: [],
+  userEntry: null,
   userRank: null,
   loading: false,
   error: null,
@@ -28,6 +29,7 @@ export const createLeaderboardActions: StateCreator<
   hydrateLeaderboard: (payload: ProgressLeaderboardHydration) =>
     set({
       entries: payload.entries,
+      userEntry: payload.userEntry,
       userRank: payload.userRank,
       error: null,
     }),
