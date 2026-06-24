@@ -1,6 +1,6 @@
 import { ACHIEVEMENTS_COMMON_STATS_MOCK } from "@/shared/constants/achievements";
-import { AchievmentsCommonStats } from "./achievments/AchievmentsCommonStats";
-import { AchievementsCategoryList } from "./achievments/AchievementsCategoryList";
+import { AchievementsCommonStats } from "@/components/ProgressPage/categories/achievements/AchievementsCommonStats";
+import { AchievementsCategoryList } from "@/components/ProgressPage/categories/achievements/AchievementsCategoryList";
 import { SectionHeader } from "@/components/ui";
 
 export function ProgressAchievementsPanel() {
@@ -8,7 +8,7 @@ export function ProgressAchievementsPanel() {
 
   return (
     <div className="flex flex-col gap-4">
-      <AchievmentsCommonStats
+      <AchievementsCommonStats
         level={level}
         currentXp={currentXp}
         xpToNextLevel={xpToNextLevel}
@@ -16,7 +16,6 @@ export function ProgressAchievementsPanel() {
       />
       <SectionHeader>Achievements</SectionHeader>
       <AchievementsCategoryList />
-      <SectionHeader>Multiple Achievements</SectionHeader>
     </div>
   );
 }

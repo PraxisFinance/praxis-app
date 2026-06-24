@@ -232,6 +232,10 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
   },
 ];
 
+export const ACHIEVEMENT_HISTORY_MOCK: AchievementItem[] = ACHIEVEMENT_CATEGORIES_MOCK.flatMap(
+  (category) => category.achievements.filter((item) => item.status === "completed"),
+);
+
 export function getAchievementCategoryProgress(category: AchievementCategory): {
   completed: number;
   total: number;

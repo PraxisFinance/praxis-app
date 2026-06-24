@@ -3,19 +3,19 @@ import { AchievmentsCommonStatsBg } from "@/components/icons/progress";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { getAchievementsLevelProgressPercent } from "@/shared/constants/achievements";
 
-export interface AchievmentsCommonStatsProps {
+export interface AchievementsCommonStatsProps {
   level: number;
   currentXp: number;
   xpToNextLevel: number;
   description: string;
 }
 
-export function AchievmentsCommonStats({
+export function AchievementsCommonStats({
   level,
   currentXp,
   xpToNextLevel,
   description,
-}: AchievmentsCommonStatsProps) {
+}: AchievementsCommonStatsProps) {
   const progressPercent = getAchievementsLevelProgressPercent(currentXp, xpToNextLevel);
 
   return (

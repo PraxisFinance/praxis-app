@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AchievementsCategoryPanel } from "@/components/ProgressPage/categories/achievments/AchievementsCategoryPanel";
+import { AchievementsCategoryPanel } from "@/components/ProgressPage/categories/achievements/AchievementsCategoryPanel";
 import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
 import type { AchievementCategoryId } from "@/shared/types/achievements";
 

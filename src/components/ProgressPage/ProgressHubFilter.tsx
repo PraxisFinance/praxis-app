@@ -21,7 +21,7 @@ const PROGRESS_CATEGORY_ICONS: Record<
 > = {
   achievements: AchievmentsIcon,
   leaderboard: LeaderboardIcon,
-  history: HistoryIcon,
+  "achievement-history": HistoryIcon,
   quests: QuestIcon,
 };
 
