@@ -1,55 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { ProgressHubFilter } from "@/components/ProgressPage/ProgressHubFilter";
 import { ProgressAchievementsPanel } from "@/components/ProgressPage/categories/achievements/ProgressAchievementsPanel";
 import { ProgressAchievementHistoryPanel } from "@/components/ProgressPage/categories/history/ProgressAchievementHistoryPanel";
 import { ProgressLeaderboardPanel } from "@/components/ProgressPage/categories/leaderboard/ProgressLeaderboardPanel";
 import { ProgressQuestsPanel } from "@/components/ProgressPage/categories/quests/ProgressQuestsPanel";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { buildProgressHubRoute } from "@/lib/routes";
-import {
-  DEFAULT_PROGRESS_HUB_CATEGORY_ID,
-  PROGRESS_HUB_CATEGORY_FILTERS,
-  type ProgressHubCategoryId,
-} from "@/shared/constants/progressHubFilters";
+import { useProgressDataSync, useProgressHubCategory } from "@/hooks/progress";
+import { PROGRESS_HUB_CATEGORY_FILTERS } from "@/shared/constants/progressHubFilters";
 
-export interface ProgressHubPageProps {
-  /** Preset category filter when the page opens or when the prop changes. */
-  initialCategoryId?: ProgressHubCategoryId;
-}
-
-export function ProgressHubPage({
-  initialCategoryId = DEFAULT_PROGRESS_HUB_CATEGORY_ID,
-}: ProgressHubPageProps) {
-  const router = useRouter();
-  const [categoryId, setCategoryId] = useState<ProgressHubCategoryId>(initialCategoryId);
-
-  useEffect(() => {
-    setCategoryId((prev) => (prev === initialCategoryId ? prev : initialCategoryId));
-  }, [initialCategoryId]);
-
-  function handleCategoryChange(nextCategoryId: ProgressHubCategoryId) {
-    setCategoryId(nextCategoryId);
-    router.replace(buildProgressHubRoute(nextCategoryId), { scroll: false });
-  }
+export function ProgressHubPage() {
+  useProgressDataSync();
+  const { activeCategoryId, changeCategory } = useProgressHubCategory();
 
   const sectionTitle = useMemo(() => {
     const activeCategory = PROGRESS_HUB_CATEGORY_FILTERS.find(
-      (category) => category.id === categoryId,
+      (category) => category.id === activeCategoryId,
     );
     return activeCategory?.title;
-  }, [categoryId]);
+  }, [activeCategoryId]);
 
   return (
     <div className="flex flex-col gap-6">
-      <ProgressHubFilter value={categoryId} onChange={handleCategoryChange} />
+      <ProgressHubFilter value={activeCategoryId} onChange={changeCategory} />
       {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null}
-      {categoryId === "achievements" ? <ProgressAchievementsPanel /> : null}
-      {categoryId === "leaderboard" ? <ProgressLeaderboardPanel /> : null}
-      {categoryId === "achievement-history" ? <ProgressAchievementHistoryPanel /> : null}
-      {categoryId === "quests" ? <ProgressQuestsPanel /> : null}
+      {activeCategoryId === "achievements" ? <ProgressAchievementsPanel /> : null}
+      {activeCategoryId === "leaderboard" ? <ProgressLeaderboardPanel /> : null}
+      {activeCategoryId === "achievement-history" ? <ProgressAchievementHistoryPanel /> : null}
+      {activeCategoryId === "quests" ? <ProgressQuestsPanel /> : null}
     </div>
   );
 }
