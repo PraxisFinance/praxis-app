@@ -19,6 +19,10 @@ export interface UserAchievementView extends AchievementPublic {
 export interface UserAchievementsResponse {
   achievements: UserAchievementView[];
   totalXp: number;
+  level?: number;
+  currentXp?: number;
+  xpToNextLevel?: number;
+  description?: string | null;
 }
 
 export type AchievementTrigger =

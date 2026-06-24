@@ -65,6 +65,10 @@ export function useProgressAchievementsSync() {
     hydrateUser({
       achievements: userQuery.data.achievements,
       totalXp: userQuery.data.totalXp,
+      level: userQuery.data.level,
+      currentXp: userQuery.data.currentXp,
+      xpToNextLevel: userQuery.data.xpToNextLevel,
+      description: userQuery.data.description,
     });
   }, [userQuery.data, hydrateUser]);
 
