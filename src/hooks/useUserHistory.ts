@@ -40,7 +40,7 @@ export function useUserHistory(address: `0x${string}` | undefined) {
     queryKey: ["userHistory", address],
     queryFn: async () => {
       const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/history/${address}`, {
+      const res = await fetch(`${BACKEND_URL}/user-history/${address}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw await parseApiError(res);
