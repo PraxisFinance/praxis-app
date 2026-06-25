@@ -14,7 +14,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   PREDICTIONS_STATS_INTERVALS,
   PREDICTIONS_STATS_LINE_META,
-  PREDICTIONS_STATS_MOCK_DATA,
 } from "@/shared/constants/profile";
 import type {
   PredictionsStatsDataPoint,
@@ -45,7 +44,7 @@ export function PredictionsStatsChart({ data, className }: PredictionsStatsChart
   const activeLabel =
     PREDICTIONS_STATS_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
 
-  const chartData = data?.[activeInterval] ?? PREDICTIONS_STATS_MOCK_DATA[activeInterval];
+  const chartData = data?.[activeInterval] ?? [];
 
   const visibleLines = PREDICTIONS_STATS_LINE_META.filter((l) => activeLines.has(l.key));
 

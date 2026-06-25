@@ -1,14 +1,28 @@
 import { useCallback, useEffect } from "react";
-import { trpc } from "@/lib/trpc/client";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
 import { deriveClaimsFromHistory } from "@/shared/utils/userHistory/deriveClaimsFromHistory";
 import type { HistoryResponse, ActivityItem, CpfPosition } from "@/shared/types/history";
 import { useClaimsStore } from "@/stores/claimsStore";
 import { useHistoryStore } from "@/stores/historyStore";
 import { useStatisticsStore } from "@/stores/statisticsStore";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+
+async function parseApiError(res: Response): Promise<Error> {
+  try {
+    const body = (await res.json()) as { message?: string };
+    return new Error(body.message ?? res.statusText);
+  } catch {
+    return new Error(res.statusText);
+  }
+}
+
 // ─── Public hook ─────────────────────────────────────────────────────────────
 
 export function useUserHistory(address: `0x${string}` | undefined) {
+  const { getToken } = useAuth();
+
   const setHistory = useHistoryStore((s) => s.setHistory);
   const resetHistory = useHistoryStore((s) => s.reset);
 
@@ -22,15 +36,21 @@ export function useUserHistory(address: `0x${string}` | undefined) {
   const setClaims = useClaimsStore((s) => s.setClaims);
   const resetClaims = useClaimsStore((s) => s.reset);
 
-  const query = trpc.userHistory.get.useQuery(
-    { address: (address ?? "") as `0x${string}` },
-    {
-      enabled: !!address,
-      staleTime: 0,
-      gcTime: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const query = useQuery<HistoryResponse, Error>({
+    queryKey: ["userHistory", address],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await fetch(`${BACKEND_URL}/history/${address}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw await parseApiError(res);
+      return res.json() as Promise<HistoryResponse>;
+    },
+    enabled: !!address,
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnWindowFocus: false,
+  });
 
   const populateStores = useCallback(
     (data: HistoryResponse) => {
@@ -58,7 +78,6 @@ export function useUserHistory(address: `0x${string}` | undefined) {
         (a) => a.kind === "CPF_BET" || a.kind === "CPF_CANCEL"
       );
       const cpfPositions = data.portfolio.positions.cpfBets;
-      console.log("cpfPositions", cpfPositions);
       const predictionHistory = cpfActivities.map((a) => ({
         id: a.id,
         date: a.time,
@@ -66,8 +85,6 @@ export function useUserHistory(address: `0x${string}` | undefined) {
         status: resolveCpfStatus(a, cpfPositions),
         amount: BigInt(a.amount),
       }));
-
-      console.log("predictionHistory", predictionHistory);
 
       // Prediction history (feed items)
       setPredictionHistory(predictionHistory);

@@ -14,7 +14,6 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
   BALANCES_CHART_INTERVALS,
   BALANCE_CURRENCY_META,
-  BALANCES_CHART_MOCK_DATA,
 } from "@/shared/constants/balances";
 import type {
   BalanceCurrencyKey,
@@ -47,7 +46,7 @@ export function BalancesChart({ data, className }: BalancesChartProps) {
   const activeLabel =
     BALANCES_CHART_INTERVALS.find((i) => i.id === activeInterval)?.label ?? "3 days";
 
-  const chartData = data?.[activeInterval] ?? BALANCES_CHART_MOCK_DATA[activeInterval];
+  const chartData = data?.[activeInterval] ?? [];
 
   const visibleCurrencies = BALANCE_CURRENCY_META.filter((c) => activeCurrencies.has(c.key));
 
