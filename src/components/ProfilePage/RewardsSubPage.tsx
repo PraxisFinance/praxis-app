@@ -1,28 +1,49 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useAccount } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import { Balances } from "../Balances/Balances";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useClaimsStore } from "@/stores/claimsStore";
-import { claimToRewardClaimItem } from "./claimDisplayMapper";
-import { RewardClaimRow } from "./RewardClaimRow";
+import { useClaimAll } from "@/hooks/useClaimAll";
+import { ClaimableRewardRow } from "./ClaimableRewardRow";
 
 export function RewardsSubPage() {
-  const claims = useClaimsStore((s) => s.claims);
+  const { address } = useAccount();
+  const queryClient = useQueryClient();
 
-  const pendingRewards = useMemo(
-    () => claims.filter((c) => c.status === "pending").map(claimToRewardClaimItem),
+  const claims = useClaimsStore((s) => s.claims);
+  const markClaimed = useClaimsStore((s) => s.markClaimed);
+
+  const pendingClaims = useMemo(
+    () => claims.filter((c) => c.status === "pending"),
     [claims]
   );
 
-  function handleClaim(id: string) {
-    console.log("claim", id);
-  }
+  const { claimAll, isPending: isClaimingAll, errorMessage: claimAllError } =
+    useClaimAll(pendingClaims);
 
-  function handleClaimAll() {
-    console.log("claim all");
-  }
+  const invalidateHistory = useCallback(() => {
+    if (address) {
+      void queryClient.invalidateQueries({ queryKey: ["userHistory", address] });
+    }
+  }, [queryClient, address]);
+
+  const handleSuccess = useCallback(
+    (id: string) => {
+      markClaimed(id);
+      invalidateHistory();
+    },
+    [markClaimed, invalidateHistory]
+  );
+
+  const handleClaimAll = useCallback(async () => {
+    const claimedIds = await claimAll();
+    for (const id of claimedIds) markClaimed(id);
+    if (claimedIds.length > 0) invalidateHistory();
+  }, [claimAll, markClaimed, invalidateHistory]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,9 +53,9 @@ export function RewardsSubPage() {
         <SectionHeader>Claims</SectionHeader>
 
         <div className="flex flex-col gap-2">
-          {pendingRewards.length > 0 ? (
-            pendingRewards.map((item) => (
-              <RewardClaimRow key={item.id} item={item} onClaim={handleClaim} />
+          {pendingClaims.length > 0 ? (
+            pendingClaims.map((claim) => (
+              <ClaimableRewardRow key={claim.id} claim={claim} onSuccess={handleSuccess} />
             ))
           ) : (
             <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
@@ -43,11 +64,21 @@ export function RewardsSubPage() {
           )}
         </div>
 
-        {pendingRewards.length > 0 ? (
-          <Button variant="primary" size="action" onClick={handleClaimAll} className="mt-1">
-            Claim all
+        {claimAllError && (
+          <p className="text-xs text-red-500 text-center">{claimAllError}</p>
+        )}
+
+        {pendingClaims.length > 0 && (
+          <Button
+            variant="primary"
+            size="action"
+            onClick={() => void handleClaimAll()}
+            disabled={isClaimingAll}
+            className="mt-1"
+          >
+            {isClaimingAll ? "Claiming…" : "Claim all"}
           </Button>
-        ) : null}
+        )}
       </section>
     </div>
   );
