@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useAccount } from "wagmi";
+import { canUseAuthenticatedApi } from "@/lib/auth/devAuthToken";
 import { useProgressAchievementsSync } from "@/hooks/progress/useProgressAchievementsSync";
 import { useProgressHistorySync } from "@/hooks/progress/useProgressHistorySync";
 import { useProgressLeaderboardSync } from "@/hooks/progress/useProgressLeaderboardSync";
@@ -17,7 +18,7 @@ export function useProgressDataSync() {
   useProgressLeaderboardSync();
 
   useEffect(() => {
-    if (!address) {
+    if (!canUseAuthenticatedApi(address)) {
       resetUserProgress();
     }
   }, [address, resetUserProgress]);

@@ -4,11 +4,13 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
+import { canUseAuthenticatedApi, resolveAuthAddress } from "@/lib/auth/devAuthToken";
 import { fetchAchievementHistory, PROGRESS_QUERY_KEYS } from "@/hooks/progress/progressApi";
 import { useProgressStore } from "@/stores/progress/store";
 
 export function useProgressHistorySync() {
   const { address } = useAccount();
+  const authAddress = resolveAuthAddress(address);
   const { getToken } = useAuth();
   const page = useProgressStore((state) => state.page);
 
@@ -17,12 +19,12 @@ export function useProgressHistorySync() {
   const setHistoryError = useProgressStore((state) => state.setHistoryError);
 
   const historyQuery = useQuery({
-    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(address, page),
+    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(authAddress, page),
     queryFn: async () => {
       const token = await getToken();
       return fetchAchievementHistory(token, page);
     },
-    enabled: !!address,
+    enabled: canUseAuthenticatedApi(address),
   });
 
   useEffect(() => {

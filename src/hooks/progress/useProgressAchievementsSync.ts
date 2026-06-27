@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
+import { canUseAuthenticatedApi, resolveAuthAddress } from "@/lib/auth/devAuthToken";
 import {
   fetchAchievementsCatalogue,
   fetchUserAchievements,
@@ -13,6 +14,7 @@ import { useProgressStore } from "@/stores/progress/store";
 
 export function useProgressAchievementsSync() {
   const { address } = useAccount();
+  const authAddress = resolveAuthAddress(address);
   const { getToken } = useAuth();
 
   const hydrateCatalogue = useProgressStore((state) => state.hydrateCatalogue);
@@ -29,12 +31,12 @@ export function useProgressAchievementsSync() {
   });
 
   const userQuery = useQuery({
-    queryKey: PROGRESS_QUERY_KEYS.achievementsMe(address),
+    queryKey: PROGRESS_QUERY_KEYS.achievementsMe(authAddress),
     queryFn: async () => {
       const token = await getToken();
       return fetchUserAchievements(token);
     },
-    enabled: !!address,
+    enabled: canUseAuthenticatedApi(address),
   });
 
   useEffect(() => {

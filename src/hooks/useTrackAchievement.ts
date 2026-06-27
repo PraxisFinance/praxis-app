@@ -9,6 +9,7 @@ import {
   postAchievementCheck,
 } from "@/hooks/progress/achievementCheck";
 import { showAchievementCheckToasts } from "@/hooks/progress/achievementCheckToasts";
+import { canUseAuthenticatedApi, resolveAuthAddress } from "@/lib/auth/devAuthToken";
 import type { AchievementTrigger } from "@/shared/types/api";
 
 /**
@@ -17,12 +18,13 @@ import type { AchievementTrigger } from "@/shared/types/api";
  */
 export function useTrackAchievement() {
   const { address } = useAccount();
+  const authAddress = resolveAuthAddress(address);
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
   const trackAchievement = useCallback(
     (trigger: AchievementTrigger, txHash?: string): void => {
-      if (!address) return;
+      if (!canUseAuthenticatedApi(address)) return;
 
       void (async () => {
         try {
@@ -32,14 +34,14 @@ export function useTrackAchievement() {
             payload: txHash ? { txHash } : {},
           });
 
-          applyAchievementCheckResult(queryClient, address, result);
+          applyAchievementCheckResult(queryClient, authAddress, result);
           showAchievementCheckToasts(result);
         } catch {
           // Achievement tracking must never interrupt the main UX flow
         }
       })();
     },
-    [address, getToken, queryClient],
+    [address, authAddress, getToken, queryClient],
   );
 
   return { trackAchievement };

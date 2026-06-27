@@ -11,13 +11,14 @@ import {
 import {
   fetchAchievementsCatalogue,
   fetchUserAchievements,
-  parseProgressApiError,
   PROGRESS_QUERY_KEYS,
 } from "@/hooks/progress/progressApi";
+import { canUseAuthenticatedApi, resolveAuthAddress } from "@/lib/auth/devAuthToken";
 import type { CheckAchievementDto, CheckResult } from "@/shared/types/api";
 
 export function useAchievements() {
   const { address } = useAccount();
+  const authAddress = resolveAuthAddress(address);
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
@@ -28,27 +29,29 @@ export function useAchievements() {
   });
 
   const userQuery = useQuery({
-    queryKey: PROGRESS_QUERY_KEYS.achievementsMe(address),
+    queryKey: PROGRESS_QUERY_KEYS.achievementsMe(authAddress),
     queryFn: async () => {
       const token = await getToken();
       return fetchUserAchievements(token);
     },
-    enabled: !!address,
+    enabled: canUseAuthenticatedApi(address),
   });
 
   const checkTrigger = useCallback(
     async (dto: CheckAchievementDto): Promise<CheckResult> => {
       const token = await getToken();
       const result = await postAchievementCheck(token, dto);
-      applyAchievementCheckResult(queryClient, address, result);
+      applyAchievementCheckResult(queryClient, authAddress, result);
       return result;
     },
-    [address, getToken, queryClient],
+    [authAddress, getToken, queryClient],
   );
 
   const refreshUserAchievements = useCallback(async (): Promise<void> => {
-    await queryClient.invalidateQueries({ queryKey: PROGRESS_QUERY_KEYS.achievementsMe(address) });
-  }, [address, queryClient]);
+    await queryClient.invalidateQueries({
+      queryKey: PROGRESS_QUERY_KEYS.achievementsMe(authAddress),
+    });
+  }, [authAddress, queryClient]);
 
   return {
     definitions: definitionsQuery.data ?? [],

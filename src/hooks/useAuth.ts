@@ -5,6 +5,7 @@ import { useAccount, useSignMessage, useSwitchChain } from "wagmi";
 import { createSiweMessage } from "viem/siwe";
 import { baseSepolia } from "wagmi/chains";
 import { toast } from "sonner";
+import { getDevAuthToken } from "@/lib/auth/devAuthToken";
 import { ensureAppChain } from "@/lib/ensureAppChain";
 import type { CheckResult } from "@/shared/types/api";
 
@@ -72,6 +73,9 @@ export function useAuth() {
   const { signMessageAsync } = useSignMessage();
 
   const getToken = useCallback(async (): Promise<string> => {
+    const devToken = getDevAuthToken();
+    if (devToken) return devToken;
+
     if (!address) throw new Error("Wallet not connected");
 
     const stored = getStoredToken(address);
