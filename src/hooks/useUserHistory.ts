@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
 import { deriveClaimsFromHistory } from "@/shared/utils/userHistory/deriveClaimsFromHistory";
 import type { HistoryResponse, ActivityItem, CpfPosition } from "@/shared/types/history";
@@ -20,7 +21,8 @@ async function parseApiError(res: Response): Promise<Error> {
 
 // ─── Public hook ─────────────────────────────────────────────────────────────
 
-export function useUserHistory(address: `0x${string}` | undefined) {
+export function useUserHistory() {
+  const { address } = useAccount();
   const { getToken } = useAuth();
 
   const setHistory = useHistoryStore((s) => s.setHistory);
@@ -40,7 +42,7 @@ export function useUserHistory(address: `0x${string}` | undefined) {
     queryKey: ["userHistory", address],
     queryFn: async () => {
       const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/user-history/${address}`, {
+      const res = await fetch(`${BACKEND_URL}/user-history`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw await parseApiError(res);

@@ -9,6 +9,7 @@ import { ensureAppChain } from "@/lib/ensureAppChain";
 import type { CheckResult } from "@/shared/types/api";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
+const FAKE_JWT = process.env.NEXT_PUBLIC_FAKE_JWT;
 
 const JWT_STORAGE_KEY = "praxis_auth_token";
 
@@ -72,6 +73,8 @@ export function useAuth() {
   const { signMessageAsync } = useSignMessage();
 
   const getToken = useCallback(async (): Promise<string> => {
+    if (FAKE_JWT) return FAKE_JWT;
+
     if (!address) throw new Error("Wallet not connected");
 
     const stored = getStoredToken(address);
