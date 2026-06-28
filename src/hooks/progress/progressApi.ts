@@ -1,4 +1,5 @@
 import type { AchievementHistoryApiResponse } from "@/stores/progress/achievement-history/types";
+import { normalizeAchievementHistoryResponse } from "@/stores/progress/achievement-history/normalize";
 import type {
   AchievementPublic,
   CheckAchievementDto,
@@ -53,7 +54,8 @@ export async function fetchAchievementHistory(
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw await parseProgressApiError(res);
-  return res.json() as Promise<AchievementHistoryApiResponse>;
+  const raw: unknown = await res.json();
+  return normalizeAchievementHistoryResponse(raw);
 }
 
 export async function fetchAchievementCheck(

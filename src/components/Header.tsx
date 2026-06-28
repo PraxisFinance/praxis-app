@@ -34,7 +34,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
 
       <div className="flex items-center gap-2.5">
         <Badge variant="neutral" className="text-sm leading-4">
-          {points.toLocaleString()}
+          {points.toLocaleString("en-US")}
           <span className="inline-flex shrink-0" aria-hidden>
             <WUsdcTokenIcon size={18} />
           </span>

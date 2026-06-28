@@ -1,13 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AchievementsCategoryPanel } from "@/components/ProgressPage/categories/achievements/AchievementsCategoryPanel";
 import { selectAchievementCategories } from "@/stores/progress/achievements/selectors";
 import { useProgressStore } from "@/stores/progress/store";
 import type { AchievementCategoryId } from "@/shared/types/achievements";
 
 export function AchievementsCategoryList() {
-  const categories = useProgressStore(selectAchievementCategories);
+  const definitions = useProgressStore((state) => state.definitions);
+  const userAchievements = useProgressStore((state) => state.userAchievements);
+  const categories = useMemo(
+    () => selectAchievementCategories({ definitions, userAchievements }),
+    [definitions, userAchievements],
+  );
   const [openCategoryId, setOpenCategoryId] = useState<AchievementCategoryId | null>(null);
 
   function toggleCategory(id: AchievementCategoryId) {

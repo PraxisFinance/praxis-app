@@ -29,5 +29,5 @@ export function mapHistoryApiItemToAchievementItem(
 export function mapHistoryApiResponse(
   response: AchievementHistoryApiResponse,
 ): AchievementHistoryItem[] {
-  return response.items.map(mapHistoryApiItemToAchievementItem);
+  return (response.items ?? []).map(mapHistoryApiItemToAchievementItem);
 }

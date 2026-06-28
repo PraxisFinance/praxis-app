@@ -3,9 +3,10 @@
 import { useMemo, useState } from "react";
 import { AchievementItemRow } from "@/components/ProgressPage/categories/achievements/AchievementItemRow";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { useStableNowMs } from "@/hooks/useStableNowMs";
 import { selectAchievementHistoryItems } from "@/stores/progress/achievement-history/selectors";
 import { useProgressStore } from "@/stores/progress/store";
-import { HISTORY_TIME_FILTER_OPTIONS } from "@/shared/constants/history";
+import { HISTORY_PAGE_CLOCK_ANCHOR_MS, HISTORY_TIME_FILTER_OPTIONS } from "@/shared/constants/history";
 import type { HistoryTimeFilter } from "@/shared/types/history";
 
 export function ProgressAchievementHistoryPanel() {
@@ -13,10 +14,11 @@ export function ProgressAchievementHistoryPanel() {
   const items = useProgressStore((state) => state.items);
   const loading = useProgressStore((state) => state.loading);
   const error = useProgressStore((state) => state.error);
+  const nowMs = useStableNowMs(HISTORY_PAGE_CLOCK_ANCHOR_MS);
 
   const visibleAchievements = useMemo(
-    () => selectAchievementHistoryItems({ items }, timeFilter),
-    [items, timeFilter],
+    () => selectAchievementHistoryItems({ items }, timeFilter, nowMs),
+    [items, timeFilter, nowMs],
   );
 
   return (

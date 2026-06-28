@@ -5,7 +5,7 @@ import type { ProgressStore } from "@/stores/progress/types";
 export function selectAchievementHistoryItems(
   state: Pick<ProgressStore, "items">,
   timeFilter: HistoryTimeFilter,
-  nowMs = Date.now(),
+  nowMs: number,
 ): ProgressStore["items"] {
   const cutoffMs = historyTimeFilterCutoffMs(timeFilter, nowMs);
 
