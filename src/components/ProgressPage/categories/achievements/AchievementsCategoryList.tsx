@@ -13,10 +13,18 @@ export function AchievementsCategoryList() {
     () => selectAchievementCategories({ definitions, userAchievements }),
     [definitions, userAchievements],
   );
-  const [openCategoryId, setOpenCategoryId] = useState<AchievementCategoryId | null>(null);
+  const [openCategoryIds, setOpenCategoryIds] = useState<Set<AchievementCategoryId>>(new Set());
 
   function toggleCategory(id: AchievementCategoryId) {
-    setOpenCategoryId((prev) => (prev === id ? null : id));
+    setOpenCategoryIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   }
 
   if (categories.length === 0) {
@@ -33,7 +41,7 @@ export function AchievementsCategoryList() {
         <AchievementsCategoryPanel
           key={category.id}
           category={category}
-          isOpen={openCategoryId === category.id}
+          isOpen={openCategoryIds.has(category.id)}
           onToggle={() => toggleCategory(category.id)}
         />
       ))}
