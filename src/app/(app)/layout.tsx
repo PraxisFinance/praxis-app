@@ -5,6 +5,7 @@ import { useHydrated } from "@/hooks/useHydrated";
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { ActiveVaultBoot } from "@/components/ActiveVaultBoot";
+import { AchievementCompletedDrawerHost } from "@/components/ProgressPage/drawers/AchievementCompletedDrawerHost";
 import { StaleVaultBanner } from "@/components/ui/StaleVaultBanner";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -27,6 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <BottomNav />
+      <AchievementCompletedDrawerHost />
     </div>
   );
 }
