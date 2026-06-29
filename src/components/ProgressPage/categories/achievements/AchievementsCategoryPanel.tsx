@@ -72,14 +72,18 @@ export function AchievementsCategoryPanel({
           <ChevronDown
             className={cn(
               "size-4 shrink-0 text-main-darkPurple/50 transition-transform duration-200",
-              isOpen && "rotate-180",
+              isOpen && "rotate-180"
             )}
             aria-hidden
           />
         </button>
 
         <div className="flex flex-col gap-1.5">
-          <ProgressBar value={completionPercent} variant="live" className="h-1.5 bg-main-grayPurple/80" />
+          <ProgressBar
+            value={completionPercent}
+            variant="live"
+            className="h-1.5 bg-main-grayPurple/80"
+          />
           <div className="relative flex items-center justify-between">
             <span className="text-text-6 text-main-success tabular-nums">
               {formatAchievementCategoryPercent(completionPercent)}
@@ -95,7 +99,7 @@ export function AchievementsCategoryPanel({
       </div>
 
       {isOpen ? (
-        <div className="flex flex-col gap-2 px-3 pb-3">
+        <div className="flex flex-col gap-2 bg-main-lightGray px-3 pb-3">
           {category.achievements.map((item) => (
             <AchievementItemRow key={item.id} item={item} />
           ))}

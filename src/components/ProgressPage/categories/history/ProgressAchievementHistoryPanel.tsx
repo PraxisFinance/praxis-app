@@ -3,23 +3,27 @@
 import { useMemo, useState } from "react";
 import { AchievementItemRow } from "@/components/ProgressPage/categories/achievements/AchievementItemRow";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ACHIEVEMENT_HISTORY_MOCK } from "@/shared/constants/achievements";
-import { HISTORY_TIME_FILTER_OPTIONS } from "@/shared/constants/history";
+import { useStableNowMs } from "@/hooks/useStableNowMs";
+import { selectAchievementHistoryItems } from "@/stores/progress/achievement-history/selectors";
+import { useProgressStore } from "@/stores/progress/store";
+import { HISTORY_PAGE_CLOCK_ANCHOR_MS, HISTORY_TIME_FILTER_OPTIONS } from "@/shared/constants/history";
 import type { HistoryTimeFilter } from "@/shared/types/history";
 
 export function ProgressAchievementHistoryPanel() {
   const [timeFilter, setTimeFilter] = useState<HistoryTimeFilter>("3D");
+  const items = useProgressStore((state) => state.items);
+  const loading = useProgressStore((state) => state.loading);
+  const error = useProgressStore((state) => state.error);
+  const nowMs = useStableNowMs(HISTORY_PAGE_CLOCK_ANCHOR_MS);
 
-  const visibleAchievements = useMemo(() => {
-    void timeFilter;
-    return ACHIEVEMENT_HISTORY_MOCK;
-  }, [timeFilter]);
+  const visibleAchievements = useMemo(
+    () => selectAchievementHistoryItems({ items }, timeFilter, nowMs),
+    [items, timeFilter, nowMs],
+  );
 
   return (
     <div className="flex min-h-full flex-col gap-4 pb-8">
       <div className="flex items-center justify-between gap-2">
-        {/* <SectionHeader className="text-main-darkPurple">Achievements history</SectionHeader> */}
         <FilterDropdown
           options={HISTORY_TIME_FILTER_OPTIONS}
           value={timeFilter}
@@ -29,15 +33,27 @@ export function ProgressAchievementHistoryPanel() {
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        {visibleAchievements.length > 0 ? (
-          visibleAchievements.map((item) => <AchievementItemRow key={item.id} item={item} />)
-        ) : (
-          <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-            No achievements in this period.
-          </p>
-        )}
-      </div>
+      {loading ? (
+        <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
+          Loading achievements history…
+        </p>
+      ) : null}
+
+      {error != null ? (
+        <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">{error}</p>
+      ) : null}
+
+      {!loading && error == null ? (
+        <div className="flex flex-col gap-2">
+          {visibleAchievements.length > 0 ? (
+            visibleAchievements.map((item) => <AchievementItemRow key={item.id} item={item} />)
+          ) : (
+            <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
+              No achievements in this period.
+            </p>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

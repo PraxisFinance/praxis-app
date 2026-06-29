@@ -83,3 +83,13 @@ export {
   useActiveVaultStore,
   useActiveVault,
 } from "./activeVaultStore";
+
+export {
+  useProgressStore,
+  selectAchievementCategories,
+  selectUserProgressStats,
+  type ProgressStore,
+  type UserProgressStats,
+  type AchievementHistoryApiResponse,
+  type ProgressLeaderboardEntry,
+} from "./progress";
