@@ -105,11 +105,7 @@ export function RandomRewardHubCard({ pool, onJoin, onClaim }: RandomRewardHubCa
         >
           Claim rewards
         </Button>
-      ) : (
-        <Button type="button" variant="secondaryBrand" size="action" className="h-8" disabled>
-          Pool lifetime ended
-        </Button>
-      )}
+      ) : null}
     </article>
   );
 }
