@@ -6,7 +6,7 @@ import { HISTORY_ROUTE } from "@/lib/routes";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
-import { WUsdcTokenIcon } from "@/components/icons/base";
+import { UsdcTokenIcon, WUsdcTokenIcon } from "@/components/icons/base";
 
 interface HeaderProps {
   username: string;
@@ -36,7 +36,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
         <Badge variant="neutral" className="text-sm leading-4">
           {points.toLocaleString("en-US")}
           <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon size={18} />
+            <UsdcTokenIcon size={18} />
           </span>
         </Badge>
 
