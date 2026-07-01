@@ -1,6 +1,19 @@
-export const SettingsIcon = () => {
+import {
+  DEFAULT_PROFILE_TAB_ICON_SIZE,
+  type ProfileTabIconProps,
+} from "./profileIconProps";
+
+export const SettingsIcon = ({
+  size = DEFAULT_PROFILE_TAB_ICON_SIZE,
+}: ProfileTabIconProps) => {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
