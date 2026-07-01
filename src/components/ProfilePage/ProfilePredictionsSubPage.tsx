@@ -14,7 +14,7 @@ import type {
   ProfilePredictionStatusFilter,
   ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
-import { WUSDC_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import { useStatisticsStore } from "@/stores/statisticsStore";
 import type { PredictionHistoryItem as StorePredictionHistoryItem } from "@/stores/statisticsStore";
 
@@ -58,8 +58,26 @@ function historyItemToProfilePrediction(
 ): DatedProfilePredictionItem {
   const userWon = item.status === "won";
   const ended = item.status !== "pending";
-  const amount = formatWUsdcAmount(item.amount);
 
+  if (item.kind === "ryd") {
+    const deposit = formatWUsdcAmount(item.amount);
+    const prize = formatWUsdcAmount(item.prize ?? 0n);
+    return {
+      id: item.id,
+      kind: "pool",
+      name: item.label,
+      iconUrl: YT_ICON_URL,
+      ended,
+      userWon,
+      tvl: `$${deposit}`,
+      earnings: userWon ? `$${prize}` : "$0 wUSDC",
+      usersWon: 0,
+      progressPercent: ended ? 100 : 0,
+      date: item.date,
+    };
+  }
+
+  const amount = formatWUsdcAmount(item.amount);
   return {
     id: item.id,
     kind: "match",

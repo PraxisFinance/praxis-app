@@ -12,6 +12,10 @@ export interface PredictionHistoryItem {
   label: string;
   status: "won" | "lost" | "pending";
   amount: bigint;
+  /** Discriminates between CPF match bets and RYD pool entries. Defaults to "cpf". */
+  kind?: "cpf" | "ryd";
+  /** For RYD items only: prize amount at 6 decimals. */
+  prize?: bigint;
 }
 
 interface StatisticsState {

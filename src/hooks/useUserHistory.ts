@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { useAuth } from "@/hooks/useAuth";
 import { deriveClaimsFromHistory } from "@/shared/utils/userHistory/deriveClaimsFromHistory";
-import type { HistoryResponse, ActivityItem, CpfPosition } from "@/shared/types/history";
+import type { HistoryResponse, ActivityItem, CpfPosition, RydPosition } from "@/shared/types/history";
 import { useClaimsStore } from "@/stores/claimsStore";
 import { useHistoryStore } from "@/stores/historyStore";
 import { useStatisticsStore } from "@/stores/statisticsStore";
@@ -80,16 +80,38 @@ export function useUserHistory() {
         (a) => a.kind === "CPF_BET" || a.kind === "CPF_CANCEL"
       );
       const cpfPositions = data.portfolio.positions.cpfBets;
-      const predictionHistory = cpfActivities.map((a) => ({
+      const cpfHistory = cpfActivities.map((a) => ({
         id: a.id,
         date: a.time,
         label: a.title,
         status: resolveCpfStatus(a, cpfPositions),
         amount: BigInt(a.amount),
+        kind: "cpf" as const,
       }));
 
+      // RYD positions — one entry per open/closed pool the user has deposited into.
+      // We match against RYD_DEPOSIT activities for the label and timestamp;
+      // fall back to a generic label if no matching activity exists.
+      const rydActivitiesByAddr = new Map(
+        data.activity
+          .filter((a) => a.kind === "RYD_DEPOSIT")
+          .map((a) => [a.productAddr?.toLowerCase() ?? "", a])
+      );
+      const rydHistory = data.portfolio.positions.ryds.map((ryd) => {
+        const activity = rydActivitiesByAddr.get(ryd.rydId.toLowerCase());
+        return {
+          id: `ryd-${ryd.rydId}`,
+          date: activity?.time ?? Date.now(),
+          label: activity?.title ?? "Random Yield Distribution",
+          status: resolveRydStatus(ryd),
+          amount: BigInt(ryd.deposit),
+          kind: "ryd" as const,
+          prize: BigInt(ryd.prize),
+        };
+      });
+
       // Prediction history (feed items)
-      setPredictionHistory(predictionHistory);
+      setPredictionHistory([...cpfHistory, ...rydHistory]);
 
       // Match stats from CPF positions
       const resolved = cpfPositions.filter((p) => p.resolved);
@@ -152,4 +174,11 @@ function resolveCpfStatus(
   });
   if (!pos?.resolved) return "pending";
   return BigInt(pos.claimable) > 0n ? "won" : "lost";
+}
+
+function resolveRydStatus(ryd: RydPosition): "won" | "lost" | "pending" {
+  const state = ryd.state.toLowerCase();
+  if (state === "open" || state === "drawing") return "pending";
+  if (ryd.isWinner && BigInt(ryd.prize) > 0n) return "won";
+  return "lost";
 }
