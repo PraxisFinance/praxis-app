@@ -12,17 +12,15 @@ export function useProgressHistorySync() {
   const { address } = useAccount();
   const authAddress = resolveAuthAddress(address);
   const { getToken } = useAuth();
-  const page = useProgressStore((state) => state.page);
-
   const hydrateHistory = useProgressStore((state) => state.hydrateHistory);
   const setHistoryLoading = useProgressStore((state) => state.setHistoryLoading);
   const setHistoryError = useProgressStore((state) => state.setHistoryError);
 
   const historyQuery = useQuery({
-    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(authAddress, page),
+    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(authAddress),
     queryFn: async () => {
       const token = await getToken();
-      return fetchAchievementHistory(token, page);
+      return fetchAchievementHistory(token);
     },
     enabled: canUseAuthenticatedApi(address),
   });

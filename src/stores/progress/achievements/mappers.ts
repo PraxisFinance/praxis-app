@@ -2,8 +2,10 @@ import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
 import {
   ACHIEVEMENT_CATEGORY_LABELS,
   ACHIEVEMENT_CATEGORY_ORDER,
-  isAchievementCategoryId,
+  resolveAchievementCategoryId,
 } from "@/shared/constants/achievementCategoryMeta";
+import { deriveProgressStatsFromTotalXp } from "@/shared/utils/achievementProgress";
+import { resolveAchievementIconIdFromSlug } from "@/shared/utils/achievementIcons";
 import type { AchievementPublic, UserAchievementView } from "@/shared/types/api";
 import type {
   AchievementCategory,
@@ -33,11 +35,13 @@ const CATEGORY_DEFAULT_ICON: Record<AchievementCategoryId, AchievementItemIconId
 };
 
 export function mapUserProgressStats(payload: UserAchievementsHydration): UserProgressStats {
+  const derived = deriveProgressStatsFromTotalXp(payload.totalXp);
+
   return {
     totalXp: payload.totalXp,
-    level: payload.level ?? 1,
-    currentXp: payload.currentXp ?? payload.totalXp,
-    xpToNextLevel: payload.xpToNextLevel ?? 100,
+    level: payload.level ?? derived.level,
+    currentXp: payload.currentXp ?? derived.currentXp,
+    xpToNextLevel: payload.xpToNextLevel ?? derived.xpToNextLevel,
     description: payload.description ?? DEFAULT_LEVEL_DESCRIPTION,
   };
 }
@@ -46,12 +50,15 @@ function resolveAchievementIconId(
   achievementId: string,
   categoryId: AchievementCategoryId,
 ): AchievementItemIconId {
-  return ACHIEVEMENT_ICON_BY_ID[achievementId] ?? CATEGORY_DEFAULT_ICON[categoryId];
+  return (
+    ACHIEVEMENT_ICON_BY_ID[achievementId] ??
+    CATEGORY_DEFAULT_ICON[categoryId] ??
+    resolveAchievementIconIdFromSlug(achievementId)
+  );
 }
 
 function normalizeCategoryId(category: string): AchievementCategoryId | null {
-  if (isAchievementCategoryId(category)) return category;
-  return null;
+  return resolveAchievementCategoryId(category);
 }
 
 function mapDefinitionToItem(

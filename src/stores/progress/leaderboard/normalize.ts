@@ -1,3 +1,4 @@
+import { deriveAccountLevelFromTotalXp, formatWalletDisplayName } from "@/shared/utils/achievementProgress";
 import type { ProgressLeaderboardApiItem, ProgressLeaderboardApiResponse } from "./types";
 
 function readNumber(value: unknown): number | undefined {
@@ -14,11 +15,6 @@ function readString(value: unknown): string | undefined {
   return undefined;
 }
 
-function readNestedRecord(value: unknown): Record<string, unknown> | null {
-  if (value == null || typeof value !== "object" || Array.isArray(value)) return null;
-  return value as Record<string, unknown>;
-}
-
 function normalizeAddress(value: unknown): `0x${string}` {
   const address = readString(value);
   if (address?.startsWith("0x")) {
@@ -28,38 +24,20 @@ function normalizeAddress(value: unknown): `0x${string}` {
   return "0x0000000000000000000000000000000000000000";
 }
 
-function normalizeLeaderboardItem(raw: unknown, fallbackRank?: number): ProgressLeaderboardApiItem | null {
+function normalizeLeaderboardItem(
+  raw: unknown,
+  fallbackRank?: number,
+): ProgressLeaderboardApiItem | null {
   if (raw == null || typeof raw !== "object") return null;
 
   const record = raw as Record<string, unknown>;
-  const user = readNestedRecord(record.user);
 
   const rank =
     readNumber(record.rank) ??
     readNumber(record.place) ??
     readNumber(record.position) ??
     fallbackRank;
-  const name =
-    readString(record.name) ??
-    readString(record.nickname) ??
-    readString(record.displayName) ??
-    readString(record.username) ??
-    readString(user?.name) ??
-    readString(user?.nickname);
-  const address = normalizeAddress(
-    record.address ??
-      record.walletAddress ??
-      record.wallet ??
-      user?.address ??
-      user?.walletAddress,
-  );
-  const accountLevel =
-    readNumber(record.accountLevel) ??
-    readNumber(record.account_level) ??
-    readNumber(record.level) ??
-    readNumber(user?.level) ??
-    readNumber(user?.accountLevel) ??
-    0;
+  const address = normalizeAddress(record.address ?? record.walletAddress ?? record.wallet);
   const score =
     readNumber(record.score) ??
     readNumber(record.points) ??
@@ -67,8 +45,19 @@ function normalizeLeaderboardItem(raw: unknown, fallbackRank?: number): Progress
     readNumber(record.total_xp) ??
     readNumber(record.xp) ??
     0;
+  const name =
+    readString(record.name) ??
+    readString(record.nickname) ??
+    readString(record.displayName) ??
+    readString(record.username) ??
+    formatWalletDisplayName(address);
+  const accountLevel =
+    readNumber(record.accountLevel) ??
+    readNumber(record.account_level) ??
+    readNumber(record.level) ??
+    deriveAccountLevelFromTotalXp(score);
 
-  if (rank == null || name == null) return null;
+  if (rank == null) return null;
 
   const id = readString(record.id) ?? address ?? `rank-${rank}`;
 
@@ -105,6 +94,7 @@ function extractUserEntry(raw: unknown): unknown {
   const record = raw as Record<string, unknown>;
 
   return (
+    record.caller ??
     record.userEntry ??
     record.user ??
     record.currentUser ??
@@ -114,7 +104,7 @@ function extractUserEntry(raw: unknown): unknown {
   );
 }
 
-/** Normalizes flexible backend shapes into the store contract. */
+/** Normalizes GET /achievements/leaderboard into the store contract. */
 export function normalizeProgressLeaderboardResponse(raw: unknown): ProgressLeaderboardApiResponse {
   const entries = extractLeaderboardEntries(raw)
     .map((item, index) => normalizeLeaderboardItem(item, index + 1))

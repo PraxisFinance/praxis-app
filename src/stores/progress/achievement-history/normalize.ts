@@ -49,6 +49,8 @@ function normalizeHistoryItem(raw: unknown): AchievementHistoryApiItem | null {
   const xpAwarded =
     readNumber(record.xpAwarded) ??
     readNumber(record.xp_awarded) ??
+    readNumber(record.xpAmount) ??
+    readNumber(record.xp_amount) ??
     readNumber(record.xp) ??
     readNumber(record.amount) ??
     0;

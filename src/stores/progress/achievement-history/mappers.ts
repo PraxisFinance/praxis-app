@@ -1,4 +1,5 @@
 import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
+import { resolveAchievementIconIdFromSlug } from "@/shared/utils/achievementIcons";
 import type { AchievementItemIconId } from "@/shared/types/achievements";
 import type {
   AchievementHistoryApiItem,
@@ -17,7 +18,7 @@ export function mapHistoryApiItemToAchievementItem(
 ): AchievementHistoryItem {
   return {
     id: item.id,
-    iconId: ACHIEVEMENT_ICON_BY_ID[item.achievementId] ?? "trophy",
+    iconId: ACHIEVEMENT_ICON_BY_ID[item.achievementId] ?? resolveAchievementIconIdFromSlug(item.achievementId),
     title: item.title,
     description: item.description ?? "",
     xpReward: item.xpAwarded,

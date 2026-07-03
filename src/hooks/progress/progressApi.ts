@@ -13,8 +13,7 @@ import type {
 export const PROGRESS_QUERY_KEYS = {
   achievementsCatalogue: ["achievements-catalogue"] as const,
   achievementsMe: (address: string | undefined) => ["achievements-me", address] as const,
-  achievementsHistory: (address: string | undefined, page: number) =>
-    ["achievements-history", address, page] as const,
+  achievementsHistory: (address: string | undefined) => ["achievements-history", address] as const,
   progressLeaderboard: (address: string | undefined) =>
     ["progress-leaderboard", address] as const,
 } as const;
@@ -46,15 +45,8 @@ export async function fetchUserAchievements(token: string): Promise<UserAchievem
 
 export async function fetchAchievementHistory(
   token: string,
-  page = 1,
-  pageSize = 20,
 ): Promise<AchievementHistoryApiResponse> {
-  const params = new URLSearchParams({
-    page: String(page),
-    pageSize: String(pageSize),
-  });
-
-  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/me/history?${params}`, {
+  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/me/history`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw await parseProgressApiError(res);
@@ -62,8 +54,13 @@ export async function fetchAchievementHistory(
   return normalizeAchievementHistoryResponse(raw);
 }
 
-export async function fetchProgressLeaderboard(token: string): Promise<ProgressLeaderboardHydration> {
-  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/leaderboard`, {
+export async function fetchProgressLeaderboard(
+  token: string,
+  limit = 50,
+): Promise<ProgressLeaderboardHydration> {
+  const params = new URLSearchParams({ limit: String(limit) });
+
+  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/leaderboard?${params}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw await parseProgressApiError(res);
