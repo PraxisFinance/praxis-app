@@ -1,5 +1,8 @@
 import type { AchievementHistoryApiResponse } from "@/stores/progress/achievement-history/types";
 import { normalizeAchievementHistoryResponse } from "@/stores/progress/achievement-history/normalize";
+import type { ProgressLeaderboardHydration } from "@/stores/progress/leaderboard/types";
+import { mapLeaderboardApiResponse } from "@/stores/progress/leaderboard/mappers";
+import { normalizeProgressLeaderboardResponse } from "@/stores/progress/leaderboard/normalize";
 import type {
   AchievementPublic,
   CheckAchievementDto,
@@ -12,7 +15,8 @@ export const PROGRESS_QUERY_KEYS = {
   achievementsMe: (address: string | undefined) => ["achievements-me", address] as const,
   achievementsHistory: (address: string | undefined, page: number) =>
     ["achievements-history", address, page] as const,
-  progressLeaderboard: ["progress-leaderboard"] as const,
+  progressLeaderboard: (address: string | undefined) =>
+    ["progress-leaderboard", address] as const,
 } as const;
 
 export const PROGRESS_BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "";
@@ -56,6 +60,15 @@ export async function fetchAchievementHistory(
   if (!res.ok) throw await parseProgressApiError(res);
   const raw: unknown = await res.json();
   return normalizeAchievementHistoryResponse(raw);
+}
+
+export async function fetchProgressLeaderboard(token: string): Promise<ProgressLeaderboardHydration> {
+  const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements/leaderboard`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw await parseProgressApiError(res);
+  const raw: unknown = await res.json();
+  return mapLeaderboardApiResponse(normalizeProgressLeaderboardResponse(raw));
 }
 
 export async function fetchAchievementCheck(

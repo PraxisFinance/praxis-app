@@ -7,6 +7,21 @@ export interface ProgressLeaderboardEntry {
   score: number;
 }
 
+export interface ProgressLeaderboardApiItem {
+  id: string;
+  rank: number;
+  name: string;
+  address: `0x${string}`;
+  accountLevel: number;
+  score: number;
+}
+
+export interface ProgressLeaderboardApiResponse {
+  entries: ProgressLeaderboardApiItem[];
+  userEntry: ProgressLeaderboardApiItem | null;
+  userRank: number | null;
+}
+
 export interface ProgressLeaderboardHydration {
   entries: ProgressLeaderboardEntry[];
   userEntry: ProgressLeaderboardEntry | null;

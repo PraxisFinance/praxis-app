@@ -1,47 +1,44 @@
 "use client";
 
 import { useEffect } from "react";
-import {
-  LEADERBOARD_TOP_USERS,
-  LEADERBOARD_YOUR_PLACE,
-} from "@/shared/constants/leaderboard";
+import { useQuery } from "@tanstack/react-query";
+import { useAccount } from "wagmi";
+import { useAuth } from "@/hooks/useAuth";
+import { canUseAuthenticatedApi, resolveAuthAddress } from "@/lib/auth/devAuthToken";
+import { fetchProgressLeaderboard, PROGRESS_QUERY_KEYS } from "@/hooks/progress/progressApi";
 import { useProgressStore } from "@/stores/progress/store";
-import type { ProgressLeaderboardEntry } from "@/stores/progress/leaderboard/types";
 
-const MOCK_PROGRESS_LEADERBOARD_ENTRIES: ProgressLeaderboardEntry[] = LEADERBOARD_TOP_USERS.map(
-  (user, index) => ({
-    id: user.id,
-    rank: index + 1,
-    name: user.name,
-    address: `0x${String(index + 1).padStart(40, "0")}` as `0x${string}`,
-    accountLevel: user.accountLevel,
-    score: user.score,
-  }),
-);
-
-const MOCK_PROGRESS_USER_ENTRY: ProgressLeaderboardEntry = {
-  id: LEADERBOARD_YOUR_PLACE.id,
-  rank: LEADERBOARD_YOUR_PLACE.rank,
-  name: LEADERBOARD_YOUR_PLACE.name,
-  address: "0x0000000000000000000000000000000000000000",
-  accountLevel: LEADERBOARD_YOUR_PLACE.accountLevel,
-  score: LEADERBOARD_YOUR_PLACE.score,
-};
-
-/** Temporary mock hydration until the Progress leaderboard API is available. */
 export function useProgressLeaderboardSync() {
+  const { address } = useAccount();
+  const authAddress = resolveAuthAddress(address);
+  const { getToken } = useAuth();
+
   const hydrateLeaderboard = useProgressStore((state) => state.hydrateLeaderboard);
   const setLeaderboardLoading = useProgressStore((state) => state.setLeaderboardLoading);
+  const setLeaderboardError = useProgressStore((state) => state.setLeaderboardError);
+
+  const leaderboardQuery = useQuery({
+    queryKey: PROGRESS_QUERY_KEYS.progressLeaderboard(authAddress),
+    queryFn: async () => {
+      const token = await getToken();
+      return fetchProgressLeaderboard(token);
+    },
+    enabled: canUseAuthenticatedApi(address),
+  });
 
   useEffect(() => {
-    setLeaderboardLoading(true);
+    setLeaderboardLoading(leaderboardQuery.isLoading);
+  }, [leaderboardQuery.isLoading, setLeaderboardLoading]);
 
-    hydrateLeaderboard({
-      entries: MOCK_PROGRESS_LEADERBOARD_ENTRIES,
-      userEntry: MOCK_PROGRESS_USER_ENTRY,
-      userRank: null,
-    });
+  useEffect(() => {
+    setLeaderboardError(leaderboardQuery.error?.message ?? null);
+  }, [leaderboardQuery.error, setLeaderboardError]);
 
-    setLeaderboardLoading(false);
-  }, [hydrateLeaderboard, setLeaderboardLoading]);
+  useEffect(() => {
+    if (leaderboardQuery.data != null) {
+      hydrateLeaderboard(leaderboardQuery.data);
+    }
+  }, [leaderboardQuery.data, hydrateLeaderboard]);
+
+  return { leaderboardQuery };
 }
