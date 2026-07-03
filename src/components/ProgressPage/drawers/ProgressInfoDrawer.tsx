@@ -17,8 +17,7 @@ export function ProgressInfoDrawer({
   paragraphs,
 }: ProgressInfoDrawerProps) {
   return (
-    <DrawerShell open={open} onOpenChange={onOpenChange}>
-      <AppDrawerHeading title={title} variant="plain" />
+    <DrawerShell open={open} onOpenChange={onOpenChange} header={<AppDrawerHeading title={title} variant="plain" />}>
 
       <div className="flex flex-col gap-5">
         {paragraphs.map((paragraph) => (

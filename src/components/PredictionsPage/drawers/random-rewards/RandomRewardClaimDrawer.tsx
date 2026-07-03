@@ -57,12 +57,28 @@ export function RandomRewardClaimDrawer({
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
-        <div className="flex flex-col gap-6">
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={
           <AppDrawerHeading
             title="Claim rewards"
             titleClassName="underline decoration-main-darkPurple underline-offset-4"
           />
+        }
+        footer={
+          <Button
+            variant="primary"
+            size="action"
+            className="h-8 text-white"
+            disabled={isPending}
+            onClick={claim}
+          >
+            {STATUS_LABELS[status] ?? "Claim rewards"}
+          </Button>
+        }
+      >
+        <div className="flex flex-col gap-6">
 
           <div className="rounded-2xl bg-main-grayPurple/80 px-4 py-3">
             <p className="text-main-darkPurple mb-2 text-base font-bold leading-5">{pool.title}</p>
@@ -76,16 +92,6 @@ export function RandomRewardClaimDrawer({
           <p className="text-main-darkPurple text-sm leading-snug">
             Congratulations! You are among the winners — claim your rewards to your wallet.
           </p>
-
-          <Button
-            variant="primary"
-            size="action"
-            className="h-8 text-white"
-            disabled={isPending}
-            onClick={claim}
-          >
-            {STATUS_LABELS[status] ?? "Claim rewards"}
-          </Button>
         </div>
       </DrawerShell>
     </>

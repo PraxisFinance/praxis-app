@@ -37,7 +37,21 @@ export function AchievementCompletedDrawer({
   }
 
   return (
-    <DrawerShell open={open} onOpenChange={onOpenChange}>
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      footer={
+        <Button
+          type="button"
+          variant="primary"
+          size="action"
+          className="text-header-5 h-11 font-medium"
+          onClick={handleShowAchievements}
+        >
+          Show my achievements
+        </Button>
+      }
+    >
       <div className="flex flex-col items-center gap-6">
         <div className="relative h-[132px] w-full max-w-[280px]">
           <Image
@@ -70,16 +84,6 @@ export function AchievementCompletedDrawer({
             />
           </div>
         </div>
-
-        <Button
-          type="button"
-          variant="primary"
-          size="action"
-          className="text-header-5 h-11 font-medium"
-          onClick={handleShowAchievements}
-        >
-          Show my achievements
-        </Button>
       </div>
     </DrawerShell>
   );

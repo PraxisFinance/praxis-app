@@ -8,6 +8,7 @@ import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
   PredictionsDrawerHeaderImage,
+  PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
   PredictionsDrawerTemplate,
 } from "../shared";
@@ -33,27 +34,32 @@ export function FinanceEventHubDrawer({
     event && selectedOutcomeId
       ? (event.outcomes.find((outcome) => outcome.id === selectedOutcomeId) ?? null)
       : null;
-  const resolved = Boolean(event && selectedOutcome);
+
+  if (!event || !selectedOutcome) {
+    return <DrawerShell open={false} onOpenChange={onOpenChange}>{null}</DrawerShell>;
+  }
 
   return (
-    <DrawerShell open={open && resolved} onOpenChange={onOpenChange}>
-      {event && selectedOutcome ? (
-        <FinanceEventHubDrawerBody
-          key={`${event.id}-${selectedOutcome.id}`}
-          event={event}
-          selectedOutcome={selectedOutcome}
-        />
-      ) : null}
-    </DrawerShell>
+    <FinanceEventHubDrawerBody
+      key={`${event.id}-${selectedOutcome.id}`}
+      event={event}
+      selectedOutcome={selectedOutcome}
+      open={open}
+      onOpenChange={onOpenChange}
+    />
   );
 }
 
 function FinanceEventHubDrawerBody({
   event,
   selectedOutcome,
+  open,
+  onOpenChange,
 }: {
   event: FinanceHubEvent;
   selectedOutcome: FinanceHubBinaryOutcome;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = event.isTradingOpen;
@@ -63,7 +69,9 @@ function FinanceEventHubDrawerBody({
   );
 
   return (
-    <PredictionsDrawerTemplate
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
       header={
         <PredictionsDrawerHeader
           trailing={
@@ -71,22 +79,28 @@ function FinanceEventHubDrawerBody({
           }
         />
       }
+      footer={
+        <PredictionsDrawerPlaceButton disabled={!isAvailable} onClick={() => {}} />
+      }
     >
-      <CryptoPredictionDrawerOutcomeCard
-        primaryLine={primaryQuestion}
-        secondaryLine={secondaryMuted}
-        poolPercent={selectedOutcome.poolPercent}
-      />
+      <PredictionsDrawerTemplate>
+        <CryptoPredictionDrawerOutcomeCard
+          primaryLine={primaryQuestion}
+          secondaryLine={secondaryMuted}
+          poolPercent={selectedOutcome.poolPercent}
+        />
 
-      <PredictionsDrawerPredictionForm
-        amount={amount}
-        onAmountChange={setAmount}
-        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-        priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
-        disabled={!isAvailable}
-        unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-        onSubmit={() => {}}
-      />
-    </PredictionsDrawerTemplate>
+        <PredictionsDrawerPredictionForm
+          amount={amount}
+          onAmountChange={setAmount}
+          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+          priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
+          disabled={!isAvailable}
+          unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
+          onSubmit={() => {}}
+          hideAction
+        />
+      </PredictionsDrawerTemplate>
+    </DrawerShell>
   );
 }

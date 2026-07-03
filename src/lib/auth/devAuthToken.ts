@@ -10,7 +10,7 @@ export function getDevAuthToken(): string | null {
   if (!isDevAuthEnabled()) return null;
 
   const fromEnv = process.env.NEXT_PUBLIC_DEV_AUTH_TOKEN?.trim();
-  return fromEnv || DEFAULT_DEV_AUTH_TOKEN;
+  return fromEnv ?? null;
 }
 
 /** Wallet address encoded in the default dev JWT (`sub` claim). */
