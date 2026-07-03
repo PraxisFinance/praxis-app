@@ -1,5 +1,28 @@
 import type { AchievementItemIconId } from "@/shared/types/achievements";
 
+const ACHIEVEMENT_ITEM_ICON_IDS = new Set<AchievementItemIconId>([
+  "dice",
+  "chart",
+  "deposit",
+  "prediction",
+  "profile",
+  "wallet",
+  "yield",
+  "trophy",
+  "invite",
+  "crypto",
+  "esports",
+  "finance",
+  "calendar",
+  "stake",
+  "target",
+  "gift",
+]);
+
+export function isAchievementItemIconId(value: string): value is AchievementItemIconId {
+  return ACHIEVEMENT_ITEM_ICON_IDS.has(value as AchievementItemIconId);
+}
+
 export function resolveAchievementIconIdFromSlug(achievementId: string): AchievementItemIconId {
   const slug = achievementId.toLowerCase();
 

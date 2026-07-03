@@ -7,6 +7,8 @@ export interface AchievementPublic {
   description: string;
   targetValue: number | null;
   xp: number | null; // null = dynamic, shown as "variable" in UI
+  iconUrl?: string | null;
+  iconKey?: string | null;
 }
 
 export interface UserAchievementView extends AchievementPublic {

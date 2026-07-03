@@ -1,5 +1,6 @@
 import type { AchievementHistoryApiResponse } from "@/stores/progress/achievement-history/types";
 import { normalizeAchievementHistoryResponse } from "@/stores/progress/achievement-history/normalize";
+import { normalizeAchievementsCatalogue, normalizeUserAchievementsResponse } from "@/stores/progress/achievements/normalize";
 import type { ProgressLeaderboardHydration } from "@/stores/progress/leaderboard/types";
 import { mapLeaderboardApiResponse } from "@/stores/progress/leaderboard/mappers";
 import { normalizeProgressLeaderboardResponse } from "@/stores/progress/leaderboard/normalize";
@@ -32,7 +33,8 @@ export async function parseProgressApiError(res: Response): Promise<Error> {
 export async function fetchAchievementsCatalogue(): Promise<AchievementPublic[]> {
   const res = await fetch(`${PROGRESS_BACKEND_URL}/achievements`);
   if (!res.ok) throw await parseProgressApiError(res);
-  return res.json() as Promise<AchievementPublic[]>;
+  const raw: unknown = await res.json();
+  return normalizeAchievementsCatalogue(raw);
 }
 
 export async function fetchUserAchievements(token: string): Promise<UserAchievementsResponse> {
@@ -40,7 +42,8 @@ export async function fetchUserAchievements(token: string): Promise<UserAchievem
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw await parseProgressApiError(res);
-  return res.json() as Promise<UserAchievementsResponse>;
+  const raw: unknown = await res.json();
+  return normalizeUserAchievementsResponse(raw);
 }
 
 export async function fetchAchievementHistory(

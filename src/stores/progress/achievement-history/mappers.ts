@@ -1,26 +1,28 @@
-import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
-import { resolveAchievementIconIdFromSlug } from "@/shared/utils/achievementIcons";
-import type { AchievementItemIconId } from "@/shared/types/achievements";
+import { resolveAchievementVisuals } from "@/shared/utils/achievementMedia";
+import type { AchievementPublic } from "@/shared/types/api";
 import type {
   AchievementHistoryApiItem,
   AchievementHistoryApiResponse,
   AchievementHistoryItem,
 } from "./types";
 
-const ACHIEVEMENT_ICON_BY_ID: Record<string, AchievementItemIconId> = Object.fromEntries(
-  ACHIEVEMENT_CATEGORIES_MOCK.flatMap((category) =>
-    category.achievements.map((item) => [item.id, item.iconId]),
-  ),
-) as Record<string, AchievementItemIconId>;
-
 export function mapHistoryApiItemToAchievementItem(
   item: AchievementHistoryApiItem,
+  definition?: AchievementPublic,
 ): AchievementHistoryItem {
+  const { iconId, iconUrl } = resolveAchievementVisuals({
+    achievementId: item.achievementId,
+    category: definition?.category,
+    iconUrl: item.iconUrl ?? definition?.iconUrl,
+    iconKey: item.iconKey ?? definition?.iconKey,
+  });
+
   return {
     id: item.id,
-    iconId: ACHIEVEMENT_ICON_BY_ID[item.achievementId] ?? resolveAchievementIconIdFromSlug(item.achievementId),
+    iconId,
+    iconUrl: iconUrl ?? item.iconUrl ?? definition?.iconUrl,
     title: item.title,
-    description: item.description ?? "",
+    description: item.description ?? definition?.description ?? "",
     xpReward: item.xpAwarded,
     status: "completed",
     completedAt: item.completedAt,
@@ -29,6 +31,11 @@ export function mapHistoryApiItemToAchievementItem(
 
 export function mapHistoryApiResponse(
   response: AchievementHistoryApiResponse,
+  definitions: AchievementPublic[] | null = null,
 ): AchievementHistoryItem[] {
-  return (response.items ?? []).map(mapHistoryApiItemToAchievementItem);
+  const definitionById = new Map((definitions ?? []).map((definition) => [definition.id, definition]));
+
+  return (response.items ?? []).map((item) =>
+    mapHistoryApiItemToAchievementItem(item, definitionById.get(item.achievementId)),
+  );
 }

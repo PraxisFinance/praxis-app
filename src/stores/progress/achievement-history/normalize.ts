@@ -1,4 +1,8 @@
 import type { AchievementHistoryApiItem, AchievementHistoryApiResponse } from "./types";
+import {
+  readAchievementIconKey,
+  readAchievementIconUrl,
+} from "@/shared/utils/achievementMedia";
 
 function readNumber(value: unknown): number | undefined {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -62,6 +66,14 @@ function normalizeHistoryItem(raw: unknown): AchievementHistoryApiItem | null {
     description: readString(record.description) ?? readString(achievement?.description),
     xpAwarded,
     completedAt: completedAt ?? new Date(0).toISOString(),
+    iconUrl:
+      readAchievementIconUrl(record) ??
+      (achievement != null ? readAchievementIconUrl(achievement) : undefined) ??
+      null,
+    iconKey:
+      readAchievementIconKey(record) ??
+      (achievement != null ? readAchievementIconKey(achievement) : undefined) ??
+      null,
   };
 }
 

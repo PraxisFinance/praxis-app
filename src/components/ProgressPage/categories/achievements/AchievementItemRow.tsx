@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-react";
-import { ACHIEVEMENT_ITEM_ICONS } from "@/components/icons/progress/achievements/items";
+import { AchievementItemIcon } from "@/components/ProgressPage/categories/achievements/AchievementItemIcon";
 import { cn } from "@/lib/utils";
 import type { AchievementItem } from "@/shared/types/achievements";
 
@@ -9,12 +9,11 @@ export interface AchievementItemRowProps {
 
 export function AchievementItemRow({ item }: AchievementItemRowProps) {
   const isCompleted = item.status === "completed";
-  const Icon = ACHIEVEMENT_ITEM_ICONS[item.iconId];
 
   return (
     <div className="bg-main-lightGray border border-main-grayPurple flex items-start gap-3 rounded-sm px-3 py-3">
       <span className="bg-main-grayPurple/50 text-main-purple flex size-11 shrink-0 items-center justify-center self-start rounded-sm border border-main-grayPurple">
-        <Icon className="size-6" />
+        <AchievementItemIcon iconId={item.iconId} iconUrl={item.iconUrl} />
       </span>
 
       <div className="flex min-w-0 flex-1 flex-col items-start justify-start gap-0.5 self-start">

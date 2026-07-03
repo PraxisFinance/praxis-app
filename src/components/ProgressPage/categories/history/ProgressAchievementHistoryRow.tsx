@@ -1,4 +1,4 @@
-import { ACHIEVEMENT_ITEM_ICONS } from "@/components/icons/progress/achievements/items";
+import { AchievementItemIcon } from "@/components/ProgressPage/categories/achievements/AchievementItemIcon";
 import { formatHistoryTimestamp } from "@/components/HistoryPage/historyEventFormat";
 import type { AchievementHistoryItem } from "@/stores/progress/achievement-history/types";
 
@@ -7,7 +7,6 @@ export interface ProgressAchievementHistoryRowProps {
 }
 
 export function ProgressAchievementHistoryRow({ item }: ProgressAchievementHistoryRowProps) {
-  const Icon = ACHIEVEMENT_ITEM_ICONS[item.iconId];
   const completedAtMs = Date.parse(item.completedAt);
   const timestamp = Number.isNaN(completedAtMs) ? null : formatHistoryTimestamp(completedAtMs);
 
@@ -24,7 +23,12 @@ export function ProgressAchievementHistoryRow({ item }: ProgressAchievementHisto
 
       <div className="flex min-w-0 items-center gap-2">
         <span className="text-main-purple inline-flex shrink-0" aria-hidden>
-          <Icon className="size-5" />
+          <AchievementItemIcon
+            iconId={item.iconId}
+            iconUrl={item.iconUrl}
+            className="size-5"
+            imageClassName="size-5"
+          />
         </span>
 
         <span className="text-header-6 text-main-darkPurple min-w-0 flex-1 truncate">
