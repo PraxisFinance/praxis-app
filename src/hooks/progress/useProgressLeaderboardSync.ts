@@ -14,15 +14,17 @@ const MOCK_PROGRESS_LEADERBOARD_ENTRIES: ProgressLeaderboardEntry[] = LEADERBOAR
     rank: index + 1,
     name: user.name,
     address: `0x${String(index + 1).padStart(40, "0")}` as `0x${string}`,
+    accountLevel: user.accountLevel,
     score: user.score,
   }),
 );
 
 const MOCK_PROGRESS_USER_ENTRY: ProgressLeaderboardEntry = {
   id: LEADERBOARD_YOUR_PLACE.id,
-  rank: 0,
+  rank: LEADERBOARD_YOUR_PLACE.rank,
   name: LEADERBOARD_YOUR_PLACE.name,
   address: "0x0000000000000000000000000000000000000000",
+  accountLevel: LEADERBOARD_YOUR_PLACE.accountLevel,
   score: LEADERBOARD_YOUR_PLACE.score,
 };
 

@@ -3,6 +3,7 @@ export interface ProgressLeaderboardEntry {
   rank: number;
   name: string;
   address: `0x${string}`;
+  accountLevel: number;
   score: number;
 }
 

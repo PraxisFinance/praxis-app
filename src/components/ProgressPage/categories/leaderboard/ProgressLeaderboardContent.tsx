@@ -1,8 +1,15 @@
 "use client";
 
-import Image from "next/image";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { ProgressLeaderboardUserRow } from "@/components/ProgressPage/categories/leaderboard/ProgressLeaderboardUserRow";
+import {
+  ProgressLeaderboardUserRow,
+  progressLeaderboardLevelColumnClassName,
+  progressLeaderboardNicknameColumnClassName,
+  progressLeaderboardPlaceColumnClassName,
+  progressLeaderboardPointsColumnClassName,
+  progressLeaderboardRowLayoutClassName,
+} from "@/components/ProgressPage/categories/leaderboard/ProgressLeaderboardUserRow";
+import { cn } from "@/lib/utils";
 import type { ProgressLeaderboardEntry } from "@/stores/progress/leaderboard/types";
 
 export interface ProgressLeaderboardContentProps {
@@ -14,50 +21,67 @@ export function ProgressLeaderboardContent({
   entries,
   userEntry,
 }: ProgressLeaderboardContentProps) {
+  const hasRows = userEntry != null || entries.length > 0;
+
   return (
-    <div className="flex min-h-full flex-col gap-5 pb-8">
-      <section className="bg-main-lightGray relative min-h-28 overflow-hidden rounded-lg px-3 py-4 sm:min-h-32 sm:px-4">
-        <Image
-          src="/leaderboard/card-bg.png"
-          alt=""
-          fill
-          className="object-cover object-right"
-          sizes="(max-width: 28rem) 100vw, 28rem"
-          priority
-        />
-        <div className="relative z-10 flex min-w-0 max-w-[65%] flex-col justify-center gap-2">
-          <h1 className="text-main-darkPurple text-2xl font-medium leading-tight sm:text-3xl">
-            Leaderboard
-          </h1>
-          <p className="text-main-darkPurple text-sm leading-snug sm:text-base">
-            Develop your own strategy and compete with other players
-          </p>
-        </div>
-      </section>
+    <section className="flex flex-col gap-3">
+      <SectionHeader className="text-main-darkPurple">Leaderboard</SectionHeader>
 
-      {userEntry != null ? (
-        <section className="flex flex-col gap-3">
-          <SectionHeader className="text-main-darkPurple">Your place</SectionHeader>
-          <ProgressLeaderboardUserRow entry={userEntry} />
-        </section>
-      ) : null}
+      {hasRows ? (
+        <div className="flex flex-col gap-2">
+          <div className={cn(progressLeaderboardRowLayoutClassName, "px-3 py-0")}>
+            <span
+              className={cn(
+                progressLeaderboardPlaceColumnClassName,
+                "text-text-11 text-main-darkPurple/55"
+              )}
+            >
+              Place
+            </span>
+            <span
+              className={cn(
+                progressLeaderboardNicknameColumnClassName,
+                "text-text-11 text-main-darkPurple/55"
+              )}
+            >
+              Nickname
+            </span>
+            <span
+              className={cn(
+                progressLeaderboardLevelColumnClassName,
+                "text-text-11 text-main-darkPurple/55"
+              )}
+            >
+              Account LvL
+            </span>
+            <span
+              className={cn(
+                progressLeaderboardPointsColumnClassName,
+                "text-text-11 text-main-darkPurple/55"
+              )}
+            >
+              Points earned
+            </span>
+          </div>
 
-      <section className="flex flex-col gap-3">
-        <SectionHeader className="text-main-darkPurple">Top users</SectionHeader>
-        {entries.length > 0 ? (
-          <ul className="flex flex-col gap-2.5">
+          <ul className="flex flex-col gap-2">
+            {userEntry != null ? (
+              <li>
+                <ProgressLeaderboardUserRow entry={userEntry} isCurrentUser />
+              </li>
+            ) : null}
             {entries.map((entry) => (
               <li key={entry.id}>
                 <ProgressLeaderboardUserRow entry={entry} />
               </li>
             ))}
           </ul>
-        ) : (
-          <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-            No leaderboard entries yet.
-          </p>
-        )}
-      </section>
-    </div>
+        </div>
+      ) : (
+        <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
+          No leaderboard entries yet.
+        </p>
+      )}
+    </section>
   );
 }
