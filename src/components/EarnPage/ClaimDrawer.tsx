@@ -104,12 +104,33 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
-        <AppDrawerHeading
-          variant="plain"
-          title="Claim your deposit from ended vault"
-          description="Withdraw your cryptocurrency from ended pool."
-        />
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={
+          <AppDrawerHeading
+            variant="plain"
+            title="Claim your deposit from ended vault"
+            description="Withdraw your cryptocurrency from ended pool."
+          />
+        }
+        footer={
+          isSuccess ? (
+            <Button variant="success" size="action" onClick={handleClose}>
+              {buttonLabel}
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              size="action"
+              onClick={() => void handleClaim()}
+              disabled={isPending || !canSubmit}
+            >
+              {buttonLabel}
+            </Button>
+          )
+        }
+      >
 
         <div className="flex flex-col gap-3">
           <InfoRow
@@ -167,21 +188,6 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
             </p>
           </div>
         </div>
-
-        {isSuccess ? (
-          <Button variant="success" size="action" onClick={handleClose}>
-            {buttonLabel}
-          </Button>
-        ) : (
-          <Button
-            variant="success"
-            size="action"
-            onClick={() => void handleClaim()}
-            disabled={isPending || !canSubmit}
-          >
-            {buttonLabel}
-          </Button>
-        )}
       </DrawerShell>
     </>
   );

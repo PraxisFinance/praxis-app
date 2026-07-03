@@ -10,6 +10,7 @@ import { DEFAULT_HISTORY_PAGE_SIZE } from "./types";
 
 export const ACHIEVEMENT_HISTORY_INITIAL_STATE: AchievementHistorySliceState = {
   items: [],
+  historySource: null,
   page: 1,
   pageSize: DEFAULT_HISTORY_PAGE_SIZE,
   total: null,
@@ -30,10 +31,11 @@ export const createAchievementHistoryActions: StateCreator<
     | "setHistoryError"
     | "resetAchievementHistory"
   >
-> = (set) => ({
+> = (set, get) => ({
   hydrateHistory: (payload: AchievementHistoryApiResponse) =>
     set({
-      items: mapHistoryApiResponse(payload),
+      historySource: payload,
+      items: mapHistoryApiResponse(payload, get().definitions),
       page: payload.page ?? 1,
       pageSize: payload.pageSize ?? DEFAULT_HISTORY_PAGE_SIZE,
       total: payload.total ?? null,

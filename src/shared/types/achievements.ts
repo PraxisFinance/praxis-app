@@ -30,6 +30,8 @@ export type AchievementCategoryId =
 export interface AchievementItem {
   id: string;
   iconId: AchievementItemIconId;
+  /** Remote icon from the achievements API when available. */
+  iconUrl?: string | null;
   title: string;
   description: string;
   xpReward: number;

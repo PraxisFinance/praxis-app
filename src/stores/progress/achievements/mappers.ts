@@ -1,57 +1,36 @@
-import { ACHIEVEMENT_CATEGORIES_MOCK } from "@/shared/constants/achievements";
-import {
-  ACHIEVEMENT_CATEGORY_LABELS,
-  ACHIEVEMENT_CATEGORY_ORDER,
-  isAchievementCategoryId,
-} from "@/shared/constants/achievementCategoryMeta";
-import type { AchievementPublic, UserAchievementView } from "@/shared/types/api";
+import { resolveAchievementVisuals } from "@/shared/utils/achievementMedia";
+import type { AchievementPublic } from "@/shared/types/api";
 import type {
   AchievementCategory,
   AchievementCategoryId,
   AchievementItem,
-  AchievementItemIconId,
 } from "@/shared/types/achievements";
+import {
+  ACHIEVEMENT_CATEGORY_LABELS,
+  ACHIEVEMENT_CATEGORY_ORDER,
+  resolveAchievementCategoryId,
+} from "@/shared/constants/achievementCategoryMeta";
+import { deriveProgressStatsFromTotalXp } from "@/shared/utils/achievementProgress";
+import type { UserAchievementView } from "@/shared/types/api";
 import type { UserAchievementsHydration, UserProgressStats } from "./types";
 
 const DEFAULT_LEVEL_DESCRIPTION =
   "Upgrade your account and receive bonuses when you use the app.";
 
-const ACHIEVEMENT_ICON_BY_ID: Record<string, AchievementItemIconId> = Object.fromEntries(
-  ACHIEVEMENT_CATEGORIES_MOCK.flatMap((category) =>
-    category.achievements.map((item) => [item.id, item.iconId]),
-  ),
-) as Record<string, AchievementItemIconId>;
-
-const CATEGORY_DEFAULT_ICON: Record<AchievementCategoryId, AchievementItemIconId> = {
-  "core-flow": "deposit",
-  referal: "invite",
-  "market-coverage": "chart",
-  activity: "calendar",
-  "yield-predictions": "stake",
-  perfomance: "target",
-  bonus: "gift",
-};
-
 export function mapUserProgressStats(payload: UserAchievementsHydration): UserProgressStats {
+  const derived = deriveProgressStatsFromTotalXp(payload.totalXp);
+
   return {
     totalXp: payload.totalXp,
-    level: payload.level ?? 1,
-    currentXp: payload.currentXp ?? payload.totalXp,
-    xpToNextLevel: payload.xpToNextLevel ?? 100,
+    level: payload.level ?? derived.level,
+    currentXp: payload.currentXp ?? derived.currentXp,
+    xpToNextLevel: payload.xpToNextLevel ?? derived.xpToNextLevel,
     description: payload.description ?? DEFAULT_LEVEL_DESCRIPTION,
   };
 }
 
-function resolveAchievementIconId(
-  achievementId: string,
-  categoryId: AchievementCategoryId,
-): AchievementItemIconId {
-  return ACHIEVEMENT_ICON_BY_ID[achievementId] ?? CATEGORY_DEFAULT_ICON[categoryId];
-}
-
 function normalizeCategoryId(category: string): AchievementCategoryId | null {
-  if (isAchievementCategoryId(category)) return category;
-  return null;
+  return resolveAchievementCategoryId(category);
 }
 
 function mapDefinitionToItem(
@@ -59,15 +38,24 @@ function mapDefinitionToItem(
   categoryId: AchievementCategoryId,
   userView: UserAchievementView | undefined,
 ): AchievementItem {
-  const iconId = resolveAchievementIconId(definition.id, categoryId);
+  const { iconId, iconUrl } = resolveAchievementVisuals({
+    achievementId: definition.id,
+    category: definition.category,
+    iconUrl: definition.iconUrl,
+    iconKey: definition.iconKey,
+  });
   const baseXp = definition.xp ?? 0;
+  const baseItem = {
+    iconId,
+    iconUrl: iconUrl ?? definition.iconUrl,
+    title: definition.title,
+    description: definition.description,
+  };
 
   if (userView == null) {
     return {
       id: definition.id,
-      iconId,
-      title: definition.title,
-      description: definition.description,
+      ...baseItem,
       xpReward: baseXp,
       status: "locked",
     };
@@ -76,9 +64,7 @@ function mapDefinitionToItem(
   if (userView.status === "completed") {
     return {
       id: definition.id,
-      iconId,
-      title: definition.title,
-      description: definition.description,
+      ...baseItem,
       xpReward: userView.xpAwarded > 0 ? userView.xpAwarded : baseXp,
       status: "completed",
     };
@@ -86,9 +72,7 @@ function mapDefinitionToItem(
 
   const item: AchievementItem = {
     id: definition.id,
-    iconId,
-    title: definition.title,
-    description: definition.description,
+    ...baseItem,
     xpReward: baseXp,
     status: "in_progress",
   };

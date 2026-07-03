@@ -20,6 +20,7 @@ export { selectAchievementHistoryItems } from "./achievement-history/selectors";
 
 export type {
   LeaderboardSlice,
+  ProgressLeaderboardApiResponse,
   ProgressLeaderboardEntry,
   ProgressLeaderboardHydration,
 } from "./leaderboard/types";

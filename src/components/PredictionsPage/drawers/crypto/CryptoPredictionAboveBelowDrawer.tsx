@@ -9,6 +9,7 @@ import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
+  PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
   PredictionsDrawerTemplate,
 } from "../shared";
@@ -38,20 +39,20 @@ export function CryptoPredictionAboveBelowDrawer({
     prediction && parsed
       ? (prediction.strikes.find((row) => row.id === parsed.strikeId) ?? null)
       : null;
-  const resolved = Boolean(prediction && parsed && strike);
+
+  if (!prediction || !parsed || !strike) {
+    return <DrawerShell open={false} onOpenChange={onOpenChange}>{null}</DrawerShell>;
+  }
 
   return (
-    <DrawerShell open={open && resolved} onOpenChange={onOpenChange}>
-      {prediction && parsed && strike ? (
-        <CryptoPredictionAboveBelowDrawerBody
-          key={`${prediction.id}-${selectedOutcomeId}`}
-          prediction={prediction}
-          strike={strike}
-          side={parsed.side}
-          onClose={() => onOpenChange(false)}
-        />
-      ) : null}
-    </DrawerShell>
+    <CryptoPredictionAboveBelowDrawerBody
+      key={`${prediction.id}-${selectedOutcomeId}`}
+      prediction={prediction}
+      strike={strike}
+      side={parsed.side}
+      open={open}
+      onOpenChange={onOpenChange}
+    />
   );
 }
 
@@ -59,12 +60,14 @@ function CryptoPredictionAboveBelowDrawerBody({
   prediction,
   strike,
   side,
-  onClose,
+  open,
+  onOpenChange,
 }: {
   prediction: CryptoPredictionAboveBelow;
   strike: NonNullable<CryptoPredictionAboveBelow["strikes"][number]>;
   side: "yes" | "no";
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = prediction.isTradingOpen;
@@ -97,7 +100,7 @@ function CryptoPredictionAboveBelowDrawerBody({
 
   function handleSuccessClose() {
     resetBet();
-    onClose();
+    onOpenChange(false);
   }
 
   return (
@@ -118,31 +121,43 @@ function CryptoPredictionAboveBelowDrawerBody({
         closeLabel="Done"
       />
 
-      <PredictionsDrawerTemplate
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
         header={
           <PredictionsDrawerHeader
             trailing={<CryptoPredictionDrawerIcon iconUrl={prediction.iconUrl} />}
           />
         }
+        footer={
+          <PredictionsDrawerPlaceButton
+            disabled={disabled}
+            onClick={() => void placeBet()}
+            label={buttonLabel}
+          />
+        }
       >
-        <CryptoPredictionDrawerOutcomeCard
-          primaryLine={primaryQuestion}
-          secondaryLine={secondaryMuted}
-          poolPercent={selectedPoolPercent}
-        />
+        <PredictionsDrawerTemplate>
+          <CryptoPredictionDrawerOutcomeCard
+            primaryLine={primaryQuestion}
+            secondaryLine={secondaryMuted}
+            poolPercent={selectedPoolPercent}
+          />
 
-        <PredictionsDrawerPredictionForm
-          amount={amount}
-          onAmountChange={setAmount}
-          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-          priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
-          disabled={disabled}
-          unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-          errorMessage={betError}
-          buttonLabel={buttonLabel}
-          onSubmit={() => void placeBet()}
-        />
-      </PredictionsDrawerTemplate>
+          <PredictionsDrawerPredictionForm
+            amount={amount}
+            onAmountChange={setAmount}
+            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
+            disabled={disabled}
+            unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
+            errorMessage={betError}
+            buttonLabel={buttonLabel}
+            onSubmit={() => void placeBet()}
+            hideAction
+          />
+        </PredictionsDrawerTemplate>
+      </DrawerShell>
     </>
   );
 }

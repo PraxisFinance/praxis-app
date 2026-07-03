@@ -35,7 +35,7 @@ export function applyAchievementCheckResult(
   useProgressStore.getState().patchFromCheckResult(result);
 
   void queryClient.invalidateQueries({
-    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(address, useProgressStore.getState().page),
+    queryKey: PROGRESS_QUERY_KEYS.achievementsHistory(address),
   });
 }
 

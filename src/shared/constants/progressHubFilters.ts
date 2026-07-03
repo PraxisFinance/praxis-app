@@ -1,7 +1,7 @@
 export const PROGRESS_HUB_CATEGORY_FILTERS = [
   { id: "achievements", label: "Achievements", title: "Achievements" },
   { id: "leaderboard", label: "Leaderboard", title: null },
-  { id: "achievement-history", label: "History", title: "Achievements history" },
+  { id: "achievement-history", label: "History", title: "Actions history" },
   { id: "quests", label: "Quests", title: "Quests", disabled: true },
 ] as const;
 

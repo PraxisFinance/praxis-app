@@ -1,9 +1,12 @@
 "use client";
 
+import { AchievementsCommonStats } from "@/components/ProgressPage/categories/achievements/AchievementsCommonStats";
 import { ProgressLeaderboardContent } from "@/components/ProgressPage/categories/leaderboard/ProgressLeaderboardContent";
 import { useProgressStore } from "@/stores/progress/store";
+import { selectUserProgressStats } from "@/stores/progress/achievements/selectors";
 
 export function ProgressLeaderboardPanel() {
+  const stats = useProgressStore(selectUserProgressStats);
   const entries = useProgressStore((state) => state.entries);
   const userEntry = useProgressStore((state) => state.userEntry);
   const loading = useProgressStore((state) => state.loading);
@@ -23,5 +26,18 @@ export function ProgressLeaderboardPanel() {
     );
   }
 
-  return <ProgressLeaderboardContent entries={entries} userEntry={userEntry} />;
+  return (
+    <div className="flex flex-col gap-4">
+      {stats != null ? (
+        <AchievementsCommonStats
+          level={stats.level}
+          currentXp={stats.currentXp}
+          xpToNextLevel={stats.xpToNextLevel}
+          description={stats.description ?? ""}
+        />
+      ) : null}
+
+      <ProgressLeaderboardContent entries={entries} userEntry={userEntry} />
+    </div>
+  );
 }

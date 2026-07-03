@@ -16,6 +16,8 @@ export interface AchievementHistoryApiItem {
   description?: string;
   xpAwarded: number;
   completedAt: string;
+  iconUrl?: string | null;
+  iconKey?: string | null;
 }
 
 export interface AchievementHistoryItem extends AchievementItem {
@@ -24,6 +26,7 @@ export interface AchievementHistoryItem extends AchievementItem {
 
 export interface AchievementHistorySliceState {
   items: AchievementHistoryItem[];
+  historySource: AchievementHistoryApiResponse | null;
   page: number;
   pageSize: number;
   total: number | null;

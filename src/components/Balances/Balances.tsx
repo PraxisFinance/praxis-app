@@ -75,8 +75,7 @@ export function Balances() {
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={setOpen}>
-        <AppDrawerHeading title="About balance" />
+      <DrawerShell open={open} onOpenChange={setOpen} header={<AppDrawerHeading title="About balance" />}>
 
         <div className="flex flex-col gap-5">
           {BALANCE_INFO.map((item) => (

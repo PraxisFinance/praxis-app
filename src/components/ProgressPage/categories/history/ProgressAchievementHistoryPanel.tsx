@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { AchievementItemRow } from "@/components/ProgressPage/categories/achievements/AchievementItemRow";
+import { ProgressAchievementHistoryRow } from "@/components/ProgressPage/categories/history/ProgressAchievementHistoryRow";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { SectionHeader } from "@/components/ui/SectionHeader";
 import { useStableNowMs } from "@/hooks/useStableNowMs";
 import { selectAchievementHistoryItems } from "@/stores/progress/achievement-history/selectors";
 import { useProgressStore } from "@/stores/progress/store";
@@ -24,6 +25,7 @@ export function ProgressAchievementHistoryPanel() {
   return (
     <div className="flex min-h-full flex-col gap-4 pb-8">
       <div className="flex items-center justify-between gap-2">
+        <SectionHeader className="text-main-darkPurple">Actions history</SectionHeader>
         <FilterDropdown
           options={HISTORY_TIME_FILTER_OPTIONS}
           value={timeFilter}
@@ -35,7 +37,7 @@ export function ProgressAchievementHistoryPanel() {
 
       {loading ? (
         <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-          Loading achievements history…
+          Loading actions history…
         </p>
       ) : null}
 
@@ -46,10 +48,12 @@ export function ProgressAchievementHistoryPanel() {
       {!loading && error == null ? (
         <div className="flex flex-col gap-2">
           {visibleAchievements.length > 0 ? (
-            visibleAchievements.map((item) => <AchievementItemRow key={item.id} item={item} />)
+            visibleAchievements.map((item) => (
+              <ProgressAchievementHistoryRow key={item.id} item={item} />
+            ))
           ) : (
             <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-              No achievements in this period.
+              No actions in this period.
             </p>
           )}
         </div>
