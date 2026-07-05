@@ -2,8 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { createPublicClient, http, toCoinType } from "viem";
-import { mainnet } from "viem/chains";
-import { base } from "viem/chains";
+import { mainnet, base, baseSepolia } from "viem/chains";
 import { useAccount } from "wagmi";
 
 const mainnetClient = createPublicClient({
@@ -11,12 +10,35 @@ const mainnetClient = createPublicClient({
   transport: http(),
 });
 
-async function fetchBaseName(address: `0x${string}`) {
-  const name = await mainnetClient.getEnsName({
-    address,
-    coinType: toCoinType(base.id),
-  });
-  return name;
+const baseClient = createPublicClient({
+  chain: base,
+  transport: http(),
+});
+
+const baseSepoliaClient = createPublicClient({
+  chain: baseSepolia,
+  transport: http(),
+});
+
+/**
+ * Basenames (.base.eth) store their reverse records on Base L2 directly.
+ * We try each chain in order and return the first match:
+ *   1. Base mainnet  – direct L2 reverse lookup (Basenames)
+ *   2. Base Sepolia  – same, for testnet names
+ *   3. Mainnet ENSIP-19 – cross-chain reverse via CCIP-Read + coinType
+ */
+async function fetchBaseName(address: `0x${string}`): Promise<string | null> {
+  const [baseL2Name, baseSepoliaName, ensip19Name] = await Promise.allSettled([
+    baseClient.getEnsName({ address }),
+    baseSepoliaClient.getEnsName({ address }),
+    mainnetClient.getEnsName({ address, coinType: toCoinType(base.id) }),
+  ]);
+
+  if (baseL2Name.status === "fulfilled" && baseL2Name.value) return baseL2Name.value;
+  if (baseSepoliaName.status === "fulfilled" && baseSepoliaName.value) return baseSepoliaName.value;
+  if (ensip19Name.status === "fulfilled" && ensip19Name.value) return ensip19Name.value;
+
+  return null;
 }
 
 export function useBaseName() {
