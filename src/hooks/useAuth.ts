@@ -65,12 +65,9 @@ export function useAuth() {
   const { signMessageAsync } = useSignMessage();
 
   const getToken = useCallback(async (): Promise<string> => {
-<<<<<<< HEAD
     if (FAKE_JWT) return FAKE_JWT;
-=======
     const devToken = getDevAuthToken();
     if (devToken) return devToken;
->>>>>>> dev
 
     if (!address) throw new Error("Wallet not connected");
 
