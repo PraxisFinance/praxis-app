@@ -1,42 +1,58 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { createPublicClient, http, toCoinType } from "viem";
+import { createPublicClient, http } from "viem";
 import { mainnet, base, baseSepolia } from "viem/chains";
 import { useAccount } from "wagmi";
 
-const mainnetClient = createPublicClient({
-  chain: mainnet,
-  transport: http(),
-});
+// ENSIP-19 L2 Reverse Registrar — deployed by ENS at the same address on every
+// supported L2 (Base, Optimism, Arbitrum, Linea, Scroll).
+// viem's getEnsName() silently returns null on Base because the `base` chain
+// definition in viem/chains has no ensUniversalResolver configured.
+// We bypass that by calling nameForAddr() on this contract directly.
+const ENSIP19_L2_REVERSE = "0x0000000000D8e504002cC26E3Ec46D81971C1664" as const;
 
-const baseClient = createPublicClient({
-  chain: base,
-  transport: http(),
-});
+const ENSIP19_ABI = [
+  {
+    name: "nameForAddr",
+    type: "function",
+    stateMutability: "view",
+    inputs: [{ name: "addr", type: "address" }],
+    outputs: [{ name: "name", type: "string" }],
+  },
+] as const;
 
-const baseSepoliaClient = createPublicClient({
-  chain: baseSepolia,
-  transport: http(),
-});
+const mainnetClient = createPublicClient({ chain: mainnet, transport: http() });
+const baseClient = createPublicClient({ chain: base, transport: http() });
+const baseSepoliaClient = createPublicClient({ chain: baseSepolia, transport: http() });
 
 /**
- * Basenames (.base.eth) store their reverse records on Base L2 directly.
- * We try each chain in order and return the first match:
- *   1. Base mainnet  – direct L2 reverse lookup (Basenames)
- *   2. Base Sepolia  – same, for testnet names
- *   3. Mainnet ENSIP-19 – cross-chain reverse via CCIP-Read + coinType
+ * Resolves a Basename (.base.eth) or ENS name for an address.
+ * Priority:
+ *   1. Base mainnet  — ENSIP-19 L2 Reverse Registrar (nameForAddr)
+ *   2. Base Sepolia  — same contract, testnet
+ *   3. Mainnet ENS   — fallback for plain .eth names
  */
 async function fetchBaseName(address: `0x${string}`): Promise<string | null> {
-  const [baseL2Name, baseSepoliaName, ensip19Name] = await Promise.allSettled([
-    baseClient.getEnsName({ address }),
-    baseSepoliaClient.getEnsName({ address }),
-    mainnetClient.getEnsName({ address, coinType: toCoinType(base.id) }),
+  const [baseL2Name, baseSepoliaName, mainnetName] = await Promise.allSettled([
+    baseClient.readContract({
+      address: ENSIP19_L2_REVERSE,
+      abi: ENSIP19_ABI,
+      functionName: "nameForAddr",
+      args: [address],
+    }),
+    baseSepoliaClient.readContract({
+      address: ENSIP19_L2_REVERSE,
+      abi: ENSIP19_ABI,
+      functionName: "nameForAddr",
+      args: [address],
+    }),
+    mainnetClient.getEnsName({ address }),
   ]);
 
   if (baseL2Name.status === "fulfilled" && baseL2Name.value) return baseL2Name.value;
   if (baseSepoliaName.status === "fulfilled" && baseSepoliaName.value) return baseSepoliaName.value;
-  if (ensip19Name.status === "fulfilled" && ensip19Name.value) return ensip19Name.value;
+  if (mainnetName.status === "fulfilled" && mainnetName.value) return mainnetName.value;
 
   return null;
 }
