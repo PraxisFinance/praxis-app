@@ -15,6 +15,7 @@ import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
+  PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
   PredictionsDrawerTemplate,
 } from "../shared";
@@ -51,30 +52,32 @@ export function CryptoPredictionDrawer({
     binary && selectedOutcomeId
       ? (binary.outcomes.find((o) => o.id === selectedOutcomeId) ?? null)
       : null;
-  const resolved = Boolean(binary && selectedOutcome);
+
+  if (!binary || !selectedOutcome) {
+    return <DrawerShell open={false} onOpenChange={onOpenChange}>{null}</DrawerShell>;
+  }
 
   return (
-    <DrawerShell open={open && resolved} onOpenChange={onOpenChange}>
-      {binary && selectedOutcome ? (
-        <CryptoPredictionDrawerBody
-          key={`${binary.id}-${selectedOutcome.id}`}
-          prediction={binary}
-          selectedOutcome={selectedOutcome}
-          onClose={() => onOpenChange(false)}
-        />
-      ) : null}
-    </DrawerShell>
+    <CryptoPredictionDrawerBody
+      key={`${binary.id}-${selectedOutcome.id}`}
+      prediction={binary}
+      selectedOutcome={selectedOutcome}
+      open={open}
+      onOpenChange={onOpenChange}
+    />
   );
 }
 
 function CryptoPredictionDrawerBody({
   prediction,
   selectedOutcome,
-  onClose,
+  open,
+  onOpenChange,
 }: {
   prediction: BinaryCryptoPrediction;
   selectedOutcome: PredictionOutcome;
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
   const isAvailable = prediction.isTradingOpen;
@@ -104,7 +107,7 @@ function CryptoPredictionDrawerBody({
 
   function handleSuccessClose() {
     resetBet();
-    onClose();
+    onOpenChange(false);
   }
 
   return (
@@ -125,31 +128,43 @@ function CryptoPredictionDrawerBody({
         closeLabel="Done"
       />
 
-      <PredictionsDrawerTemplate
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
         header={
           <PredictionsDrawerHeader
             trailing={<CryptoPredictionDrawerIcon iconUrl={prediction.iconUrl} />}
           />
         }
+        footer={
+          <PredictionsDrawerPlaceButton
+            disabled={disabled}
+            onClick={() => void placeBet()}
+            label={buttonLabel}
+          />
+        }
       >
-        <CryptoPredictionDrawerOutcomeCard
-          primaryLine={primaryQuestion}
-          secondaryLine={secondaryMuted}
-          poolPercent={selectedOutcome.poolPercent}
-        />
+        <PredictionsDrawerTemplate>
+          <CryptoPredictionDrawerOutcomeCard
+            primaryLine={primaryQuestion}
+            secondaryLine={secondaryMuted}
+            poolPercent={selectedOutcome.poolPercent}
+          />
 
-        <PredictionsDrawerPredictionForm
-          amount={amount}
-          onAmountChange={setAmount}
-          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-          priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
-          disabled={disabled}
-          unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-          errorMessage={betError}
-          buttonLabel={buttonLabel}
-          onSubmit={() => void placeBet()}
-        />
-      </PredictionsDrawerTemplate>
+          <PredictionsDrawerPredictionForm
+            amount={amount}
+            onAmountChange={setAmount}
+            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
+            disabled={disabled}
+            unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
+            errorMessage={betError}
+            buttonLabel={buttonLabel}
+            onSubmit={() => void placeBet()}
+            hideAction
+          />
+        </PredictionsDrawerTemplate>
+      </DrawerShell>
     </>
   );
 }

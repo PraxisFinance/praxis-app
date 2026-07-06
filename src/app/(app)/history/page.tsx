@@ -1,5 +1,5 @@
-import { HistoryPage } from "@/components/HistoryPage";
 import { HistoryBoot } from "@/components/HistoryBoot";
+import { HistoryPage } from "@/components/HistoryPage";
 
 export default function Page() {
   return (

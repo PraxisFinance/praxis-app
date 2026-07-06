@@ -21,6 +21,7 @@ export function MainMenu() {
             redirectUrl={item.redirectUrl}
             redirectLabel={item.redirectLabel}
             hubCategoryId={item.hubCategoryId}
+            progressHubCategoryId={item.progressHubCategoryId}
           />
         ))}
 
@@ -34,6 +35,7 @@ export function MainMenu() {
               redirectUrl={item.redirectUrl}
               redirectLabel={item.redirectLabel}
               hubCategoryId={item.hubCategoryId}
+            progressHubCategoryId={item.progressHubCategoryId}
             />
           ))}
         </div>

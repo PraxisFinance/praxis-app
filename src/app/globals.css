@@ -5,14 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Custom font sizes */
+  /* Legacy font-size aliases (prefer text-header-*, text-num-*, text-text-* — see docs/typography.md) */
   --text-3xs: 0.5rem; /* 8px  — Text 9/10 */
   --text-2xs: 0.625rem; /* 10px — Header 7, Numbers 5, Text 7/8 */
-  --text-h2: 1.5625rem; /* 25px — Header 2 */
   --text-h1: 2.1875rem; /* 35px — Header 1 */
+  --text-h2: 1.5625rem; /* 25px — Header 2 */
   --text-num1: 2.8125rem; /* 45px — Numbers 1 */
 
-  /* Brand palette */
+  --font-sans: "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --color-main-darkPurple: #2d274b;
   --color-main-purple: #9787f4;
   --color-main-lightPurple: #d4cbff;
@@ -28,7 +28,6 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -66,6 +65,145 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* Typography presets — Helvetica Now Display (docs/typography.md) */
+
+@utility text-header-1 {
+  font-size: 2.1875rem;
+  line-height: 2.625rem;
+  font-weight: 500;
+}
+
+@utility text-header-2 {
+  font-size: 1.5625rem;
+  line-height: 1.875rem;
+  font-weight: 500;
+}
+
+@utility text-header-3 {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+}
+
+@utility text-header-4 {
+  font-size: 1.125rem;
+  line-height: 1.375rem;
+  font-weight: 500;
+}
+
+@utility text-header-5 {
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+}
+
+@utility text-header-6 {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+}
+
+@utility text-header-7 {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  font-weight: 500;
+}
+
+@utility text-num-1 {
+  font-size: 2.8125rem;
+  line-height: 3.125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-num-2 {
+  font-size: 1.25rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-num-3 {
+  font-size: 0.875rem;
+  line-height: 1.125rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-num-4 {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-num-5 {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+@utility text-text-1 {
+  font-size: 1rem;
+  line-height: 1.375rem;
+  font-weight: 400;
+}
+
+@utility text-text-2 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+@utility text-text-3 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+@utility text-text-5 {
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  font-weight: 400;
+}
+
+@utility text-text-6 {
+  font-size: 0.75rem;
+  line-height: 1.125rem;
+  font-weight: 400;
+}
+
+@utility text-text-7 {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  font-weight: 400;
+}
+
+@utility text-text-8 {
+  font-size: 0.625rem;
+  line-height: 0.875rem;
+  font-weight: 400;
+}
+
+@utility text-text-9 {
+  font-size: 0.5rem;
+  line-height: 0.75rem;
+  font-weight: 400;
+}
+
+@utility text-text-10 {
+  font-size: 0.5rem;
+  line-height: 0.75rem;
+  font-weight: 400;
+}
+
+@utility text-text-11 {
+  font-size: 0.4375rem;
+  line-height: 0.75rem;
+  font-weight: 400;
 }
 
 html,

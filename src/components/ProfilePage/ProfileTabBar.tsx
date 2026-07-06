@@ -36,7 +36,7 @@ export function ProfileTabBar() {
                 : "bg-main-lightGray text-main-darkPurple hover:bg-main-grayPurple"
             )}
           >
-            <tab.icon />
+            <tab.icon size={24} />
             {tab.label}
           </Link>
         );

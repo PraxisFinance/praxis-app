@@ -77,9 +77,23 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={<AppDrawerHeading title="Make a prediction" titleClassName="decoration-main-darkPurple" />}
+        footer={
+          <Button
+            variant="primary"
+            size="action"
+            className="h-8 text-white"
+            disabled={!canDeposit}
+            onClick={deposit}
+          >
+            {STATUS_LABELS[status] ?? "Place deposit"}
+          </Button>
+        }
+      >
         <div className="flex flex-col gap-6">
-          <AppDrawerHeading title="Make a prediction" titleClassName="decoration-main-darkPurple" />
 
           <div className="rounded-2xl bg-main-grayPurple/80 px-4 py-3">
             <p className="text-main-darkPurple mb-2 text-base font-bold leading-5">{pool.title}</p>
@@ -101,16 +115,6 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
               placeholder="Deposit amount"
             />
           </div>
-
-          <Button
-            variant="primary"
-            size="action"
-            className="h-8 text-white"
-            disabled={!canDeposit}
-            onClick={deposit}
-          >
-            {STATUS_LABELS[status] ?? "Place deposit"}
-          </Button>
         </div>
       </DrawerShell>
     </>

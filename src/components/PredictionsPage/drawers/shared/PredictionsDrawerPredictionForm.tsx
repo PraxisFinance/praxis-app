@@ -15,6 +15,8 @@ interface PredictionsDrawerPredictionFormProps {
   errorMessage?: string | null;
   buttonLabel?: string;
   onSubmit: () => void;
+  /** When true, the action button is omitted (render it in DrawerShell footer). */
+  hideAction?: boolean;
 }
 
 export function PredictionsDrawerPredictionForm({
@@ -27,6 +29,7 @@ export function PredictionsDrawerPredictionForm({
   errorMessage,
   buttonLabel,
   onSubmit,
+  hideAction = false,
 }: PredictionsDrawerPredictionFormProps) {
   return (
     <div className="flex flex-col gap-4">
@@ -52,7 +55,9 @@ export function PredictionsDrawerPredictionForm({
         </p>
       ) : null}
 
-      <PredictionsDrawerPlaceButton disabled={disabled} onClick={onSubmit} label={buttonLabel} />
+      {!hideAction ? (
+        <PredictionsDrawerPlaceButton disabled={disabled} onClick={onSubmit} label={buttonLabel} />
+      ) : null}
     </div>
   );
 }

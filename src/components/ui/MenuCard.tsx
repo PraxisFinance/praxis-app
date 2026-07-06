@@ -6,8 +6,9 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { Badge } from "@/components/ui/badge";
 import { ArrowIcon } from "@/components/ui";
-import { buildPredictionsHubRoute } from "@/lib/routes";
+import { buildPredictionsHubRoute, buildProgressHubRoute } from "@/lib/routes";
 import type { PredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
+import type { ProgressHubCategoryId } from "@/shared/constants/progressHubFilters";
 import { cn } from "@/lib/utils";
 
 const menuCardVariants = cva(
@@ -44,13 +45,16 @@ interface MenuCardProps extends VariantProps<typeof menuCardVariants> {
   redirectUrl?: string;
   redirectLabel?: string;
   hubCategoryId?: PredictionsHubCategoryId;
+  progressHubCategoryId?: ProgressHubCategoryId;
 }
 
 function resolveMenuCardHref(
   redirectUrl: string | undefined,
   hubCategoryId: PredictionsHubCategoryId | undefined,
+  progressHubCategoryId: ProgressHubCategoryId | undefined,
 ): string {
   if (hubCategoryId != null) return buildPredictionsHubRoute(hubCategoryId);
+  if (progressHubCategoryId != null) return buildProgressHubRoute(progressHubCategoryId);
   return redirectUrl ?? "";
 }
 
@@ -61,9 +65,10 @@ export function MenuCard({
   redirectUrl,
   redirectLabel,
   hubCategoryId,
+  progressHubCategoryId,
   size = "sm",
 }: MenuCardProps) {
-  const href = resolveMenuCardHref(redirectUrl, hubCategoryId);
+  const href = resolveMenuCardHref(redirectUrl, hubCategoryId, progressHubCategoryId);
 
   return (
     <Link href={href} className={cn(menuCardVariants({ size }))}>

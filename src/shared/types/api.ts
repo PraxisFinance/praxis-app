@@ -7,6 +7,8 @@ export interface AchievementPublic {
   description: string;
   targetValue: number | null;
   xp: number | null; // null = dynamic, shown as "variable" in UI
+  iconUrl?: string | null;
+  iconKey?: string | null;
 }
 
 export interface UserAchievementView extends AchievementPublic {
@@ -19,6 +21,10 @@ export interface UserAchievementView extends AchievementPublic {
 export interface UserAchievementsResponse {
   achievements: UserAchievementView[];
   totalXp: number;
+  level?: number;
+  currentXp?: number;
+  xpToNextLevel?: number;
+  description?: string | null;
 }
 
 export type AchievementTrigger =

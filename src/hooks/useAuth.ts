@@ -4,7 +4,8 @@ import { useCallback } from "react";
 import { useAccount, useSignMessage, useSwitchChain } from "wagmi";
 import { createSiweMessage } from "viem/siwe";
 import { baseSepolia } from "wagmi/chains";
-import { toast } from "sonner";
+import { showAchievementCheckToasts } from "@/hooks/progress/achievementCheckToasts";
+import { getDevAuthToken } from "@/lib/auth/devAuthToken";
 import { ensureAppChain } from "@/lib/ensureAppChain";
 import type { CheckResult } from "@/shared/types/api";
 
@@ -52,16 +53,7 @@ async function fireWalletConnectAchievement(token: string): Promise<void> {
     });
     if (!res.ok) return;
     const result = (await res.json()) as CheckResult;
-    if (result.newlyCompleted.length > 0) {
-      const a = result.updated.find((u) => u.id === result.newlyCompleted[0]);
-      toast.success(a?.title ?? "Achievement unlocked!", {
-        description: a
-          ? `${a.description}${a.xpAwarded > 0 ? ` · +${a.xpAwarded} XP` : ""}`
-          : undefined,
-      });
-    } else if (result.xpGained > 0) {
-      toast.success(`+${result.xpGained} XP earned`);
-    }
+    showAchievementCheckToasts(result);
   } catch {
     // Silently swallow — never break the auth flow
   }
@@ -73,7 +65,12 @@ export function useAuth() {
   const { signMessageAsync } = useSignMessage();
 
   const getToken = useCallback(async (): Promise<string> => {
+<<<<<<< HEAD
     if (FAKE_JWT) return FAKE_JWT;
+=======
+    const devToken = getDevAuthToken();
+    if (devToken) return devToken;
+>>>>>>> dev
 
     if (!address) throw new Error("Wallet not connected");
 

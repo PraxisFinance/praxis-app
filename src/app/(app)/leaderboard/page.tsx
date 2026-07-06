@@ -1,5 +1,6 @@
-import { LeaderboardPage } from "@/components/LeaderboardPage";
+import { redirect } from "next/navigation";
+import { buildProgressHubRoute } from "@/lib/routes";
 
 export default function Page() {
-  return <LeaderboardPage />;
+  redirect(buildProgressHubRoute("leaderboard"));
 }

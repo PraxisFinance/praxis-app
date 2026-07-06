@@ -18,9 +18,7 @@ export function ProfilePredictionCard({ item, onClaim }: ProfilePredictionCardPr
         <PoolHeader iconUrl={item.iconUrl} name={item.name} />
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {item.ended && (
-            <span className="text-main-darkPurple/50 text-xs font-medium">Ended</span>
-          )}
+          {item.ended && <span className="text-main-darkPurple/50 text-xs font-medium">Ended</span>}
           {item.userWon && (
             <span className="rounded-sm bg-main-success px-2 py-0.5 text-2xs font-semibold text-white">
               Your won
@@ -54,11 +52,7 @@ export function ProfilePredictionCard({ item, onClaim }: ProfilePredictionCardPr
           <Button variant="primary" size="action" onClick={() => onClaim(item.id)}>
             Claim rewards
           </Button>
-        ) : (
-          <Button variant="secondaryBrand" size="action" disabled>
-            Pool lifetime ended
-          </Button>
-        )
+        ) : null
       ) : (
         <Button variant="secondaryBrand" size="action" disabled>
           In progress

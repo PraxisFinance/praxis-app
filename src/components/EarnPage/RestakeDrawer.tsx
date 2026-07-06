@@ -168,12 +168,27 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
-        <AppDrawerHeading
-          variant="plain"
-          title="Restake your deposit"
-          description="Claim from your ended vault and deposit into the latest active pool."
-        />
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={
+          <AppDrawerHeading
+            variant="plain"
+            title="Restake your deposit"
+            description="Claim from your ended vault and deposit into the latest active pool."
+          />
+        }
+        footer={
+          <Button
+            variant="primary"
+            size="action"
+            onClick={() => void handleRestake()}
+            disabled={isPending || !canSubmit}
+          >
+            {buttonLabel}
+          </Button>
+        }
+      >
 
         {/* Source vault */}
         <div className="flex flex-col gap-3">
@@ -282,15 +297,6 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
             <p className="text-main-darkPurple/70 text-xs font-normal leading-4">{yieldNote}</p>
           </div>
         </div>
-
-        <Button
-          variant="primary"
-          size="action"
-          onClick={() => void handleRestake()}
-          disabled={isPending || !canSubmit}
-        >
-          {buttonLabel}
-        </Button>
       </DrawerShell>
     </>
   );

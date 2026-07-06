@@ -85,12 +85,33 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
-        <AppDrawerHeading
-          variant="plain"
-          title="Claim your deposit from ended vault"
-          description="Withdraw your cryptocurrency from pool vault."
-        />
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={
+          <AppDrawerHeading
+            variant="plain"
+            title="Claim your deposit from ended vault"
+            description="Withdraw your cryptocurrency from pool vault."
+          />
+        }
+        footer={
+          status === "success" ? (
+            <Button variant="destructiveBrand" size="action" onClick={handleClose}>
+              {buttonLabel}
+            </Button>
+          ) : (
+            <Button
+              variant="destructiveBrand"
+              size="action"
+              onClick={handleWithdraw}
+              disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
+            >
+              {buttonLabel}
+            </Button>
+          )
+        }
+      >
 
         <div className="flex flex-col gap-3">
           <InfoRow
@@ -158,21 +179,6 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
             {WITHDRAW_PRINCIPAL_NOTE}
           </p>
         </div>
-
-        {status === "success" ? (
-          <Button variant="destructiveBrand" size="action" onClick={handleClose}>
-            {buttonLabel}
-          </Button>
-        ) : (
-          <Button
-            variant="destructiveBrand"
-            size="action"
-            onClick={handleWithdraw}
-            disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
-          >
-            {buttonLabel}
-          </Button>
-        )}
       </DrawerShell>
     </>
   );

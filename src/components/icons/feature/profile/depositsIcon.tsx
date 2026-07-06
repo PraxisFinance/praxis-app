@@ -1,6 +1,19 @@
-export const DepositsIcon = () => {
+import {
+  DEFAULT_PROFILE_TAB_ICON_SIZE,
+  type ProfileTabIconProps,
+} from "./profileIconProps";
+
+export const DepositsIcon = ({
+  size = DEFAULT_PROFILE_TAB_ICON_SIZE,
+}: ProfileTabIconProps) => {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M7.84798 6.5595C8.01823 6.4245 8.22073 6.32625 8.43748 6.264V8.36025C8.22353 8.30166 8.02321 8.20151 7.84798 8.0655C7.55248 7.83075 7.43848 7.55475 7.43848 7.3125C7.43848 7.07025 7.55248 6.79425 7.84798 6.5595ZM9.56248 11.7465V9.6285C9.82273 9.69225 10.0605 9.7995 10.2532 9.94425C10.5735 10.1842 10.6875 10.4587 10.6875 10.6875C10.6875 10.9162 10.5735 11.1908 10.2532 11.4307C10.0465 11.5811 9.81157 11.689 9.56248 11.7465Z"
         fill="currentColor"

@@ -2,10 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
+import { HISTORY_ROUTE } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { SettingsIcon, NotificationIcon } from "@/components/icons/navigation";
-import { WUsdcTokenIcon } from "@/components/icons/base";
 
 interface HeaderProps {
   username: string;
@@ -32,14 +31,7 @@ export function Header({ username, avatarUrl, points = 0 }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2.5">
-        <Badge variant="neutral" className="text-sm leading-4">
-          {points.toLocaleString()}
-          <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon size={18} />
-          </span>
-        </Badge>
-
-        <Button variant="iconPill" size="icon" onClick={() => router.push("/history")}>
+        <Button variant="iconPill" size="icon" onClick={() => router.push(HISTORY_ROUTE)}>
           <NotificationIcon className="w-4 h-4" />
         </Button>
 

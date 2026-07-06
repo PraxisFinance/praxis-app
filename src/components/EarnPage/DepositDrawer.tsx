@@ -79,11 +79,32 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
         closeLabel="Done"
       />
 
-      <DrawerShell open={open} onOpenChange={onOpenChange}>
-        <AppDrawerHeading
-          title="Deposit your cryptocurrency"
-          description="Deposit cryptocurrency from your wallet into the vault to start earn."
-        />
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={
+          <AppDrawerHeading
+            title="Deposit your cryptocurrency"
+            description="Deposit cryptocurrency from your wallet into the vault to start earn."
+          />
+        }
+        footer={
+          status === "success" ? (
+            <Button variant="success" size="action" onClick={handleClose}>
+              {buttonLabel}
+            </Button>
+          ) : (
+            <Button
+              variant="success"
+              size="action"
+              onClick={handleDeposit}
+              disabled={isPending || !amount || Number(amount) <= 0 || insufficientBalance}
+            >
+              {insufficientBalance ? "Insufficient balance (includes buy-in fee)" : buttonLabel}
+            </Button>
+          )
+        }
+      >
 
         <div className="flex flex-col gap-3">
           <span className="text-main-darkPurple text-lg font-bold leading-6">Pool Information</span>
@@ -134,21 +155,6 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
             </div>
           )}
         </div>
-
-        {status === "success" ? (
-          <Button variant="success" size="action" onClick={handleClose}>
-            {buttonLabel}
-          </Button>
-        ) : (
-          <Button
-            variant="success"
-            size="action"
-            onClick={handleDeposit}
-            disabled={isPending || !amount || Number(amount) <= 0 || insufficientBalance}
-          >
-            {insufficientBalance ? "Insufficient balance (includes buy-in fee)" : buttonLabel}
-          </Button>
-        )}
       </DrawerShell>
     </>
   );

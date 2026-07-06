@@ -1,6 +1,19 @@
-export const PredictionsIcon = () => {
+import {
+  DEFAULT_PROFILE_TAB_ICON_SIZE,
+  type ProfileTabIconProps,
+} from "./profileIconProps";
+
+export const PredictionsIcon = ({
+  size = DEFAULT_PROFILE_TAB_ICON_SIZE,
+}: ProfileTabIconProps) => {
   return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M14.6667 2C13.7467 2 13 2.68923 13 3.53846V16.4615C13 17.3108 13.7467 18 14.6667 18H15.3333C16.2533 18 17 17.3108 17 16.4615V3.53846C17 2.68841 16.2533 2 15.3333 2H14.6667ZM7 7.23077C7 6.38072 7.74667 5.69231 8.66667 5.69231H9.33333C10.2542 5.69231 11 6.38154 11 7.23077V16.4615C11 17.3108 10.2533 18 9.33333 18H8.66667C8.22464 18 7.80072 17.8379 7.48815 17.5494C7.17559 17.2609 7 16.8696 7 16.4615V7.23077ZM1 10.9231C1 10.073 1.74667 9.38462 2.66667 9.38462H3.33333C4.25422 9.38462 5 10.0738 5 10.9231V16.4615C5 17.3108 4.25333 18 3.33333 18H2.66667C2.22464 18 1.80072 17.8379 1.48816 17.5494C1.17559 17.2609 1 16.8696 1 16.4615V10.9231Z"
         fill="currentColor"

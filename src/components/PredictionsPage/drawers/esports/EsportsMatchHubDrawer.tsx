@@ -7,6 +7,7 @@ import { DrawerShell } from "@/components/ui/DrawerShell";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
+  PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
   PredictionsDrawerTemplate,
 } from "../shared";
@@ -22,23 +23,31 @@ export interface EsportsMatchHubDrawerProps {
 }
 
 export function EsportsMatchHubDrawer({ match, side, open, onOpenChange }: EsportsMatchHubDrawerProps) {
-  const resolved = Boolean(match && side);
+  if (!match || !side) {
+    return <DrawerShell open={false} onOpenChange={onOpenChange}>{null}</DrawerShell>;
+  }
 
   return (
-    <DrawerShell open={open && resolved} onOpenChange={onOpenChange}>
-      {match && side ? (
-        <EsportsMatchHubDrawerBody key={`${match.id}-${side}`} match={match} side={side} />
-      ) : null}
-    </DrawerShell>
+    <EsportsMatchHubDrawerBody
+      key={`${match.id}-${side}`}
+      match={match}
+      side={side}
+      open={open}
+      onOpenChange={onOpenChange}
+    />
   );
 }
 
 function EsportsMatchHubDrawerBody({
   match,
   side,
+  open,
+  onOpenChange,
 }: {
   match: EsportsMatch;
   side: EsportsMatchDrawerSide;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
   const selectedTeam = side === "team1" ? match.participantA : match.participantB;
@@ -47,22 +56,32 @@ function EsportsMatchHubDrawerBody({
   const gameIconUrl = game?.iconUrl ?? "";
 
   return (
-    <PredictionsDrawerTemplate header={<PredictionsDrawerHeader />}>
-      <EsportsMatchDrawerOutcomeCard
-        match={match}
-        selectedTeam={selectedTeam}
-        gameIconUrl={gameIconUrl}
-      />
+    <DrawerShell
+      open={open}
+      onOpenChange={onOpenChange}
+      header={<PredictionsDrawerHeader />}
+      footer={
+        <PredictionsDrawerPlaceButton disabled={!isAvailable} onClick={() => {}} />
+      }
+    >
+      <PredictionsDrawerTemplate>
+        <EsportsMatchDrawerOutcomeCard
+          match={match}
+          selectedTeam={selectedTeam}
+          gameIconUrl={gameIconUrl}
+        />
 
-      <PredictionsDrawerPredictionForm
-        amount={amount}
-        onAmountChange={setAmount}
-        maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-        priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
-        disabled={!isAvailable}
-        unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
-        onSubmit={() => {}}
-      />
-    </PredictionsDrawerTemplate>
+        <PredictionsDrawerPredictionForm
+          amount={amount}
+          onAmountChange={setAmount}
+          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+          priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
+          disabled={!isAvailable}
+          unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
+          onSubmit={() => {}}
+          hideAction
+        />
+      </PredictionsDrawerTemplate>
+    </DrawerShell>
   );
 }
