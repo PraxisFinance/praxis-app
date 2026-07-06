@@ -89,7 +89,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id vault principal buyIn receiver
+      id timestamp vault principal buyIn receiver
     }
     PraxisVault_Withdraw(
       where: { id: { _gt: $cursor }, receiver: { _eq: $addr } }
@@ -97,7 +97,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id vault amount yieldPayout receiver
+      id timestamp vault amount yieldPayout receiver
     }
     PraxisVault_RedeemYield(
       where: { id: { _gt: $cursor }, receiver: { _eq: $addr } }
@@ -105,7 +105,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id vault ytBurn payout receiver
+      id timestamp vault ytBurn payout receiver
     }
     PraxisRYD_Deposited(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -113,7 +113,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id ryd user amount
+      id timestamp ryd user amount
     }
     PraxisRYD_Withdrawn(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -121,7 +121,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id ryd user amount
+      id timestamp ryd user amount
     }
     PraxisRYD_PrizeClaimed(
       where: { id: { _gt: $cursor }, winner: { _eq: $addr } }
@@ -129,7 +129,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id ryd winner amount
+      id timestamp ryd winner amount
     }
     PraxisCPF_PlaceBet(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -137,7 +137,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id cpf poolId user amount inFavor
+      id timestamp cpf poolId user amount inFavor
     }
     PraxisCPF_CancelBet(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -145,7 +145,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id cpf user poolId
+      id timestamp cpf user poolId
     }
     PraxisCPF_RewardClaimed(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -153,7 +153,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id cpf poolId user payout
+      id timestamp cpf poolId user payout
     }
     PraxisCPF_Withdraw(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -161,7 +161,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id cpf user amount
+      id timestamp cpf user amount
     }
     PraxisTwoPool_Deposited(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -169,7 +169,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id pool user side grossAmount fee netAmount
+      id timestamp pool user side grossAmount fee netAmount
     }
     PraxisTwoPool_Claimed(
       where: { id: { _gt: $cursor }, user: { _eq: $addr } }
@@ -177,7 +177,7 @@ const USER_DELTA_QUERY = /* GraphQL */ `
       limit: $limit
       offset: $offset
     ) {
-      id pool user side ytOut
+      id timestamp pool user side ytOut
     }
   }
 `;

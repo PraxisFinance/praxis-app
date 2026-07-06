@@ -26,6 +26,8 @@ export type EnvioHeadResponse = z.infer<typeof EnvioHeadResponseSchema>;
 
 export const RawVaultDepositSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   vault: z.string(),
   /** Principal deposited, USDC 6dp, BigInt string. */
   principal: z.string(),
@@ -37,6 +39,8 @@ export type RawVaultDeposit = z.infer<typeof RawVaultDepositSchema>;
 
 export const RawVaultWithdrawSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   vault: z.string(),
   /** Total USDC returned (principal + any yield), USDC 6dp, BigInt string. */
   amount: z.string(),
@@ -48,6 +52,8 @@ export type RawVaultWithdraw = z.infer<typeof RawVaultWithdrawSchema>;
 
 export const RawVaultRedeemYieldSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   vault: z.string(),
   /** YT tokens burned, USDC 6dp, BigInt string. */
   ytBurn: z.string(),
@@ -59,6 +65,8 @@ export type RawVaultRedeemYield = z.infer<typeof RawVaultRedeemYieldSchema>;
 
 export const RawRYDDepositedSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   ryd: z.string(),
   user: z.string(),
   amount: z.string(),
@@ -67,6 +75,8 @@ export type RawRYDDeposited = z.infer<typeof RawRYDDepositedSchema>;
 
 export const RawRYDWithdrawnSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   ryd: z.string(),
   user: z.string(),
   amount: z.string(),
@@ -75,6 +85,8 @@ export type RawRYDWithdrawn = z.infer<typeof RawRYDWithdrawnSchema>;
 
 export const RawRYDPrizeClaimedSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   ryd: z.string(),
   winner: z.string(),
   amount: z.string(),
@@ -83,6 +95,8 @@ export type RawRYDPrizeClaimed = z.infer<typeof RawRYDPrizeClaimedSchema>;
 
 export const RawCPFPlaceBetSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   cpf: z.string(),
   poolId: z.string(),
   user: z.string(),
@@ -94,6 +108,8 @@ export type RawCPFPlaceBet = z.infer<typeof RawCPFPlaceBetSchema>;
 
 export const RawCPFCancelBetSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   cpf: z.string(),
   user: z.string(),
   poolId: z.string(),
@@ -102,6 +118,8 @@ export type RawCPFCancelBet = z.infer<typeof RawCPFCancelBetSchema>;
 
 export const RawCPFRewardClaimedSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   cpf: z.string(),
   poolId: z.string(),
   user: z.string(),
@@ -111,6 +129,8 @@ export type RawCPFRewardClaimed = z.infer<typeof RawCPFRewardClaimedSchema>;
 
 export const RawCPFWithdrawSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   cpf: z.string(),
   user: z.string(),
   amount: z.string(),
@@ -119,6 +139,8 @@ export type RawCPFWithdraw = z.infer<typeof RawCPFWithdrawSchema>;
 
 export const RawTwoPoolDepositedSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   pool: z.string(),
   user: z.string(),
   /** 0 = STABLE, 1 = ELEVATED (Int! in the Envio schema). */
@@ -131,6 +153,8 @@ export type RawTwoPoolDeposited = z.infer<typeof RawTwoPoolDepositedSchema>;
 
 export const RawTwoPoolClaimedSchema = z.object({
   id: z.string(),
+  /** Unix seconds of the block, BigInt string. */
+  timestamp: z.string(),
   pool: z.string(),
   user: z.string(),
   /** 0 = STABLE, 1 = ELEVATED (Int! in the Envio schema). */

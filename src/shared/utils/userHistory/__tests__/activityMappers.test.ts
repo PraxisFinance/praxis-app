@@ -36,7 +36,7 @@ const strippedId = (block: number, logIndex: number) =>
 
 describe("mapVaultDepositActivity", () => {
   it("maps a deposit correctly", () => {
-    const raw = { id: mkId(1_000_000, 5), vault: VAULT, principal: "5000000", buyIn: "4950000", receiver: USER };
+    const raw = { id: mkId(1_000_000, 5), timestamp: "1700000000", vault: VAULT, principal: "5000000", buyIn: "4950000", receiver: USER };
     const rec = mapVaultDepositActivity(raw, USER);
 
     expect(rec.id).toBe(strippedId(1_000_000, 5));
@@ -46,29 +46,18 @@ describe("mapVaultDepositActivity", () => {
     expect(rec.metadataJson).toMatchObject({ principal: "5000000", buyIn: "4950000" });
   });
 
-  it("uses HISTORY_BASE_GENESIS_TS when approximating block time", () => {
-    const previous = process.env.HISTORY_BASE_GENESIS_TS;
-    process.env.HISTORY_BASE_GENESIS_TS = "1000";
+  it("uses the real block timestamp from the Envio indexer", () => {
+    const raw = { id: mkId(10, 0), timestamp: "1691539220", vault: VAULT, principal: "1", buyIn: "1", receiver: USER };
+    const rec = mapVaultDepositActivity(raw, USER);
 
-    try {
-      const raw = { id: mkId(10, 0), vault: VAULT, principal: "1", buyIn: "1", receiver: USER };
-      const rec = mapVaultDepositActivity(raw, USER);
-
-      expect(rec.blockNumber).toBe(10n);
-      expect(rec.blockTime).toBe(1020n);
-    } finally {
-      if (previous === undefined) {
-        delete process.env.HISTORY_BASE_GENESIS_TS;
-      } else {
-        process.env.HISTORY_BASE_GENESIS_TS = previous;
-      }
-    }
+    expect(rec.blockNumber).toBe(10n);
+    expect(rec.blockTime).toBe(1691539220n);
   });
 });
 
 describe("mapVaultWithdrawActivity", () => {
   it("records withdrawal as negative amountDelta", () => {
-    const raw = { id: mkId(2_000_000, 0), vault: VAULT, amount: "5100000", yieldPayout: "100000", receiver: USER };
+    const raw = { id: mkId(2_000_000, 0), timestamp: "1700002000", vault: VAULT, amount: "5100000", yieldPayout: "100000", receiver: USER };
     const rec = mapVaultWithdrawActivity(raw, USER);
 
     expect(rec.kind).toBe("VAULT_WITHDRAW");
@@ -79,7 +68,7 @@ describe("mapVaultWithdrawActivity", () => {
 
 describe("mapVaultRedeemActivity", () => {
   it("records yield redemption as positive amountDelta", () => {
-    const raw = { id: mkId(3_000_000, 1), vault: VAULT, ytBurn: "200000", payout: "200000", receiver: USER };
+    const raw = { id: mkId(3_000_000, 1), timestamp: "1700003000", vault: VAULT, ytBurn: "200000", payout: "200000", receiver: USER };
     const rec = mapVaultRedeemActivity(raw, USER);
 
     expect(rec.kind).toBe("VAULT_REDEEM_YIELD");
@@ -91,7 +80,7 @@ describe("mapVaultRedeemActivity", () => {
 
 describe("mapRydDepositActivity", () => {
   it("records deposit as negative (YT locked)", () => {
-    const raw = { id: mkId(1_000_000, 0), ryd: RYD, user: USER, amount: "1000000" };
+    const raw = { id: mkId(1_000_000, 0), timestamp: "1700001000", ryd: RYD, user: USER, amount: "1000000" };
     const rec = mapRydDepositActivity(raw, USER);
 
     expect(rec.kind).toBe("RYD_DEPOSIT");
@@ -102,7 +91,7 @@ describe("mapRydDepositActivity", () => {
 
 describe("mapRydWithdrawActivity", () => {
   it("records withdrawal as positive", () => {
-    const raw = { id: mkId(1_000_001, 0), ryd: RYD, user: USER, amount: "1000000" };
+    const raw = { id: mkId(1_000_001, 0), timestamp: "1700001002", ryd: RYD, user: USER, amount: "1000000" };
     const rec = mapRydWithdrawActivity(raw, USER);
 
     expect(rec.kind).toBe("RYD_WITHDRAW");
@@ -112,7 +101,7 @@ describe("mapRydWithdrawActivity", () => {
 
 describe("mapRydClaimActivity", () => {
   it("records prize claim as positive", () => {
-    const raw = { id: mkId(2_000_000, 0), ryd: RYD, winner: USER, amount: "500000" };
+    const raw = { id: mkId(2_000_000, 0), timestamp: "1700002000", ryd: RYD, winner: USER, amount: "500000" };
     const rec = mapRydClaimActivity(raw, USER);
 
     expect(rec.kind).toBe("RYD_CLAIM");
@@ -124,7 +113,7 @@ describe("mapRydClaimActivity", () => {
 
 describe("mapCpfBetActivity", () => {
   it("records FOR-side bet as negative", () => {
-    const raw = { id: mkId(1_000_000, 0), cpf: CPF, poolId: "42", user: USER, amount: "1000000", inFavor: true };
+    const raw = { id: mkId(1_000_000, 0), timestamp: "1700001000", cpf: CPF, poolId: "42", user: USER, amount: "1000000", inFavor: true };
     const rec = mapCpfBetActivity(raw, USER);
 
     expect(rec.kind).toBe("CPF_BET");
@@ -134,7 +123,7 @@ describe("mapCpfBetActivity", () => {
   });
 
   it("records AGAINST-side bet as negative", () => {
-    const raw = { id: mkId(1_000_001, 0), cpf: CPF, poolId: "42", user: USER, amount: "500000", inFavor: false };
+    const raw = { id: mkId(1_000_001, 0), timestamp: "1700001002", cpf: CPF, poolId: "42", user: USER, amount: "500000", inFavor: false };
     const rec = mapCpfBetActivity(raw, USER);
 
     expect(rec.metadataJson).toMatchObject({ side: "AGAINST" });
@@ -143,7 +132,7 @@ describe("mapCpfBetActivity", () => {
 
 describe("mapCpfCancelActivity", () => {
   it("records cancellation with zero amountDelta (on-chain refund amount not available)", () => {
-    const raw = { id: mkId(1_000_002, 0), cpf: CPF, user: USER, poolId: "42" };
+    const raw = { id: mkId(1_000_002, 0), timestamp: "1700001004", cpf: CPF, user: USER, poolId: "42" };
     const rec = mapCpfCancelActivity(raw, USER);
 
     expect(rec.kind).toBe("CPF_CANCEL");
@@ -154,7 +143,7 @@ describe("mapCpfCancelActivity", () => {
 
 describe("mapCpfClaimActivity", () => {
   it("records reward claim as positive", () => {
-    const raw = { id: mkId(2_000_000, 0), cpf: CPF, poolId: "42", user: USER, payout: "1800000" };
+    const raw = { id: mkId(2_000_000, 0), timestamp: "1700002000", cpf: CPF, poolId: "42", user: USER, payout: "1800000" };
     const rec = mapCpfClaimActivity(raw, USER);
 
     expect(rec.kind).toBe("CPF_CLAIM");
@@ -164,7 +153,7 @@ describe("mapCpfClaimActivity", () => {
 
 describe("mapCpfWithdrawActivity", () => {
   it("records withdraw as positive with no marketRef", () => {
-    const raw = { id: mkId(2_000_001, 0), cpf: CPF, user: USER, amount: "900000" };
+    const raw = { id: mkId(2_000_001, 0), timestamp: "1700002002", cpf: CPF, user: USER, amount: "900000" };
     const rec = mapCpfWithdrawActivity(raw, USER);
 
     expect(rec.kind).toBe("CPF_WITHDRAW");
@@ -177,7 +166,7 @@ describe("mapCpfWithdrawActivity", () => {
 
 describe("mapTwoPoolDepositActivity", () => {
   it("converts side=0 to STABLE and records as negative", () => {
-    const raw = { id: mkId(1_000_000, 0), pool: POOL, user: USER, side: 0, grossAmount: "1020000", fee: "20000", netAmount: "1000000" };
+    const raw = { id: mkId(1_000_000, 0), timestamp: "1700001000", pool: POOL, user: USER, side: 0, grossAmount: "1020000", fee: "20000", netAmount: "1000000" };
     const rec = mapTwoPoolDepositActivity(raw, USER);
 
     expect(rec.kind).toBe("TWOPOOL_DEPOSIT");
@@ -186,7 +175,7 @@ describe("mapTwoPoolDepositActivity", () => {
   });
 
   it("converts side=1 to ELEVATED", () => {
-    const raw = { id: mkId(1_000_001, 0), pool: POOL, user: USER, side: 1, grossAmount: "2000000", fee: "40000", netAmount: "1960000" };
+    const raw = { id: mkId(1_000_001, 0), timestamp: "1700001002", pool: POOL, user: USER, side: 1, grossAmount: "2000000", fee: "40000", netAmount: "1960000" };
     const rec = mapTwoPoolDepositActivity(raw, USER);
 
     expect(rec.metadataJson).toMatchObject({ side: "ELEVATED" });
@@ -195,7 +184,7 @@ describe("mapTwoPoolDepositActivity", () => {
 
 describe("mapTwoPoolClaimActivity", () => {
   it("records YT claim with zero USDC amountDelta", () => {
-    const raw = { id: mkId(3_000_000, 0), pool: POOL, user: USER, side: 0, ytOut: "300000" };
+    const raw = { id: mkId(3_000_000, 0), timestamp: "1700003000", pool: POOL, user: USER, side: 0, ytOut: "300000" };
     const rec = mapTwoPoolClaimActivity(raw, USER);
 
     expect(rec.kind).toBe("TWOPOOL_CLAIM");
@@ -230,13 +219,13 @@ describe("mapAllDeltaToActivities", () => {
     const delta: UserDeltaResponse = {
       ...emptyDelta,
       PraxisVault_Deposit: [
-        { id: mkId(500_000, 0), vault: VAULT, principal: "1000000", buyIn: "990000", receiver: USER },
+        { id: mkId(500_000, 0), timestamp: "1700000500", vault: VAULT, principal: "1000000", buyIn: "990000", receiver: USER },
       ],
       PraxisCPF_PlaceBet: [
-        { id: mkId(1_000_000, 0), cpf: CPF, poolId: "1", user: USER, amount: "500000", inFavor: true },
+        { id: mkId(1_000_000, 0), timestamp: "1700001000", cpf: CPF, poolId: "1", user: USER, amount: "500000", inFavor: true },
       ],
       PraxisRYD_Deposited: [
-        { id: mkId(750_000, 0), ryd: RYD, user: USER, amount: "200000" },
+        { id: mkId(750_000, 0), timestamp: "1700000750", ryd: RYD, user: USER, amount: "200000" },
       ],
     };
 
@@ -251,7 +240,7 @@ describe("mapAllDeltaToActivities", () => {
 
 describe("chain prefix stripping", () => {
   it("strips the 8453_ prefix from all mapper outputs", () => {
-    const raw = { id: mkId(1, 0), vault: VAULT, principal: "1", buyIn: "1", receiver: USER };
+    const raw = { id: mkId(1, 0), timestamp: "1700000001", vault: VAULT, principal: "1", buyIn: "1", receiver: USER };
     const rec = mapVaultDepositActivity(raw, USER);
     expect(rec.id).not.toContain("8453_");
     expect(rec.id).toMatch(/^\d+_\d+$/);
