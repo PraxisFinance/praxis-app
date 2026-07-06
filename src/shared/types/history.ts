@@ -4,7 +4,7 @@ import { z } from "zod";
  * Monotonic schema version — bump this constant to force a full recompute for
  * all users the next time their cache row is read by the orchestrator.
  */
-export const CURRENT_SCHEMA_VERSION = 3;
+export const CURRENT_SCHEMA_VERSION = 4;
 
 // ─── Activity kinds ──────────────────────────────────────────────────────────
 
@@ -342,7 +342,7 @@ export type ActivityRecord = {
   /** Signed USDC amount, 6dp, BigInt string. Positive = inflow, negative = outflow. */
   amountDelta: string;
   blockNumber: bigint;
-  /** Unix seconds derived from block number (approx for Base; update to real timestamp when available). */
+  /** Unix seconds — real block timestamp from the Envio indexer. */
   blockTime: bigint;
   /** Event-specific extras for display and debugging. */
   metadataJson: Record<string, unknown>;

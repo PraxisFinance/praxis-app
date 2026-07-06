@@ -11,7 +11,7 @@ export interface EventMetadata {
   assetName?: string;
   assetTicker?: string;
   resolutionSourceLabel?: string;
-  // ── esports ─────────────────────────────────────────────────────────
+  // ── esports / sport ─────────────────────────────────────────────────
   gameId?: "dota2" | "csgo" | "lol" | "valorant" | "cod";
   teamAName?: string;
   teamALogoUrl?: string;
@@ -25,6 +25,12 @@ export interface OffchainEventData {
   contractEventId: string | null;
   /** Value of `Event.conditionId` (may be null for rows matched via `contractEventId`). */
   conditionId: string | null;
+  /**
+   * Upstream provider's identifier for this event (e.g. a match ID from a
+   * sports/esports data feed). Used to correlate `live_sports_update` /
+   * `live_esports_update` WebSocket payloads with this market.
+   */
+  sourceId: string | null;
   title: string;
   description: string | null;
   categories: string[];
@@ -63,6 +69,7 @@ export const offchainEventsRouter = router({
         select: {
           contractEventId: true,
           conditionId: true,
+          sourceId: true,
           title: true,
           description: true,
           categories: true,

@@ -1,6 +1,7 @@
 "use client";
 
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
+import { useLiveSportScore } from "@/hooks/useLiveMatchScore";
 import {
   getSportMatchStatusLine,
   getSportMatchUpcomingDateLabel,
@@ -21,7 +22,10 @@ interface SportMatchDetailMatchCardProps {
 export function SportMatchDetailMatchCard({ match, displayTitle }: SportMatchDetailMatchCardProps) {
   const { participantA, participantB } = match;
   const statusLine = getSportMatchStatusLine(match.status);
-  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
+  const liveScore = useLiveSportScore(match.externalMatchId);
+  const scoreA = liveScore?.scoreA ?? participantA.score;
+  const scoreB = liveScore?.scoreB ?? participantB.score;
+  const hasScores = scoreA !== undefined && scoreB !== undefined;
 
   return (
     <section className="bg-main-lightGray relative flex flex-col gap-4 rounded-[10px] p-3">
@@ -62,8 +66,8 @@ export function SportMatchDetailMatchCard({ match, displayTitle }: SportMatchDet
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <SportMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
-                <SportMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? scoreA : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? scoreB : undefined} />
               </div>
             </>
           )}

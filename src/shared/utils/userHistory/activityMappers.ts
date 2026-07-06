@@ -36,32 +36,17 @@ import type {
   UserDeltaResponse,
 } from "@/shared/types/envioRaw";
 
-// ─── Block time approximation ────────────────────────────────────────────────
+// ─── Block info ──────────────────────────────────────────────────────────────
 
-/**
- * Default Base mainnet genesis timestamp (August 9, 2023 ≈ unix 1691539200).
- * Used to approximate block timestamps until we query real `block.timestamp`
- * from Envio (TODO: add blockTimestamp to Q1 query fields).
- */
-const DEFAULT_BASE_GENESIS_TS = 1691539200n;
-const BASE_BLOCK_SECS = 2n;
-
-function configuredBaseGenesisTs(): bigint {
-  const raw = process.env.HISTORY_BASE_GENESIS_TS;
-  if (!raw) return DEFAULT_BASE_GENESIS_TS;
-  if (!/^\d+$/.test(raw)) {
-    throw new Error("HISTORY_BASE_GENESIS_TS must be a unix timestamp in seconds");
-  }
-  return BigInt(raw);
-}
-
-function blockInfoFromId(envioId: string): { blockNumber: bigint; blockTime: bigint } {
+function blockInfoFromEvent(
+  envioId: string,
+  timestamp: string,
+): { blockNumber: bigint; blockTime: bigint } {
   // envioIdToActivityId strips the chain-prefix regardless of chain id
   // (handles both "8453_…" and "84532_…" without hardcoding the prefix).
   const stripped = envioIdToActivityId(envioId);
   const blockNumber = BigInt(stripped.split("_")[0] ?? "0");
-  const blockTime = configuredBaseGenesisTs() + blockNumber * BASE_BLOCK_SECS;
-  return { blockNumber, blockTime };
+  return { blockNumber, blockTime: BigInt(timestamp) };
 }
 
 // ─── Vault ───────────────────────────────────────────────────────────────────
@@ -70,7 +55,7 @@ export function mapVaultDepositActivity(
   raw: RawVaultDeposit,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -88,7 +73,7 @@ export function mapVaultWithdrawActivity(
   raw: RawVaultWithdraw,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -106,7 +91,7 @@ export function mapVaultRedeemActivity(
   raw: RawVaultRedeemYield,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -126,7 +111,7 @@ export function mapRydDepositActivity(
   raw: RawRYDDeposited,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -144,7 +129,7 @@ export function mapRydWithdrawActivity(
   raw: RawRYDWithdrawn,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -162,7 +147,7 @@ export function mapRydClaimActivity(
   raw: RawRYDPrizeClaimed,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -182,7 +167,7 @@ export function mapCpfBetActivity(
   raw: RawCPFPlaceBet,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -205,7 +190,7 @@ export function mapCpfCancelActivity(
   raw: RawCPFCancelBet,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -224,7 +209,7 @@ export function mapCpfClaimActivity(
   raw: RawCPFRewardClaimed,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -242,7 +227,7 @@ export function mapCpfWithdrawActivity(
   raw: RawCPFWithdraw,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -268,7 +253,7 @@ export function mapTwoPoolDepositActivity(
   raw: RawTwoPoolDeposited,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,
@@ -292,7 +277,7 @@ export function mapTwoPoolClaimActivity(
   raw: RawTwoPoolClaimed,
   userAddress: string,
 ): ActivityRecord {
-  const { blockNumber, blockTime } = blockInfoFromId(raw.id);
+  const { blockNumber, blockTime } = blockInfoFromEvent(raw.id, raw.timestamp);
   return {
     id: envioIdToActivityId(raw.id),
     userAddress,

@@ -50,6 +50,8 @@ export function isPredictionsHubDetailPath(pathname: string): boolean {
   return !isPredictionsHubCategoryId(segment);
 }
 
+export const DEBUG_ROUTE = "/debug";
+
 export const PROFILE_ROUTE = "/profile";
 export const PROFILE_BALANCES_ROUTE = "/profile/balances";
 export const PROFILE_REWARDS_ROUTE = "/profile/rewards";
