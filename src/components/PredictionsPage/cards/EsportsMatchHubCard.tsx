@@ -12,6 +12,7 @@ import { EsportsMatchHubOddsChip } from "./esports/EsportsMatchHubOddsChip";
 import { EsportsMatchHubScoreBox } from "./esports/EsportsMatchHubScoreBox";
 import { EsportsMatchHubStreamButton } from "./esports/EsportsMatchHubStreamButton";
 import { EsportsMatchHubTeamBlock } from "./esports/EsportsMatchHubTeamBlock";
+import { useLiveEsportsScore } from "@/hooks/useLiveMatchScore";
 
 interface EsportsMatchHubCardProps {
   match: EsportsMatch;
@@ -23,7 +24,10 @@ export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardPr
   const gameIconUrl = game?.iconUrl ?? "";
   const { participantA, participantB } = match;
   const statusLine = getEsportsMatchStatusLine(match.status);
-  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
+  const liveScore = useLiveEsportsScore(match.externalMatchId);
+  const scoreA = liveScore?.scoreA ?? participantA.score;
+  const scoreB = liveScore?.scoreB ?? participantB.score;
+  const hasScores = scoreA !== undefined && scoreB !== undefined;
   const bettingDisabled = !match.isTradingOpen;
 
   return (
@@ -64,8 +68,8 @@ export function EsportsMatchHubCard({ match, onPickTeam }: EsportsMatchHubCardPr
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <EsportsMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
-                <EsportsMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? scoreA : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? scoreB : undefined} />
               </div>
             </>
           )}

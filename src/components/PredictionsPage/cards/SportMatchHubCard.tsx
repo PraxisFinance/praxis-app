@@ -13,6 +13,7 @@ import {
   SportMatchHubStreamButton,
   SportMatchHubTeamBlock,
 } from "./sport";
+import { useLiveSportScore } from "@/hooks/useLiveMatchScore";
 
 interface SportMatchHubCardProps {
   match: SportHubMatch;
@@ -22,7 +23,10 @@ interface SportMatchHubCardProps {
 export function SportMatchHubCard({ match, onPickTeam }: SportMatchHubCardProps) {
   const { participantA, participantB } = match;
   const statusLine = getSportMatchStatusLine(match.status);
-  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
+  const liveScore = useLiveSportScore(match.externalMatchId);
+  const scoreA = liveScore?.scoreA ?? participantA.score;
+  const scoreB = liveScore?.scoreB ?? participantB.score;
+  const hasScores = scoreA !== undefined && scoreB !== undefined;
   const bettingDisabled = !match.isTradingOpen;
 
   return (
@@ -57,8 +61,8 @@ export function SportMatchHubCard({ match, onPickTeam }: SportMatchHubCardProps)
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <SportMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
-                <SportMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? scoreA : undefined} />
+                <SportMatchHubScoreBox value={hasScores ? scoreB : undefined} />
               </div>
             </>
           )}

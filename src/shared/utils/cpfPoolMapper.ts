@@ -155,8 +155,10 @@ function mapCPFPoolToEsportsCard(
   const rawGameId = meta?.gameId;
   const gameId: EsportsGameFilterId =
     rawGameId != null && (VALID_GAME_IDS as readonly string[]).includes(rawGameId)
-      ? (rawGameId as EsportsGameFilterId)
+      ? rawGameId
       : "dota2";
+
+  const externalMatchId = offchain?.sourceId ?? undefined;
 
   return {
     id: pool.id,
@@ -166,6 +168,7 @@ function mapCPFPoolToEsportsCard(
     isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
     streamUrl: meta?.streamUrl,
     gameId,
+    externalMatchId,
     participantA: {
       name: meta?.teamAName ?? "Team A",
       logoUrl: meta?.teamALogoUrl ?? "",

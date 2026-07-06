@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 import { ESPORTS_GAMES } from "@/shared/constants/esports";
+import { useLiveEsportsScore } from "@/hooks/useLiveMatchScore";
 import {
   getEsportsMatchStatusLine,
   getEsportsUpcomingDateLabel,
@@ -22,7 +23,10 @@ export function EsportsMatchDetailMatchCard({ match, displayTitle }: EsportsMatc
   const gameIconUrl = game?.iconUrl ?? "";
   const { participantA, participantB } = match;
   const statusLine = getEsportsMatchStatusLine(match.status);
-  const hasScores = participantA.score !== undefined && participantB.score !== undefined;
+  const liveScore = useLiveEsportsScore(match.externalMatchId);
+  const scoreA = liveScore?.scoreA ?? participantA.score;
+  const scoreB = liveScore?.scoreB ?? participantB.score;
+  const hasScores = scoreA !== undefined && scoreB !== undefined;
 
   return (
     <section className="bg-main-lightGray relative flex flex-col gap-4 rounded-[10px] p-3">
@@ -69,8 +73,8 @@ export function EsportsMatchDetailMatchCard({ match, displayTitle }: EsportsMatc
                 </span>
               </div>
               <div className="flex items-center justify-center gap-1">
-                <EsportsMatchHubScoreBox value={hasScores ? participantA.score : undefined} />
-                <EsportsMatchHubScoreBox value={hasScores ? participantB.score : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? scoreA : undefined} />
+                <EsportsMatchHubScoreBox value={hasScores ? scoreB : undefined} />
               </div>
             </>
           )}
