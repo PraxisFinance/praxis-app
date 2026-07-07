@@ -10,6 +10,10 @@ import { buildFinanceHubTitle } from "@/shared/types/financeHubEvent";
 import type { PredictionsHubListItem } from "@/shared/types/predictionsHubItem";
 import type { EsportsGameFilterId } from "@/shared/constants/esports";
 import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
+import type { SportPredictionCard } from "@/shared/types/predictions/domains/sport";
+import type { PoliticsPredictionCard } from "@/shared/types/predictions/domains/politics";
+import type { TechPredictionCard } from "@/shared/types/predictions/domains/tech";
+import type { PredictionsHubSportDisciplineId } from "@/shared/constants/predictionsHubFilters";
 import { outcomeLabelsFromResolutionTypeTuple } from "@/shared/constants/resolutionTypeTuples";
 import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
@@ -215,6 +219,102 @@ function mapCPFPoolToFinanceCard(
   };
 }
 
+function mapCPFPoolToSportCard(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): SportPredictionCard {
+  const meta = offchain?.metadata;
+  const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
+
+  const VALID_DISCIPLINE_IDS: readonly PredictionsHubSportDisciplineId[] = [
+    "football",
+    "basketball",
+    "hockey",
+    "formula1",
+  ];
+  const rawDisciplineId = meta?.disciplineId;
+  const disciplineId: PredictionsHubSportDisciplineId =
+    rawDisciplineId != null && (VALID_DISCIPLINE_IDS as readonly string[]).includes(rawDisciplineId)
+      ? rawDisciplineId
+      : "football";
+
+  return {
+    id: pool.id,
+    predictionType: "sport",
+    status: deriveStatus(pool, offchain, nowMs),
+    endsAt: deriveEndsAt(pool, offchain),
+    isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
+    streamUrl: meta?.streamUrl,
+    disciplineId,
+    externalMatchId: offchain?.sourceId ?? undefined,
+    participantA: {
+      name: meta?.teamAName ?? "Team A",
+      logoUrl: meta?.teamALogoUrl ?? "",
+      odds: impliedOdds(favorPercent),
+    },
+    participantB: {
+      name: meta?.teamBName ?? "Team B",
+      logoUrl: meta?.teamBLogoUrl ?? "",
+      odds: impliedOdds(againstPercent),
+    },
+  };
+}
+
+function mapCPFPoolToPoliticsCard(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): PoliticsPredictionCard {
+  const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
+  const sideALabel = offchain?.sideALabel ?? "Yes";
+  const sideBLabel = offchain?.sideBLabel ?? "No";
+
+  return {
+    id: pool.id,
+    predictionType: "politics",
+    status: deriveStatus(pool, offchain, nowMs),
+    endsAt: deriveEndsAt(pool, offchain),
+    isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
+    title: offchain?.title ?? "",
+    imageUrl: offchain?.logoPath ?? "",
+    description: offchain?.description,
+    categories: offchain?.categories,
+    volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
+    outcomes: [
+      { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
+      { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },
+    ],
+  };
+}
+
+function mapCPFPoolToTechCard(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): TechPredictionCard {
+  const [favorPercent, againstPercent] = poolPercents(pool.stakeInFavor, pool.stakeAgainst);
+  const sideALabel = offchain?.sideALabel ?? "Yes";
+  const sideBLabel = offchain?.sideBLabel ?? "No";
+
+  return {
+    id: pool.id,
+    predictionType: "tech",
+    status: deriveStatus(pool, offchain, nowMs),
+    endsAt: deriveEndsAt(pool, offchain),
+    isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
+    title: offchain?.title ?? "",
+    imageUrl: offchain?.logoPath ?? "",
+    description: offchain?.description,
+    categories: offchain?.categories,
+    volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
+    outcomes: [
+      { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
+      { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },
+    ],
+  };
+}
+
 export function mapCPFPoolToCryptoPrediction(
   pool: CPFPoolState,
   offchain?: OffchainEventData | null,
@@ -262,6 +362,9 @@ export function mapCPFPoolToCryptoPrediction(
 /**
  * Dispatches a CPF pool to the correct hub card type based on `offchain.category`.
  * - `"esports"` → `EsportsPredictionCard`
+ * - `"sport"`   → `SportPredictionCard`
+ * - `"politics"` → `PoliticsPredictionCard`
+ * - `"tech"`    → `TechPredictionCard`
  * - `"finance"` → `FinancePredictionCard`
  * - everything else → `CryptoPrediction` (`crypto_up_down`)
  */
@@ -273,6 +376,9 @@ export function mapCPFPoolToHubCard(
   const category = offchain?.category ?? null;
 
   if (category === "esports") return mapCPFPoolToEsportsCard(pool, offchain, nowMs);
+  if (category === "sport") return mapCPFPoolToSportCard(pool, offchain, nowMs);
+  if (category === "politics") return mapCPFPoolToPoliticsCard(pool, offchain, nowMs);
+  if (category === "tech") return mapCPFPoolToTechCard(pool, offchain, nowMs);
   if (category === "finance") return mapCPFPoolToFinanceCard(pool, offchain, nowMs);
   return mapCPFPoolToCryptoPrediction(pool, offchain, nowMs);
 }

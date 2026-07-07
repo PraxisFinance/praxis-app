@@ -11,8 +11,10 @@ export interface EventMetadata {
   assetName?: string;
   assetTicker?: string;
   resolutionSourceLabel?: string;
-  // ── esports / sport ─────────────────────────────────────────────────
+  // ── esports ─────────────────────────────────────────────────────────
   gameId?: "dota2" | "csgo" | "lol" | "valorant" | "cod";
+  // ── sport ───────────────────────────────────────────────────────────
+  disciplineId?: "football" | "basketball" | "hockey" | "formula1";
   teamAName?: string;
   teamALogoUrl?: string;
   teamBName?: string;
