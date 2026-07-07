@@ -3,6 +3,7 @@ import { envioQuery, toBigInt } from "@/shared/api/envioClient";
 import { trpcClient } from "@/lib/trpc/vanillaClient";
 import type { OffchainEventData } from "@/lib/trpc/routers/offchainEvents";
 import { USDC_DECIMALS } from "@/shared/constants/tokens";
+import { useActiveVaultStore } from "@/stores/activeVaultStore";
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -164,29 +165,6 @@ const USER_BALANCE_QUERY = `
       id
       balance
       lastUpdatedAt
-    }
-  }
-`;
-
-const ALL_POOL_STATES_QUERY = `
-  query AllCPFPools {
-    CPFPoolState(order_by: { createdAt: desc }) {
-      id
-      cpfAddress
-      poolId
-      ctfAddress
-      conditionId
-      state
-      stakeInFavor
-      stakeAgainst
-      winningOutcome
-      totalWinningStake
-      totalLosingStake
-      createdAt
-      resolvedAt
-      lastUpdatedAt
-      betCount
-      uniqueBettors
     }
   }
 `;
@@ -460,33 +438,41 @@ export const useEventsStore = create<EventsState>((set, get) => ({
 
   fetchAllPoolStates: async (vaultId?: string, ytAddress?: string) => {
     try {
+      // Pools and their offchain metadata are only meaningful for a single
+      // vault: contract event ids collide across vaults. Always scope to the
+      // active vault (falling back to explicit args when provided).
+      const active = useActiveVaultStore.getState();
+      const resolvedVaultId = vaultId ?? active.activeVaultId ?? undefined;
+      const resolvedYt = ytAddress ?? active.activeYtAddress ?? undefined;
+
+      // Without an active vault we cannot safely scope events — clear any
+      // stale cross-vault data and wait for the active vault to resolve.
+      if (!resolvedVaultId || !resolvedYt) {
+        set({ pools: {}, offchainByContractId: {}, loading: false });
+        return;
+      }
+
       set({ loading: true, error: null });
 
-      let rawPools: RawCPFPoolState[];
-      if (ytAddress) {
-        const ytKey = ytAddress.toLowerCase();
-        let cpfAddr = get().cpfAddressByYt[ytKey];
+      const ytKey = resolvedYt.toLowerCase();
+      let cpfAddr = get().cpfAddressByYt[ytKey];
 
+      if (!cpfAddr) {
+        cpfAddr = (await get().resolveCPFAddress(resolvedYt)) ?? "";
         if (!cpfAddr) {
-          cpfAddr = (await get().resolveCPFAddress(ytAddress)) ?? "";
-          if (!cpfAddr) {
-            set({ pools: {}, loading: false });
-            return;
-          }
-          set((s) => ({
-            cpfAddressByYt: { ...s.cpfAddressByYt, [ytKey]: cpfAddr },
-          }));
+          set({ pools: {}, offchainByContractId: {}, loading: false });
+          return;
         }
-
-        const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(
-          POOL_STATES_BY_CPF_QUERY,
-          { cpfAddress: cpfAddr }
-        );
-        rawPools = data.CPFPoolState;
-      } else {
-        const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(ALL_POOL_STATES_QUERY);
-        rawPools = data.CPFPoolState;
+        set((s) => ({
+          cpfAddressByYt: { ...s.cpfAddressByYt, [ytKey]: cpfAddr },
+        }));
       }
+
+      const data = await envioQuery<{ CPFPoolState: RawCPFPoolState[] }>(
+        POOL_STATES_BY_CPF_QUERY,
+        { cpfAddress: cpfAddr }
+      );
+      const rawPools = data.CPFPoolState;
 
       const nextPools = { ...get().pools };
       for (const raw of rawPools) {
@@ -495,13 +481,21 @@ export const useEventsStore = create<EventsState>((set, get) => ({
         nextPools[mapped.id] = { ...existing, state: mapped };
       }
       set({ pools: nextPools, loading: false });
-      await get().fetchOffchainMetadata(vaultId);
+      await get().fetchOffchainMetadata(resolvedVaultId);
     } catch (err) {
       set({ error: (err as Error).message, loading: false });
     }
   },
 
   fetchOffchainMetadata: async (vaultId?: string) => {
+    // The vault is mandatory: without it the query would return events from
+    // every vault that happens to share a contract event id.
+    const resolvedVaultId = vaultId ?? useActiveVaultStore.getState().activeVaultId ?? undefined;
+    if (!resolvedVaultId) {
+      set({ offchainByContractId: {} });
+      return;
+    }
+
     const poolStates = Object.values(get().pools)
       .map((p) => p.state)
       .filter((s): s is CPFPoolState => s !== null);
@@ -517,7 +511,7 @@ export const useEventsStore = create<EventsState>((set, get) => ({
     try {
       const rows = await trpcClient.offchainEvents.byContractIds.query({
         ids: idList,
-        vault: vaultId,
+        vault: resolvedVaultId,
       });
 
       const byId: Record<string, OffchainEventData> = {};
@@ -595,6 +589,18 @@ export const useEventsStore = create<EventsState>((set, get) => ({
 
   reset: () => set(initialState),
 }));
+
+// Re-scope pools + offchain metadata whenever the active vault changes so the
+// hub never mixes events from different vaults. Also covers the initial load,
+// where the active vault resolves asynchronously after deposits are fetched.
+useActiveVaultStore.subscribe(
+  (state) => state.activeYtAddress,
+  (next, prev) => {
+    if (next !== prev) {
+      void useEventsStore.getState().fetchAllPoolStates();
+    }
+  }
+);
 
 // ── Helpers ──────────────────────────────────────────────────────────
 

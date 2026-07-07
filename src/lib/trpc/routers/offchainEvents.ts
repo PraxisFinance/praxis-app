@@ -55,7 +55,10 @@ export const offchainEventsRouter = router({
     .input(
       z.object({
         ids: z.array(z.string()),
-        vault: z.string().optional(),
+        // Contract event ids are only unique *within* a vault — the same id can
+        // exist across vaults. The vault must always be supplied so results are
+        // scoped to a single vault (the caller's active vault).
+        vault: z.string().min(1),
       })
     )
     .query(async ({ ctx, input }): Promise<OffchainEventData[]> => {
@@ -64,7 +67,7 @@ export const offchainEventsRouter = router({
       const rows = await ctx.db.event.findMany({
         where: {
           contractEventId: { in: input.ids },
-          ...(input.vault ? { vault: input.vault } : {}),
+          vault: input.vault,
         },
         select: {
           contractEventId: true,
