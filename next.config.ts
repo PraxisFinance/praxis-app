@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "media.praxis.cc",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "media.api-sports.io",
+        pathname: "/**",
+      },
     ],
   },
 };

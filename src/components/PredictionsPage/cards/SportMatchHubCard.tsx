@@ -22,8 +22,12 @@ interface SportMatchHubCardProps {
 
 export function SportMatchHubCard({ match, onPickTeam }: SportMatchHubCardProps) {
   const { participantA, participantB } = match;
-  const statusLine = getSportMatchStatusLine(match.status);
   const liveScore = useLiveSportScore(match.externalMatchId);
+
+  const effectiveStatus: typeof match.status =
+    liveScore != null && !liveScore.isFinished ? { kind: "live" } : match.status;
+
+  const statusLine = getSportMatchStatusLine(effectiveStatus);
   const scoreA = liveScore?.scoreA ?? participantA.score;
   const scoreB = liveScore?.scoreB ?? participantB.score;
   const hasScores = scoreA !== undefined && scoreB !== undefined;
@@ -41,13 +45,13 @@ export function SportMatchHubCard({ match, onPickTeam }: SportMatchHubCardProps)
         </div>
 
         <div className="flex min-w-0 shrink flex-col items-center justify-end gap-2 self-stretch px-1 pb-5">
-          {match.status.kind === "upcoming" ? (
+          {effectiveStatus.kind === "upcoming" ? (
             <div className="flex flex-col items-center gap-1">
               <span className="text-main-darkPurple text-center text-2xs font-medium leading-tight">
-                {getSportMatchUpcomingDateLabel(match.status.startsAt, match.status.label)}
+                {getSportMatchUpcomingDateLabel(effectiveStatus.startsAt, effectiveStatus.label)}
               </span>
               <span className="text-main-darkPurple text-md text-center font-normal leading-tight tabular-nums">
-                {getSportMatchUpcomingTimeLabel(match.status.startsAt)}
+                {getSportMatchUpcomingTimeLabel(effectiveStatus.startsAt)}
               </span>
             </div>
           ) : (

@@ -14,6 +14,7 @@ import type { SportPredictionCard } from "@/shared/types/predictions/domains/spo
 import type { PoliticsPredictionCard } from "@/shared/types/predictions/domains/politics";
 import type { TechPredictionCard } from "@/shared/types/predictions/domains/tech";
 import type { PredictionsHubSportDisciplineId } from "@/shared/constants/predictionsHubFilters";
+import type { PredictionStatus } from "@/shared/types/predictions/core/status";
 import { outcomeLabelsFromResolutionTypeTuple } from "@/shared/constants/resolutionTypeTuples";
 import { USDC_DECIMALS } from "@/shared/constants/tokens";
 
@@ -95,6 +96,30 @@ function deriveStatus(
       return { kind: "live" };
     }
   }
+}
+
+/**
+ * Sport-specific status derivation. `deriveStatus` returns `"live"` whenever
+ * the pool is Open with trading enabled, but for sport cards `"live"` means
+ * "match in progress" — a signal that comes exclusively from the WebSocket
+ * feed, not from on-chain state. Convert any `"live"` result to `"upcoming"`
+ * so the card defaults to the pre-match view; the card component promotes it
+ * back to `"live"` when a WS update arrives.
+ */
+function deriveSportStatus(
+  pool: CPFPoolState,
+  offchain: OffchainEventData | null | undefined,
+  nowMs: number
+): PredictionStatus {
+  const base = deriveStatus(pool, offchain, nowMs);
+  if (base.kind === "live") {
+    const voteMs = epochSecondsToMs(offchain?.votingDeadlineTs);
+    return {
+      kind: "upcoming",
+      startsAt: voteMs != null ? new Date(voteMs).toISOString() : undefined,
+    };
+  }
+  return base;
 }
 
 function deriveIsTradingOpen(
@@ -242,7 +267,7 @@ function mapCPFPoolToSportCard(
   return {
     id: pool.id,
     predictionType: "sport",
-    status: deriveStatus(pool, offchain, nowMs),
+    status: deriveSportStatus(pool, offchain, nowMs),
     endsAt: deriveEndsAt(pool, offchain),
     isTradingOpen: deriveIsTradingOpen(pool, offchain, nowMs),
     streamUrl: meta?.streamUrl,
