@@ -81,8 +81,8 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     ],
   },
   {
-    id: "referal",
-    label: "Referal",
+    id: "referral",
+    label: "Referral",
     achievements: [
       {
         id: "referal-first-friend",
@@ -172,8 +172,8 @@ export const ACHIEVEMENT_CATEGORIES_MOCK: AchievementCategory[] = [
     ],
   },
   {
-    id: "yield-predictions",
-    label: "Yield Predictions",
+    id: "twopool",
+    label: "Two Pool",
     achievements: [
       {
         id: "yield-first-stake",
