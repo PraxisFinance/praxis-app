@@ -10,4 +10,6 @@ export type PredictionSingleParticipantCard = PredictionCoreListItem & {
   description?: string | null;
   categories?: string[];
   outcomes: PredictionBinaryOutcomes;
+  cpfPoolId: bigint;
+  cpfAddress: `0x${string}`;
 };

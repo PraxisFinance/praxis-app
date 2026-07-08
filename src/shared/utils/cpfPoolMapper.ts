@@ -198,6 +198,8 @@ function mapCPFPoolToEsportsCard(
     streamUrl: meta?.streamUrl,
     gameId,
     externalMatchId,
+    cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     participantA: {
       name: meta?.teamAName ?? "Team A",
       logoUrl: meta?.teamALogoUrl ?? "",
@@ -237,6 +239,8 @@ function mapCPFPoolToFinanceCard(
     volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
     assetName,
     assetTicker,
+    cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     outcomes: [
       { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
       { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },
@@ -273,6 +277,8 @@ function mapCPFPoolToSportCard(
     streamUrl: meta?.streamUrl,
     disciplineId,
     externalMatchId: offchain?.sourceId ?? undefined,
+    cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     participantA: {
       name: meta?.teamAName ?? "Team A",
       logoUrl: meta?.teamALogoUrl ?? "",
@@ -306,6 +312,8 @@ function mapCPFPoolToPoliticsCard(
     description: offchain?.description,
     categories: offchain?.categories,
     volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
+    cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     outcomes: [
       { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
       { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },
@@ -333,6 +341,8 @@ function mapCPFPoolToTechCard(
     description: offchain?.description,
     categories: offchain?.categories,
     volumeLabel: formatVolumeLabel(pool.stakeInFavor + pool.stakeAgainst),
+    cpfPoolId: pool.poolId,
+    cpfAddress: pool.cpfAddress as `0x${string}`,
     outcomes: [
       { id: "in_favor", label: sideALabel, odds: impliedOdds(favorPercent), poolPercent: favorPercent },
       { id: "against", label: sideBLabel, odds: impliedOdds(againstPercent), poolPercent: againstPercent },

@@ -1,7 +1,11 @@
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
 
-function tagEsportsMatch(match: Omit<EsportsMatch, "predictionType">): EsportsMatch {
-  return { ...match, predictionType: "esports" };
+const MOCK_CPF_ADDRESS = "0x0000000000000000000000000000000000000001" as const;
+
+function tagEsportsMatch(
+  match: Omit<EsportsMatch, "predictionType" | "cpfAddress" | "cpfPoolId">,
+): EsportsMatch {
+  return { ...match, predictionType: "esports", cpfAddress: MOCK_CPF_ADDRESS, cpfPoolId: 0n };
 }
 
 /**
