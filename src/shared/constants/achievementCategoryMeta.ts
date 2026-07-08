@@ -2,20 +2,20 @@ import type { AchievementCategoryId } from "@/shared/types/achievements";
 
 export const ACHIEVEMENT_CATEGORY_ORDER: AchievementCategoryId[] = [
   "core-flow",
-  "referal",
+  "referral",
   "market-coverage",
   "activity",
-  "yield-predictions",
+  "twopool",
   "perfomance",
   "bonus",
 ];
 
 export const ACHIEVEMENT_CATEGORY_LABELS: Record<AchievementCategoryId, string> = {
   "core-flow": "Core Flow",
-  referal: "Referal",
+  referral: "Referral",
   "market-coverage": "Market Coverage",
   activity: "Activity",
-  "yield-predictions": "Yield Predictions",
+  twopool: "Two Pool",
   perfomance: "Perfomance",
   bonus: "Bonus",
 };
@@ -30,13 +30,14 @@ export function isAchievementCategoryId(value: string): value is AchievementCate
 export const ACHIEVEMENT_API_CATEGORY_ALIASES: Record<string, AchievementCategoryId> = {
   onboarding: "core-flow",
   "core-flow": "core-flow",
-  referral: "referal",
-  referal: "referal",
+  referral: "referral",
+  referal: "referral",
   market: "market-coverage",
   "market-coverage": "market-coverage",
   activity: "activity",
-  yield: "yield-predictions",
-  "yield-predictions": "yield-predictions",
+  yield: "twopool",
+  "yield-predictions": "twopool",
+  twopool: "twopool",
   performance: "perfomance",
   perfomance: "perfomance",
   bonus: "bonus",

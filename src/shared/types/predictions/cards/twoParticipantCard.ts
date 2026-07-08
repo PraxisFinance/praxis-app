@@ -13,4 +13,6 @@ export type PredictionTwoParticipantCard = PredictionCoreListItem & {
    * payloads with this card. Set from `EventMetadata.matchId` when present.
    */
   externalMatchId?: string;
+  cpfPoolId: bigint;
+  cpfAddress: `0x${string}`;
 };

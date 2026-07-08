@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { ESPORTS_GAMES } from "@/shared/constants/esports";
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import { useCPF } from "@/hooks/useCPF";
 import { DrawerShell } from "@/components/ui/DrawerShell";
+import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
   PREDICTIONS_DRAWER_MAX_BALANCE,
   PredictionsDrawerHeader,
@@ -55,33 +57,81 @@ function EsportsMatchHubDrawerBody({
   const game = ESPORTS_GAMES.find((entry) => entry.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
 
-  return (
-    <DrawerShell
-      open={open}
-      onOpenChange={onOpenChange}
-      header={<PredictionsDrawerHeader />}
-      footer={
-        <PredictionsDrawerPlaceButton disabled={!isAvailable} onClick={() => {}} />
-      }
-    >
-      <PredictionsDrawerTemplate>
-        <EsportsMatchDrawerOutcomeCard
-          match={match}
-          selectedTeam={selectedTeam}
-          gameIconUrl={gameIconUrl}
-        />
+  const inFavor = side === "team1";
+  const { placeBet, isBetPending, betError, betStatus, resetBet } = useCPF(
+    match.cpfAddress,
+    match.cpfPoolId,
+    amount,
+    inFavor,
+  );
 
-        <PredictionsDrawerPredictionForm
-          amount={amount}
-          onAmountChange={setAmount}
-          maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
-          priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
-          disabled={!isAvailable}
-          unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
-          onSubmit={() => {}}
-          hideAction
-        />
-      </PredictionsDrawerTemplate>
-    </DrawerShell>
+  const buttonLabel =
+    betStatus === "approving"
+      ? "Approving…"
+      : betStatus === "depositing"
+        ? "Placing bet…"
+        : betStatus === "success"
+          ? "Placed!"
+          : undefined;
+
+  const disabled = !isAvailable || isBetPending;
+
+  function handleSuccessClose() {
+    resetBet();
+    onOpenChange(false);
+  }
+
+  return (
+    <>
+      <RequestResultDialog
+        open={betStatus === "error"}
+        onClose={resetBet}
+        title="Bet Failed"
+        description={betError ?? "Something went wrong. Please try again."}
+      />
+
+      <RequestResultDialog
+        open={betStatus === "success"}
+        onClose={handleSuccessClose}
+        status="success"
+        title="Bet Placed"
+        description="Your prediction has been placed successfully."
+        closeLabel="Done"
+      />
+
+      <DrawerShell
+        open={open}
+        onOpenChange={onOpenChange}
+        header={<PredictionsDrawerHeader />}
+        footer={
+          <PredictionsDrawerPlaceButton
+            disabled={disabled}
+            onClick={() => void placeBet()}
+            label={buttonLabel}
+          />
+        }
+      >
+        <PredictionsDrawerTemplate>
+          <EsportsMatchDrawerOutcomeCard
+            match={match}
+            selectedTeam={selectedTeam}
+            gameIconUrl={gameIconUrl}
+          />
+
+          <PredictionsDrawerPredictionForm
+            amount={amount}
+            onAmountChange={setAmount}
+            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
+            disabled={disabled}
+            unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
+            errorMessage={betError}
+            buttonLabel={buttonLabel}
+            onSubmit={() => void placeBet()}
+            hideAction
+          />
+        </PredictionsDrawerTemplate>
+      </DrawerShell>
+    </>
   );
 }

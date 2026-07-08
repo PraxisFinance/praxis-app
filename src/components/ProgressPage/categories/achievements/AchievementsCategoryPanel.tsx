@@ -24,10 +24,10 @@ import { cn } from "@/lib/utils";
 
 const ACHIEVEMENT_CATEGORY_ICONS: Record<AchievementCategoryId, ComponentType> = {
   "core-flow": CoreFlowIcon,
-  referal: ReferalIcon,
+  referral: ReferalIcon,
   "market-coverage": MarketCoverageIcon,
   activity: ActivityIcon,
-  "yield-predictions": YieldPredictionsIcon,
+  twopool: YieldPredictionsIcon,
   perfomance: PerfomanceIcon,
   bonus: BonusIcon,
 };

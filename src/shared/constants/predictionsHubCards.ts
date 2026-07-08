@@ -23,39 +23,51 @@ function isoInHours(hoursFromNow: number): string {
   return new Date(Date.now() + hoursFromNow * 60 * 60 * 1000).toISOString();
 }
 
-function tagEsportsMatch(match: Omit<EsportsMatch, "predictionType">): EsportsMatch {
-  return { ...match, predictionType: "esports" };
+function tagEsportsMatch(
+  match: Omit<EsportsMatch, "predictionType" | "cpfAddress" | "cpfPoolId">,
+): EsportsMatch {
+  return { ...match, predictionType: "esports", cpfAddress: HUB_MOCK_CPF_ADDRESS, cpfPoolId: 0n };
 }
 
-function tagSportMatch(match: Omit<SportHubMatch, "predictionType">): SportHubMatch {
-  return { ...match, predictionType: "sport" };
+function tagSportMatch(
+  match: Omit<SportHubMatch, "predictionType" | "cpfAddress" | "cpfPoolId">,
+): SportHubMatch {
+  return { ...match, predictionType: "sport", cpfAddress: HUB_MOCK_CPF_ADDRESS, cpfPoolId: 0n };
 }
 
 function tagPoliticsEvent(
-  event: Omit<PoliticsHubEvent, "predictionType" | "status">,
+  event: Omit<PoliticsHubEvent, "predictionType" | "status" | "cpfAddress" | "cpfPoolId">,
 ): PoliticsHubEvent {
   return {
     ...event,
     predictionType: "politics",
     status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+    cpfAddress: HUB_MOCK_CPF_ADDRESS,
+    cpfPoolId: 0n,
   };
 }
 
 function tagFinanceEvent(
-  event: Omit<FinanceHubEvent, "predictionType" | "status">,
+  event: Omit<FinanceHubEvent, "predictionType" | "status" | "cpfAddress" | "cpfPoolId">,
 ): FinanceHubEvent {
   return {
     ...event,
     predictionType: "finance",
     status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+    cpfAddress: HUB_MOCK_CPF_ADDRESS,
+    cpfPoolId: 0n,
   };
 }
 
-function tagTechEvent(event: Omit<TechHubEvent, "predictionType" | "status">): TechHubEvent {
+function tagTechEvent(
+  event: Omit<TechHubEvent, "predictionType" | "status" | "cpfAddress" | "cpfPoolId">,
+): TechHubEvent {
   return {
     ...event,
     predictionType: "tech",
     status: event.isTradingOpen ? { kind: "live" } : { kind: "ended" },
+    cpfAddress: HUB_MOCK_CPF_ADDRESS,
+    cpfPoolId: 0n,
   };
 }
 

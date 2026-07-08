@@ -20,10 +20,10 @@ export type AchievementStatus = "locked" | "in_progress" | "completed";
 
 export type AchievementCategoryId =
   | "core-flow"
-  | "referal"
+  | "referral"
   | "market-coverage"
   | "activity"
-  | "yield-predictions"
+  | "twopool"
   | "perfomance"
   | "bonus";
 

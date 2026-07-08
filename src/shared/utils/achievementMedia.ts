@@ -8,10 +8,10 @@ import type { AchievementCategoryId } from "@/shared/types/achievements";
 
 const CATEGORY_DEFAULT_ICON: Record<AchievementCategoryId, AchievementItemIconId> = {
   "core-flow": "deposit",
-  referal: "invite",
+  referral: "invite",
   "market-coverage": "chart",
   activity: "calendar",
-  "yield-predictions": "stake",
+  twopool: "stake",
   perfomance: "target",
   bonus: "gift",
 };
