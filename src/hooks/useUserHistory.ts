@@ -177,8 +177,11 @@ function resolveCpfStatus(
 }
 
 function resolveRydStatus(ryd: RydPosition): "won" | "lost" | "pending" {
+  // Only resolve won/lost once the pool is explicitly closed. Any other state —
+  // including in-between states like a pending draw request, or an unexpected/
+  // future state value — must stay "pending" rather than defaulting to "lost"
+  // before winners are actually decided.
   const state = ryd.state.toLowerCase();
-  if (state === "open" || state === "drawing") return "pending";
-  if (ryd.isWinner && BigInt(ryd.prize) > 0n) return "won";
-  return "lost";
+  if (state !== "closed") return "pending";
+  return ryd.isWinner && BigInt(ryd.prize) > 0n ? "won" : "lost";
 }

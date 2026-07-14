@@ -7,7 +7,7 @@ import { useCPF } from "@/hooks/useCPF";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
-  PREDICTIONS_DRAWER_MAX_BALANCE,
+  usePredictionsDrawerMaxBalance,
   PredictionsDrawerHeader,
   PredictionsDrawerHeaderImage,
   PredictionsDrawerPlaceButton,
@@ -64,15 +64,17 @@ function TechEventHubDrawerBody({
   onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
+  const { maxBalance, ytBalance } = usePredictionsDrawerMaxBalance();
   const isAvailable = event.isTradingOpen;
   const { primaryQuestion, secondaryMuted } = getTechDrawerInfoLines(event, selectedOutcome.label);
 
   const inFavor = selectedOutcome.id === event.outcomes[0].id;
-  const { placeBet, isBetPending, betError, betStatus, resetBet } = useCPF(
+  const { placeBet, isBetPending, betError, betStatus, resetBet, insufficientBalance } = useCPF(
     event.cpfAddress,
     event.cpfPoolId,
     amount,
     inFavor,
+    ytBalance,
   );
 
   const buttonLabel =
@@ -85,6 +87,7 @@ function TechEventHubDrawerBody({
           : undefined;
 
   const disabled = !isAvailable || isBetPending;
+  const canSubmit = !disabled && !insufficientBalance && amount !== "";
 
   function handleSuccessClose() {
     resetBet();
@@ -119,7 +122,7 @@ function TechEventHubDrawerBody({
         }
         footer={
           <PredictionsDrawerPlaceButton
-            disabled={disabled}
+            disabled={!canSubmit}
             onClick={() => void placeBet()}
             label={buttonLabel}
           />
@@ -135,11 +138,11 @@ function TechEventHubDrawerBody({
           <PredictionsDrawerPredictionForm
             amount={amount}
             onAmountChange={setAmount}
-            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            maxBalance={maxBalance}
             priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
             disabled={disabled}
             unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-            errorMessage={betError}
+            errorMessage={betError ?? (insufficientBalance ? "Insufficient YT balance." : null)}
             buttonLabel={buttonLabel}
             onSubmit={() => void placeBet()}
             hideAction

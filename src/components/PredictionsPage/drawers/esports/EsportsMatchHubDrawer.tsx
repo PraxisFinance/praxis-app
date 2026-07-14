@@ -7,7 +7,7 @@ import { useCPF } from "@/hooks/useCPF";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
-  PREDICTIONS_DRAWER_MAX_BALANCE,
+  usePredictionsDrawerMaxBalance,
   PredictionsDrawerHeader,
   PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
@@ -52,17 +52,19 @@ function EsportsMatchHubDrawerBody({
   onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
+  const { maxBalance, ytBalance } = usePredictionsDrawerMaxBalance();
   const selectedTeam = side === "team1" ? match.participantA : match.participantB;
   const isAvailable = match.isTradingOpen;
   const game = ESPORTS_GAMES.find((entry) => entry.id === match.gameId);
   const gameIconUrl = game?.iconUrl ?? "";
 
   const inFavor = side === "team1";
-  const { placeBet, isBetPending, betError, betStatus, resetBet } = useCPF(
+  const { placeBet, isBetPending, betError, betStatus, resetBet, insufficientBalance } = useCPF(
     match.cpfAddress,
     match.cpfPoolId,
     amount,
     inFavor,
+    ytBalance,
   );
 
   const buttonLabel =
@@ -75,6 +77,7 @@ function EsportsMatchHubDrawerBody({
           : undefined;
 
   const disabled = !isAvailable || isBetPending;
+  const canSubmit = !disabled && !insufficientBalance && amount !== "";
 
   function handleSuccessClose() {
     resetBet();
@@ -105,7 +108,7 @@ function EsportsMatchHubDrawerBody({
         header={<PredictionsDrawerHeader />}
         footer={
           <PredictionsDrawerPlaceButton
-            disabled={disabled}
+            disabled={!canSubmit}
             onClick={() => void placeBet()}
             label={buttonLabel}
           />
@@ -121,11 +124,11 @@ function EsportsMatchHubDrawerBody({
           <PredictionsDrawerPredictionForm
             amount={amount}
             onAmountChange={setAmount}
-            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            maxBalance={maxBalance}
             priceLabel={formatCryptoPredictionDrawerPrice(selectedTeam.odds)}
             disabled={disabled}
             unavailableMessage={!isAvailable ? "Betting is unavailable for this match." : null}
-            errorMessage={betError}
+            errorMessage={betError ?? (insufficientBalance ? "Insufficient YT balance." : null)}
             buttonLabel={buttonLabel}
             onSubmit={() => void placeBet()}
             hideAction
