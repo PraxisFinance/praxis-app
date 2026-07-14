@@ -1,4 +1,4 @@
-export { PREDICTIONS_DRAWER_MAX_BALANCE } from "./predictionsDrawerConstants";
+export { usePredictionsDrawerMaxBalance } from "./usePredictionsDrawerMaxBalance";
 export { PredictionsDrawerAmountInput } from "./PredictionsDrawerAmountInput";
 export { PredictionsDrawerHeader } from "./PredictionsDrawerHeader";
 export {

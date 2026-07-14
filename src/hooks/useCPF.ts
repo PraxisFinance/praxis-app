@@ -8,7 +8,7 @@ import { config } from "@/config/wagmi";
 import { praxisCPFAbi, conditionalTokensAbi } from "@/config/contracts";
 import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
-import { parseTokenAmount } from "@/shared/utils/format";
+import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
 import { ensureAppChain } from "@/lib/ensureAppChain";
 import { useTrackAchievement } from "./useTrackAchievement";
 
@@ -23,6 +23,7 @@ export function useCPF(
   cpfPoolId: bigint,
   amountInput: string,
   inFavor: boolean,
+  ytBalance: bigint = 0n,
   minTokensOut: bigint = 0n,
 ) {
   const { address, chainId } = useAccount();
@@ -38,6 +39,7 @@ export function useCPF(
 
   const { yt } = useActiveVault();
   const amount = parseTokenAmount(amountInput, TOKEN_DECIMALS.USDC);
+  const insufficientBalance = amount > BigInt(0) && amount > ytBalance;
 
   // ─── Bet ────────────────────────────────────────────────────────────────
 
@@ -56,6 +58,14 @@ export function useCPF(
 
     if (amount === BigInt(0)) {
       setBetError("Enter an amount");
+      setBetStatus("error");
+      return;
+    }
+
+    if (amount > ytBalance) {
+      setBetError(
+        `Insufficient YT balance. Need ${formatTokenBalance(amount, TOKEN_DECIMALS.USDC)} YT but you only have ${formatTokenBalance(ytBalance, TOKEN_DECIMALS.USDC)} YT.`
+      );
       setBetStatus("error");
       return;
     }
@@ -105,7 +115,7 @@ export function useCPF(
       setBetStatus("error");
       setBetError(err instanceof Error ? err.message : "Transaction failed");
     }
-  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, minTokensOut, switchChainAsync, writeContractAsync, yt, trackAchievement]);
+  }, [address, chainId, cpfAddress, cpfPoolId, amount, inFavor, ytBalance, minTokensOut, switchChainAsync, writeContractAsync, yt, trackAchievement]);
 
   const resetBet = useCallback(() => {
     setBetStatus("idle");
@@ -177,6 +187,7 @@ export function useCPF(
     betStatus,
     betError,
     resetBet,
+    insufficientBalance,
     isBetPending: betStatus === "approving" || betStatus === "depositing",
     // claim
     claim,
