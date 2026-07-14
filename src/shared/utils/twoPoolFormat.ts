@@ -3,7 +3,7 @@ import {
   TWO_POOL_NOT_DEFINED_NUM,
   TWO_POOL_NOT_DEFINED_STR,
 } from "@/shared/constants/twoPoolSentinels";
-import type { TwoPool } from "@/shared/types/twoPool";
+import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 
 function formatTwoPoolEndDate(iso: string): string | null {
   const raw = iso.trim();
@@ -57,4 +57,12 @@ export function getTwoPoolProtocolLabel(pool: TwoPool): string {
     return fromDescription;
   }
   return "Praxis";
+}
+
+export function formatTwoPoolSideLabel(side: TwoPoolSide): string {
+  return side === "stable" ? "Stable" : "Elevated";
+}
+
+export function getTwoPoolDetailBreadcrumb(): string {
+  return "Yield Predictions • 2-pools";
 }

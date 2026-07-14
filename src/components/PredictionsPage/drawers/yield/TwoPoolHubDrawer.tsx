@@ -9,7 +9,7 @@ import { InfoRow } from "@/components/ui/InfoRow";
 import { Switch } from "@/components/ui/Switch";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import { useTwoPool } from "@/hooks/useTwoPool";
-import { formatTwoPoolSideLabel } from "@/shared/constants/twoPoolHubMocks";
+import { formatTwoPoolSideLabel } from "@/shared/utils/twoPoolFormat";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { TwoPoolExpectedPerformanceTable } from "./TwoPoolExpectedPerformanceTable";
 

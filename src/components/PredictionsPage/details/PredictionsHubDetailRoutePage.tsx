@@ -1,7 +1,7 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import {
   getPredictionsHubDetailBreadcrumb,
@@ -10,10 +10,7 @@ import {
   PREDICTIONS_HUB_KIND_TO_CATEGORY,
 } from "@/shared/types/predictionsHubItem";
 import { findPredictionsHubItemById } from "@/shared/constants/predictionsHubCards";
-import {
-  findTwoPoolHubMockById,
-  getTwoPoolDetailBreadcrumb,
-} from "@/shared/constants/twoPoolHubMocks";
+import { getTwoPoolDetailBreadcrumb } from "@/shared/utils/twoPoolFormat";
 import { useRYDStore } from "@/stores/rydStore";
 import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
 import { rydDataToRandomPool } from "@/shared/utils/rydMappers";
@@ -35,14 +32,13 @@ export function PredictionsHubDetailRoutePage({ id }: PredictionsHubDetailRouteP
   const [fetchInitiated, setFetchInitiated] = useState(false);
 
   const staticItem = findPredictionsHubItemById(id);
-  const mockTwoPool = useMemo(() => findTwoPoolHubMockById(id), [id]);
-  const twoPool = storeTwoPool ?? mockTwoPool ?? null;
+  const twoPool = storeTwoPool ?? null;
   const openTwoPoolDrawer = usePredictionsHubTwoPoolDrawer();
 
   useEffect(() => {
-    if (staticItem || mockTwoPool) return;
+    if (staticItem) return;
     void Promise.all([fetchAll(address), fetchPools()]).then(() => setFetchInitiated(true));
-  }, [staticItem, mockTwoPool, fetchAll, fetchPools, address]);
+  }, [staticItem, fetchAll, fetchPools, address]);
 
   if (twoPool) {
     return (

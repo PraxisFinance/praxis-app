@@ -14,7 +14,6 @@ import {
   type PredictionsHubCategoryId,
   type PredictionsHubFilterState,
 } from "@/shared/constants/predictionsHubFilters";
-import { PREDICTIONS_HUB_TWO_POOL_MOCKS } from "@/shared/constants/twoPoolHubMocks";
 import { useRYDStore } from "@/stores/rydStore";
 import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
 import { rydDataToRandomPool } from "@/shared/utils/rydMappers";
@@ -89,10 +88,7 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
     return filterPredictionsHubCards([...eventCards, ...rydCards], filters);
   }, [poolStates, offchainByContractId, ryds, filters]);
 
-  const yieldPools = useMemo(
-    () => (twoPools.length > 0 ? twoPools : PREDICTIONS_HUB_TWO_POOL_MOCKS),
-    [twoPools]
-  );
+  const yieldPools = twoPools;
 
   const showYieldPools = filters.categoryId === "all" || filters.categoryId === "yield";
   const showHubItems = filters.categoryId !== "yield";
