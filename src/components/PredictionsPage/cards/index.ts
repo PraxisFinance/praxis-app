@@ -7,3 +7,4 @@ export { SportMatchHubCard } from "./SportMatchHubCard";
 export { PoliticsEventHubCard } from "./PoliticsEventHubCard";
 export { FinanceEventHubCard } from "./FinanceEventHubCard";
 export { TechEventHubCard } from "./TechEventHubCard";
+export { TwoPoolHubCard } from "./yield";

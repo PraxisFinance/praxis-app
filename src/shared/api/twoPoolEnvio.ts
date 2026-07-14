@@ -1,10 +1,12 @@
 import { envioQuery, toBigInt } from "@/shared/api/envioClient";
+import { TOKEN_DECIMALS } from "@/config/tokens";
 import {
   TWO_POOL_NOT_DEFINED_NUM,
   TWO_POOL_NOT_DEFINED_STR,
 } from "@/shared/constants/twoPoolSentinels";
 import type { CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
 import type { TwoPool } from "@/shared/types/twoPool";
+import { formatTokenBalance } from "@/shared/utils/format";
 
 // ── GraphQL (Envio) ───────────────────────────────────────────────────
 
@@ -155,6 +157,12 @@ export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
       ? raw.actualRate
       : TWO_POOL_NOT_DEFINED_STR;
 
+  const totalTvl = stableTvl + elevatedTvl;
+  const tvlLabel =
+    totalTvl > BigInt(0)
+      ? `$${formatTokenBalance(totalTvl, TOKEN_DECIMALS.USDC)}`
+      : TWO_POOL_NOT_DEFINED_STR;
+
   return {
     id: raw.id,
     title: TWO_POOL_NOT_DEFINED_STR,
@@ -164,6 +172,7 @@ export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
     status,
     endsAt,
     isTradingOpen,
+    tvlLabel,
     targetApyPercent: TWO_POOL_NOT_DEFINED_NUM,
     predictedApyPercent: TWO_POOL_NOT_DEFINED_NUM,
     stablePoolPercent,

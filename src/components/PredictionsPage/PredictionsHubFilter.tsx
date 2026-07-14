@@ -31,12 +31,14 @@ export function PredictionsHubFilter({ value, onChange }: PredictionsHubFilterPr
         ariaLabel="Prediction categories"
       />
 
-      <FilterChipRow
-        options={PREDICTIONS_HUB_TIME_FILTERS}
-        value={value.timeId}
-        onChange={(timeId) => onChange({ ...value, timeId })}
-        ariaLabel="Event end time"
-      />
+      {value.categoryId !== "yield" ? (
+        <FilterChipRow
+          options={PREDICTIONS_HUB_TIME_FILTERS}
+          value={value.timeId}
+          onChange={(timeId) => onChange({ ...value, timeId })}
+          ariaLabel="Event end time"
+        />
+      ) : null}
 
       {subFilterKind === "market-type" ? (
         <FilterChipRow

@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import { PredictionsHubItemsList } from "@/components/PredictionsPage/cards";
+import { PredictionsHubItemsList, TwoPoolHubCard } from "@/components/PredictionsPage/cards";
+import { TwoPoolHubCardLink } from "@/components/PredictionsPage/cards/yield/TwoPoolHubCardLink";
 import { PredictionsHubFilter } from "@/components/PredictionsPage/filters";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { filterPredictionsHubCards } from "@/shared/constants/predictionsHubCards";
@@ -13,11 +14,14 @@ import {
   type PredictionsHubCategoryId,
   type PredictionsHubFilterState,
 } from "@/shared/constants/predictionsHubFilters";
+import { PREDICTIONS_HUB_TWO_POOL_MOCKS } from "@/shared/constants/twoPoolHubMocks";
 import { useRYDStore } from "@/stores/rydStore";
+import { useTwoPoolsStore } from "@/stores/twoPoolsStore";
 import { rydDataToRandomPool } from "@/shared/utils/rydMappers";
 import { useEventsStore, type CPFPoolState } from "@/stores/eventsStore";
 import { mapCPFPoolsToHubCards, resolveOffchainDataForPool } from "@/shared/utils/cpfPoolMapper";
 import { useSourceConnection, useMarketsConnection } from "@/hooks/useLiveDataConnection";
+import { usePredictionsHubTwoPoolDrawer } from "@/components/PredictionsPage/drawers";
 
 export interface PredictionsHubPageProps {
   /** Preset category filter when the page opens or when the prop changes. */
@@ -47,6 +51,11 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
   useEffect(() => {
     void fetchAllPoolStates();
   }, [fetchAllPoolStates]);
+
+  const { pools: twoPools, fetchPools } = useTwoPoolsStore();
+  useEffect(() => {
+    void fetchPools();
+  }, [fetchPools]);
 
   const poolStates = useMemo(
     () =>
@@ -80,6 +89,15 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
     return filterPredictionsHubCards([...eventCards, ...rydCards], filters);
   }, [poolStates, offchainByContractId, ryds, filters]);
 
+  const yieldPools = useMemo(
+    () => (twoPools.length > 0 ? twoPools : PREDICTIONS_HUB_TWO_POOL_MOCKS),
+    [twoPools]
+  );
+
+  const showYieldPools = filters.categoryId === "all" || filters.categoryId === "yield";
+  const showHubItems = filters.categoryId !== "yield";
+  const openTwoPoolDrawer = usePredictionsHubTwoPoolDrawer();
+
   const sectionTitle = useMemo(() => {
     const activeCategory = PREDICTIONS_HUB_CATEGORY_FILTERS.find(
       (category) => category.id === filters.categoryId
@@ -87,11 +105,30 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
     return activeCategory?.title;
   }, [filters.categoryId]);
 
+  const isEmpty =
+    (showHubItems ? items.length === 0 : true) && (showYieldPools ? yieldPools.length === 0 : true);
+
   return (
     <div className="flex flex-col gap-6">
       <PredictionsHubFilter value={filters} onChange={setFilters} />
       {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null}
-      <PredictionsHubItemsList items={items} />
+      {isEmpty ? (
+        <p className="text-main-darkPurple/70 px-1 text-sm">No predictions found.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {showYieldPools
+            ? yieldPools.map((pool) => (
+                <TwoPoolHubCardLink key={pool.id} pool={pool}>
+                  <TwoPoolHubCard
+                    pool={pool}
+                    onPickSide={(side) => openTwoPoolDrawer(pool, side)}
+                  />
+                </TwoPoolHubCardLink>
+              ))
+            : null}
+          {showHubItems && items.length > 0 ? <PredictionsHubItemsList items={items} /> : null}
+        </div>
+      )}
     </div>
   );
 }
