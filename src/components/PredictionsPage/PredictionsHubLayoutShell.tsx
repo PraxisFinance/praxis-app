@@ -9,6 +9,7 @@ import {
   PredictionsHubPoliticsDrawerProvider,
   PredictionsHubSportDrawerProvider,
   PredictionsHubTechDrawerProvider,
+  PredictionsHubTwoPoolDrawerProvider,
 } from "@/components/PredictionsPage/drawers";
 
 interface PredictionsHubLayoutShellProps {
@@ -23,7 +24,11 @@ export function PredictionsHubLayoutShell({ children }: PredictionsHubLayoutShel
           <PredictionsHubSportDrawerProvider>
             <PredictionsHubPoliticsDrawerProvider>
               <PredictionsHubFinanceDrawerProvider>
-                <PredictionsHubTechDrawerProvider>{children}</PredictionsHubTechDrawerProvider>
+                <PredictionsHubTechDrawerProvider>
+                  <PredictionsHubTwoPoolDrawerProvider>
+                    {children}
+                  </PredictionsHubTwoPoolDrawerProvider>
+                </PredictionsHubTechDrawerProvider>
               </PredictionsHubFinanceDrawerProvider>
             </PredictionsHubPoliticsDrawerProvider>
           </PredictionsHubSportDrawerProvider>

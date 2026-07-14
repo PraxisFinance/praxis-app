@@ -56,6 +56,13 @@ export {
   type TechEventHubDrawerProps,
 } from "./tech";
 export {
+  TwoPoolHubDrawer,
+  PredictionsHubTwoPoolDrawerProvider,
+  usePredictionsHubTwoPoolDrawer,
+  useTwoPoolDrawer,
+  type TwoPoolHubDrawerProps,
+} from "./yield";
+export {
   usePredictionsDrawerMaxBalance,
   PredictionsDrawerAmountInput,
   PredictionsDrawerHeader,

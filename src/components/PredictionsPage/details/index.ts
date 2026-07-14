@@ -13,3 +13,4 @@ export { PredictionsHubDetailPage } from "./PredictionsHubDetailPage";
 export type { PredictionsHubDetailPageProps } from "./PredictionsHubDetailPage";
 export { PredictionsHubDetailRoutePage } from "./PredictionsHubDetailRoutePage";
 export type { PredictionsHubDetailRoutePageProps } from "./PredictionsHubDetailRoutePage";
+export { TwoPoolHubDetail } from "./yield";

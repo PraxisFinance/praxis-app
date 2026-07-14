@@ -9,6 +9,7 @@ export const PREDICTIONS_HUB_CATEGORY_FILTERS = [
   { id: "all", label: "All", title: "All predictions" },
   { id: "crypto", label: "Crypto", title: "Cryptocurrencies" },
   { id: "esports", label: "Esports", title: "Matches" },
+  { id: "yield", label: "Yield Predictions", title: "2-pools" },
   { id: "random-rewards", label: "Random rewards", title: null },
   { id: "sport", label: "Sport", title: "Matches" },
   { id: "politics", label: "Politics", title: null },
@@ -92,13 +93,13 @@ export function applyPredictionsHubCategoryChange(
 
 /** Initial hub filter state with a preset category (resets category-specific sub-filters). */
 export function createPredictionsHubFilterState(
-  categoryId: PredictionsHubCategoryId = "all",
+  categoryId: PredictionsHubCategoryId = "all"
 ): PredictionsHubFilterState {
   return applyPredictionsHubCategoryChange(DEFAULT_PREDICTIONS_HUB_FILTER_STATE, categoryId);
 }
 
 const PREDICTIONS_HUB_CATEGORY_IDS = new Set<PredictionsHubCategoryId>(
-  PREDICTIONS_HUB_CATEGORY_FILTERS.map((category) => category.id),
+  PREDICTIONS_HUB_CATEGORY_FILTERS.map((category) => category.id)
 );
 
 export function isPredictionsHubCategoryId(value: string): value is PredictionsHubCategoryId {
