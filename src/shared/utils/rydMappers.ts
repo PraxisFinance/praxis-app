@@ -27,7 +27,14 @@ export function rydDataToRandomPool(data: RYDData): RandomPool | null {
   const { state, contractMeta, userParticipation } = data;
   if (!state) return null;
 
-  const isLive = state.state === "Open" || state.state === "DrawRequested";
+  // Mirrors PraxisRYD.deposit()'s own gate (`state == Open && block.timestamp < endTime`):
+  // once the deadline passes, the contract already rejects new deposits/withdrawals even
+  // though the indexed on-chain `state` can lag behind at "Open" until someone calls
+  // requestDraw(). Treat the pool as no longer live in that window so the UI doesn't
+  // advertise it as joinable/active. "DrawRequested" is likewise never joinable — the
+  // contract blocks deposits as soon as state leaves "Open" — so it must not count as live.
+  const nowSec = Math.floor(Date.now() / 1000);
+  const isLive = state.state === "Open" && nowSec < Number(state.endTime);
   const tvl = formatRYDAmount(state.totalDeposits, YT_DECIMALS);
   const title = contractMeta?.name ?? `YT RYD ${shortenAddress(state.id)}`;
 

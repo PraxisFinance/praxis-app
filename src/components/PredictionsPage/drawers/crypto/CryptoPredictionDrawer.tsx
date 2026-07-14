@@ -13,7 +13,7 @@ import { useCPF } from "@/hooks/useCPF";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import {
-  PREDICTIONS_DRAWER_MAX_BALANCE,
+  usePredictionsDrawerMaxBalance,
   PredictionsDrawerHeader,
   PredictionsDrawerPlaceButton,
   PredictionsDrawerPredictionForm,
@@ -80,6 +80,7 @@ function CryptoPredictionDrawerBody({
   onOpenChange: (open: boolean) => void;
 }) {
   const [amount, setAmount] = useState("");
+  const { maxBalance, ytBalance } = usePredictionsDrawerMaxBalance();
   const isAvailable = prediction.isTradingOpen;
   const { primaryQuestion, secondaryMuted } = getCryptoDrawerInfoLines(
     prediction,
@@ -87,11 +88,12 @@ function CryptoPredictionDrawerBody({
   );
 
   const inFavor = selectedOutcome.id === prediction.outcomes[0].id;
-  const { placeBet, isBetPending, betError, betStatus, resetBet } = useCPF(
+  const { placeBet, isBetPending, betError, betStatus, resetBet, insufficientBalance } = useCPF(
     prediction.cpfAddress,
     prediction.cpfPoolId,
     amount,
-    inFavor
+    inFavor,
+    ytBalance
   );
 
   const buttonLabel =
@@ -104,6 +106,7 @@ function CryptoPredictionDrawerBody({
           : undefined;
 
   const disabled = !isAvailable || isBetPending;
+  const canSubmit = !disabled && !insufficientBalance && amount !== "";
 
   function handleSuccessClose() {
     resetBet();
@@ -138,7 +141,7 @@ function CryptoPredictionDrawerBody({
         }
         footer={
           <PredictionsDrawerPlaceButton
-            disabled={disabled}
+            disabled={!canSubmit}
             onClick={() => void placeBet()}
             label={buttonLabel}
           />
@@ -154,11 +157,11 @@ function CryptoPredictionDrawerBody({
           <PredictionsDrawerPredictionForm
             amount={amount}
             onAmountChange={setAmount}
-            maxBalance={PREDICTIONS_DRAWER_MAX_BALANCE}
+            maxBalance={maxBalance}
             priceLabel={formatCryptoPredictionDrawerPrice(selectedOutcome.odds)}
             disabled={disabled}
             unavailableMessage={!isAvailable ? "Predictions are unavailable for this market." : null}
-            errorMessage={betError}
+            errorMessage={betError ?? (insufficientBalance ? "Insufficient YT balance." : null)}
             buttonLabel={buttonLabel}
             onSubmit={() => void placeBet()}
             hideAction
