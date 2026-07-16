@@ -6,17 +6,20 @@ import { cn } from "@/lib/utils";
 interface SwitchProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
+  disabled?: boolean;
   className?: string;
 }
 
-export function Switch({ checked, onCheckedChange, className }: SwitchProps) {
+export function Switch({ checked, onCheckedChange, disabled, className }: SwitchProps) {
   return (
     <SwitchPrimitive.Root
       checked={checked}
       onCheckedChange={onCheckedChange}
+      disabled={disabled}
       className={cn(
         "relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full outline-none transition-colors duration-200",
         "bg-main-grayPurple data-[checked]:bg-main-purple",
+        "data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className
       )}
     >

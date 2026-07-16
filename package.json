@@ -11,7 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:reset-after-deploy": "node --env-file=.env scripts/reset-db-after-deploy.mjs"
   },
   "dependencies": {
     "@base-org/account": "^2.5.2",
