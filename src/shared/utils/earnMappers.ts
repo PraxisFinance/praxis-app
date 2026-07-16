@@ -69,6 +69,18 @@ export function vaultStateToAvailableItem(vault: VaultState): EarnAvailableItem 
   };
 }
 
+/** claimableYield = max(0, totalYieldPaid × currentBalance / totalBalance − totalYieldClaimed) */
+function computeClaimableYield(
+  currentBalance: bigint,
+  totalYieldClaimed: bigint,
+  vault: VaultState | null
+): bigint {
+  if (!vault || vault.totalBalance <= BigInt(0)) return BigInt(0);
+  const entitlement = (vault.totalYieldPaid * currentBalance) / vault.totalBalance;
+  const claimable = entitlement - totalYieldClaimed;
+  return claimable > BigInt(0) ? claimable : BigInt(0);
+}
+
 export function userPositionToEarnPosition(
   pos: UserPosition,
   vault: VaultState | null
@@ -76,6 +88,7 @@ export function userPositionToEarnPosition(
   const nowSec = BigInt(Math.floor(Date.now() / 1000));
   const isMatured = vault ? vault.maturity <= nowSec : false;
   const depositDate = new Date(Number(pos.firstDepositAt) * 1000);
+  const claimableYield = computeClaimableYield(pos.currentBalance, pos.totalYieldClaimed, vault);
 
   return {
     vaultAddress: pos.vault_id as `0x${string}`,
@@ -88,7 +101,7 @@ export function userPositionToEarnPosition(
     depositsAmount: vault ? formatCompactUSDC(vault.totalDeposited) : "—",
     yourDeposit: formatTokenBalance(pos.currentBalance, USDC_DECIMALS),
     yieldApyPercent: "—",
-    yieldGenerated: formatTokenBalance(pos.totalYieldClaimed, USDC_DECIMALS),
+    yieldGenerated: formatTokenBalance(claimableYield, USDC_DECIMALS),
     stakeTime: depositDate.toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",

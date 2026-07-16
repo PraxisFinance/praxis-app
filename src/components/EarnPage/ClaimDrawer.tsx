@@ -42,13 +42,12 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
 
   const isSuccess = status === "success";
 
-  useEffect(() => {
-    if (!open) {
-      setWithdrawPrincipal(true);
-      setWithdrawYield(true);
-      reset();
-    }
-  }, [open, reset]);
+  const principalPositive = Number(principalAmount) > 0;
+  const yieldPositive = Number(yieldAmount) > 0;
+  // Align with useVaultClaimBoth: zero-amount legs are skipped, not blockers.
+  const canClaimPrincipal = withdrawPrincipal && principalPositive;
+  const canClaimYield = withdrawYield && yieldPositive;
+  const canSubmit = canClaimPrincipal || canClaimYield;
 
   useEffect(() => {
     if (isSuccess) void refetchAfterDelay();
@@ -58,11 +57,11 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
 
   const currencySuffix = ` ${item.depositCurrency}`;
 
-  const canClaimPrincipal = withdrawPrincipal && principalAmount && Number(principalAmount) > 0;
-  const canClaimYield = withdrawYield && yieldAmount && Number(yieldAmount) > 0;
-  const hasSelection = withdrawPrincipal || withdrawYield;
-  const canSubmit =
-    hasSelection && (!withdrawPrincipal || canClaimPrincipal) && (!withdrawYield || canClaimYield);
+  function resetDrawerState() {
+    setWithdrawPrincipal(true);
+    setWithdrawYield(true);
+    reset();
+  }
 
   function handleTogglePrincipal(checked: boolean) {
     setWithdrawPrincipal(checked);
@@ -75,13 +74,18 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
   }
 
   function handleClose() {
-    reset();
+    resetDrawerState();
     onOpenChange(false);
+  }
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen) resetDrawerState();
+    onOpenChange(nextOpen);
   }
 
   async function handleClaim() {
     if (!canSubmit) return;
-    await claim({ principal: withdrawPrincipal, yield: withdrawYield });
+    await claim({ principal: canClaimPrincipal, yield: canClaimYield });
   }
 
   const buttonLabel = isPending ? "Claiming…" : isSuccess ? "Done" : "Claim Funds";
@@ -106,7 +110,7 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
 
       <DrawerShell
         open={open}
-        onOpenChange={onOpenChange}
+        onOpenChange={handleOpenChange}
         header={
           <AppDrawerHeading
             variant="plain"
@@ -167,13 +171,21 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
             <span className="text-main-darkPurple text-sm font-normal leading-5">
               Withdraw principal(PT)
             </span>
-            <Switch checked={withdrawPrincipal} onCheckedChange={handleTogglePrincipal} />
+            <Switch
+              checked={canClaimPrincipal}
+              onCheckedChange={handleTogglePrincipal}
+              disabled={!principalPositive}
+            />
           </div>
           <div className="flex items-center justify-between gap-4">
             <span className="text-main-darkPurple text-sm font-normal leading-5">
               Withdraw yield(YT)
             </span>
-            <Switch checked={withdrawYield} onCheckedChange={handleToggleYield} />
+            <Switch
+              checked={canClaimYield}
+              onCheckedChange={handleToggleYield}
+              disabled={!yieldPositive}
+            />
           </div>
 
           <div className="flex items-start gap-2">
