@@ -59,6 +59,8 @@ async function fireWalletConnectAchievement(token: string): Promise<void> {
   }
 }
 
+let authInFlight: { address: string; promise: Promise<string> } | null = null;
+
 export function useAuth() {
   const { address, chainId } = useAccount();
   const { switchChainAsync } = useSwitchChain();
@@ -74,36 +76,52 @@ export function useAuth() {
     const stored = getStoredToken(address);
     if (stored) return stored;
 
-    await ensureAppChain(chainId, switchChainAsync);
+    const addressKey = address.toLowerCase();
+    if (authInFlight?.address === addressKey) {
+      return authInFlight.promise;
+    }
 
-    const nonceRes = await fetch(`${BACKEND_URL}/auth/nonce`);
-    if (!nonceRes.ok) throw new Error("Failed to fetch auth nonce");
-    const { nonce } = (await nonceRes.json()) as { nonce: string };
+    const promise = (async () => {
+      await ensureAppChain(chainId, switchChainAsync);
 
-    const message = createSiweMessage({
-      address,
-      chainId: baseSepolia.id,
-      domain: window.location.host,
-      nonce,
-      uri: window.location.origin,
-      version: "1",
-      statement: "Sign in to Praxis Finance",
-    });
+      const nonceRes = await fetch(`${BACKEND_URL}/auth/nonce`);
+      if (!nonceRes.ok) throw new Error("Failed to fetch auth nonce");
+      const { nonce } = (await nonceRes.json()) as { nonce: string };
 
-    const signature = await signMessageAsync({ message });
+      const message = createSiweMessage({
+        address,
+        chainId: baseSepolia.id,
+        domain: window.location.host,
+        nonce,
+        uri: window.location.origin,
+        version: "1",
+        statement: "Sign in to Praxis Finance",
+      });
 
-    const verifyRes = await fetch(`${BACKEND_URL}/auth/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, signature }),
-    });
+      const signature = await signMessageAsync({ message });
 
-    if (!verifyRes.ok) throw new Error("Authentication failed");
+      const verifyRes = await fetch(`${BACKEND_URL}/auth/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message, signature }),
+      });
 
-    const { accessToken } = (await verifyRes.json()) as { accessToken: string };
-    storeToken(accessToken, address);
-    void fireWalletConnectAchievement(accessToken);
-    return accessToken;
+      if (!verifyRes.ok) throw new Error("Authentication failed");
+
+      const { accessToken } = (await verifyRes.json()) as { accessToken: string };
+      storeToken(accessToken, address);
+      void fireWalletConnectAchievement(accessToken);
+      return accessToken;
+    })();
+
+    authInFlight = { address: addressKey, promise };
+    try {
+      return await promise;
+    } finally {
+      if (authInFlight?.promise === promise) {
+        authInFlight = null;
+      }
+    }
   }, [address, chainId, switchChainAsync, signMessageAsync]);
 
   const clearToken = useCallback(() => {
