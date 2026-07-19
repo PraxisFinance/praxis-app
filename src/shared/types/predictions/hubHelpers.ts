@@ -107,6 +107,7 @@ export const PREDICTIONS_HUB_ITEMS_BY_CATEGORY: Record<
   all: ["crypto", "esports", "random-reward", "sport", "politics", "finance", "tech"],
   crypto: ["crypto"],
   esports: ["esports"],
+  yield: [],
   "random-rewards": ["random-reward"],
   sport: ["sport"],
   politics: ["politics"],
