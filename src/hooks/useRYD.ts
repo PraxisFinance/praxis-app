@@ -10,6 +10,7 @@ import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { praxisRYDAbi } from "@/config/contracts";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
+import { runBatchedWrite } from "@/lib/batchedWrite";
 import { useTrackAchievement } from "./useTrackAchievement";
 
 // ── Deposit YT into RYD ───────────────────────────────────────────────
@@ -73,33 +74,31 @@ export function useRYDDeposit(
         chainId: baseSepolia.id,
       });
 
-      if (allowance < amount) {
-        setStatus("approving");
+      const needsApproval = allowance < amount;
+      setStatus(needsApproval ? "approving" : "depositing");
 
-        const approveTx = await writeContractAsync({
-          address: yt,
-          abi: erc20Abi,
-          functionName: "approve",
-          args: [rydAddress, amount],
-          chainId: baseSepolia.id,
-        });
+      const { hash } = await runBatchedWrite(
+        [
+          needsApproval && {
+            address: yt,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [rydAddress, amount],
+          },
+          {
+            address: rydAddress,
+            abi: praxisRYDAbi,
+            functionName: "deposit",
+            args: [amount],
+          },
+        ],
+        {
+          onStep: (index, total) =>
+            setStatus(needsApproval && total > 1 && index === 0 ? "approving" : "depositing"),
+        },
+      );
 
-        await waitForTransactionReceipt(config, { hash: approveTx });
-      }
-
-      setStatus("depositing");
-
-      const depositTx = await writeContractAsync({
-        address: rydAddress,
-        abi: praxisRYDAbi,
-        functionName: "deposit",
-        args: [amount],
-        chainId: baseSepolia.id,
-      });
-
-      await waitForTransactionReceipt(config, { hash: depositTx });
-
-      trackAchievement("ryd.enter", depositTx);
+      if (hash) trackAchievement("ryd.enter", hash);
       setStatus("success");
     } catch (err) {
       setStatus("error");

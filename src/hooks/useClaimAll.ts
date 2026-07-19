@@ -1,20 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import {
-  encodeFunctionData,
-  zeroHash,
-} from "viem";
+import { useAccount, useSwitchChain } from "wagmi";
+import { zeroHash } from "viem";
 import { baseSepolia } from "wagmi/chains";
-import {
-  getCapabilities,
-  readContract,
-  sendCalls,
-  waitForCallsStatus,
-  waitForTransactionReceipt,
-} from "wagmi/actions";
+import { readContract } from "wagmi/actions";
 import { config } from "@/config/wagmi";
+import { runBatchedWrite, type ContractCall } from "@/lib/batchedWrite";
 import {
   conditionalTokensAbi,
   praxisCPFAbi,
@@ -85,7 +77,6 @@ function parseClaims(claims: Claim[]) {
 export function useClaimAll(pendingClaims: Claim[]) {
   const { address } = useAccount();
   const { switchChainAsync } = useSwitchChain();
-  const { writeContractAsync } = useWriteContract();
 
   const [status, setStatus] = useState<ClaimAllStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -132,75 +123,32 @@ export function useClaimAll(pendingClaims: Claim[]) {
 
       setStatus("claiming");
 
-      // Check EIP-5792 atomicBatch capability
-      let useBatch = false;
-      try {
-        const capabilities = await getCapabilities(config);
-        useBatch = capabilities?.[baseSepolia.id]?.atomicBatch?.supported ?? false;
-      } catch {
-        // Wallet doesn't support capability queries — fall back to sequential
+      const calls: ContractCall[] = [
+        ...cpfReads.map((c) => ({
+          address: c.ctfAddress,
+          abi: conditionalTokensAbi,
+          functionName: "redeemPositions",
+          args: [c.stakeToken, zeroHash, c.conditionId, [...CTF_PARTITION]],
+        })),
+        ...ryd.map((c) => ({
+          address: c.rydAddress,
+          abi: praxisRYDAbi,
+          functionName: "claim",
+        })),
+        ...twoPool.map((c) => ({
+          address: c.poolAddress,
+          abi: twoPoolAbi,
+          functionName: "claimTrader",
+          args: [sideToUint8(c.side)],
+        })),
+      ];
+
+      if (calls.length === 0) {
+        setStatus("success");
+        return allIds;
       }
 
-      if (useBatch) {
-        const calls = [
-          ...cpfReads.map((c) => ({
-            to: c.ctfAddress,
-            data: encodeFunctionData({
-              abi: conditionalTokensAbi,
-              functionName: "redeemPositions",
-              args: [c.stakeToken, zeroHash, c.conditionId, [...CTF_PARTITION]],
-            }),
-          })),
-          ...ryd.map((c) => ({
-            to: c.rydAddress,
-            data: encodeFunctionData({ abi: praxisRYDAbi, functionName: "claim" }),
-          })),
-          ...twoPool.map((c) => ({
-            to: c.poolAddress,
-            data: encodeFunctionData({
-              abi: twoPoolAbi,
-              functionName: "claimTrader",
-              args: [sideToUint8(c.side)],
-            }),
-          })),
-        ];
-
-        const batchId = await sendCalls(config, { calls, chainId: baseSepolia.id });
-        await waitForCallsStatus(config, batchId);
-      } else {
-        // Sequential fallback
-        for (const c of cpfReads) {
-          const tx = await writeContractAsync({
-            address: c.ctfAddress,
-            abi: conditionalTokensAbi,
-            functionName: "redeemPositions",
-            args: [c.stakeToken, zeroHash, c.conditionId, [...CTF_PARTITION]],
-            chainId: baseSepolia.id,
-          });
-          await waitForTransactionReceipt(config, { hash: tx });
-        }
-
-        for (const c of ryd) {
-          const tx = await writeContractAsync({
-            address: c.rydAddress,
-            abi: praxisRYDAbi,
-            functionName: "claim",
-            chainId: baseSepolia.id,
-          });
-          await waitForTransactionReceipt(config, { hash: tx });
-        }
-
-        for (const c of twoPool) {
-          const tx = await writeContractAsync({
-            address: c.poolAddress,
-            abi: twoPoolAbi,
-            functionName: "claimTrader",
-            args: [sideToUint8(c.side)],
-            chainId: baseSepolia.id,
-          });
-          await waitForTransactionReceipt(config, { hash: tx });
-        }
-      }
+      await runBatchedWrite(calls);
 
       setStatus("success");
       return allIds;
@@ -209,7 +157,7 @@ export function useClaimAll(pendingClaims: Claim[]) {
       setErrorMessage(err instanceof Error ? err.message : "Claim all failed");
       return [];
     }
-  }, [address, pendingClaims, switchChainAsync, writeContractAsync]);
+  }, [address, pendingClaims, switchChainAsync]);
 
   const reset = useCallback(() => {
     setStatus("idle");
