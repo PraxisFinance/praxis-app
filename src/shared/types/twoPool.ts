@@ -37,21 +37,21 @@ export type TwoPool = {
   status: CryptoPredictionStatus;
   endsAt: string;
   isTradingOpen: boolean;
-  /** Formatted total TVL (`sideTVLStable` + `sideTVLElevated`), or "Not defined" */
+  /** Formatted total TVL (`stableReserve` + `elevatedReserve`), or "Not defined" */
   tvlLabel: string;
-  /** Deploy-time target APY %, or -1 if not on indexer */
+  /** Deploy-time target APY % from `targetRate` (1e18 = 100%), or -1 if unset */
   targetApyPercent: number;
-  /** Model / predicted APY %, or -1 if not on indexer */
+  /** Market-implied APY % from reserves/`stablePrice`, or -1 if unset */
   predictedApyPercent: number;
-  /** Share of TVL on stable side (0–100), derived from `sideTVLStable` / `sideTVLElevated` */
+  /** Share of TVL on stable side (0–100), derived from `stableReserve` / `elevatedReserve` */
   stablePoolPercent: number;
   /** Share of TVL on elevated side (0–100) */
   elevatedPoolPercent: number;
-  /** Entrance fee % of deposit (stable), or -1 if not on indexer */
+  /** Entrance fee % of deposit (stable), from pool `feePercentage` BPS, or -1 if unset */
   stableEntranceFeePercent: number;
-  /** Entrance fee % of deposit (elevated), or -1 if not on indexer */
+  /** Entrance fee % of deposit (elevated), from pool `feePercentage` BPS, or -1 if unset */
   elevatedEntranceFeePercent: number;
-  /** Raw `actualRate` from indexer, or "Not defined" if absent */
+  /** Realized `actualRate` as percent string, or "Not defined" if absent */
   actualRateRaw: string;
   /** Off-chain description from TwoPoolContract postgres row, or null if not seeded */
   description: string | null;
