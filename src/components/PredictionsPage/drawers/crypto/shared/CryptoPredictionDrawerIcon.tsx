@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface CryptoPredictionDrawerIconProps {
   iconUrl: string;
@@ -20,14 +20,6 @@ export function CryptoPredictionDrawerIcon({ iconUrl }: CryptoPredictionDrawerIc
     return (
       <span className="inline-flex overflow-hidden rounded-full" aria-hidden>
         <UsdcTokenIcon size={size} />
-      </span>
-    );
-  }
-
-  if (isWUsdcIconUrl(trimmed)) {
-    return (
-      <span className="inline-flex overflow-hidden rounded-full" aria-hidden>
-        <WUsdcTokenIcon size={size} />
       </span>
     );
   }

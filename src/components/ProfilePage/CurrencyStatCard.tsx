@@ -1,4 +1,4 @@
-import { WUsdcTokenIcon } from "@/components/icons/base";
+import { YtTokenIcon } from "@/components/icons/base";
 import type { CurrencyStat } from "@/shared/types/profile";
 
 export function CurrencyStatCard({ stat }: { stat: CurrencyStat }) {
@@ -7,7 +7,7 @@ export function CurrencyStatCard({ stat }: { stat: CurrencyStat }) {
       <span className="text-xs font-normal text-main-darkPurple/60 leading-4">{stat.label}</span>
       <div className="flex items-center gap-2">
         <span className="inline-flex shrink-0" aria-hidden>
-          <WUsdcTokenIcon size={18} />
+          <YtTokenIcon size={18} />
         </span>
         <span className="text-main-darkPurple text-md tabular-nums leading-6">
           {stat.amount.toLocaleString()}&nbsp;

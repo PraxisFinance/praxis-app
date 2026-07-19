@@ -8,7 +8,7 @@ import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { formatTokenBalance } from "@/shared/utils/format";
 import type { Balance } from "@/shared/types/balances";
-import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { USDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 const BALANCE_LABELS = {
   USDC: { label: "Wallet", iconUrl: USDC_ICON_URL },

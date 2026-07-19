@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { PoolHeader } from "@/components/ui/PoolHeader";
 import { cn } from "@/lib/utils";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { EarnPosition } from "@/shared/types/earn";
 
 interface EarnMyPositionsCardProps {
@@ -20,13 +20,6 @@ function DepositCurrencyIcon({ iconUrl, currency }: { iconUrl: string; currency:
     return (
       <span className="inline-flex shrink-0" aria-hidden>
         <UsdcTokenIcon size={16} className="rounded-full" />
-      </span>
-    );
-  }
-  if (isWUsdcIconUrl(iconUrl)) {
-    return (
-      <span className="inline-flex shrink-0" aria-hidden>
-        <WUsdcTokenIcon size={16} className="rounded-full" />
       </span>
     );
   }

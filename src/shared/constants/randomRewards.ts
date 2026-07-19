@@ -1,6 +1,6 @@
 import type { RandomPool, RandomPoolUserInPool } from "@/shared/types/randomPool";
 import { INLINE_HINT_ICON_URL } from "@/shared/constants/inlineIcons";
-import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { USDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 function tagRandomPool<T extends Omit<RandomPool, "predictionType">>(
   pool: T,
@@ -28,7 +28,7 @@ export const RANDOM_POOLS_HINT = {
 } as const;
 
 /** Default currency icon for pool user amounts when `currencyIconUrl` is not set */
-export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = WUSDC_ICON_URL;
+export const DEFAULT_POOL_USER_CURRENCY_ICON_URL = YT_ICON_URL;
 
 /** Mock users shown on pool details (until API exists). */
 export const MOCK_USERS_IN_POOL: RandomPoolUserInPool[] = [

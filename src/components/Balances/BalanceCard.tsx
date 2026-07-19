@@ -1,7 +1,7 @@
 import Image from "next/image";
 
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface BalanceCardProps {
   label: string;
@@ -17,10 +17,6 @@ export function BalanceCard({ label, value, iconUrl }: BalanceCardProps) {
         {isUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
             <UsdcTokenIcon size={16} />
-          </span>
-        ) : isWUsdcIconUrl(iconUrl) ? (
-          <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon size={16} />
           </span>
         ) : isYtIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>

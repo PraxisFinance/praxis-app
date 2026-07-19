@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { HintIcon, UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { HintIcon, UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { DEFAULT_POOL_USER_CURRENCY_ICON_URL } from "@/shared/constants/randomRewards";
 import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { RandomPoolUserInPool } from "@/shared/types/randomPool";
 
 export interface RandomRewardsPoolUserRowProps {
@@ -26,10 +26,6 @@ export function RandomRewardsPoolUserRow({ user: u }: RandomRewardsPoolUserRowPr
           ) : isUsdcIconUrl(u.avatarUrl) ? (
             <span className="flex h-full w-full items-center justify-center" aria-hidden>
               <UsdcTokenIcon size={32} />
-            </span>
-          ) : isWUsdcIconUrl(u.avatarUrl) ? (
-            <span className="flex h-full w-full items-center justify-center" aria-hidden>
-              <WUsdcTokenIcon size={32} />
             </span>
           ) : isYtIconUrl(u.avatarUrl) ? (
             <span className="flex h-full w-full items-center justify-center" aria-hidden>
@@ -55,10 +51,6 @@ export function RandomRewardsPoolUserRow({ user: u }: RandomRewardsPoolUserRowPr
         {isUsdcIconUrl(currencyUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
             <UsdcTokenIcon size={16} />
-          </span>
-        ) : isWUsdcIconUrl(currencyUrl) ? (
-          <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon size={16} />
           </span>
         ) : isYtIconUrl(currencyUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>

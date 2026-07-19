@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { cn } from "@/lib/utils";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface PoolHeaderProps {
   iconUrl: string;
@@ -19,10 +19,6 @@ export function PoolHeader({ iconUrl, name, subtitle, emphasized }: PoolHeaderPr
         {isUsdcIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
             <UsdcTokenIcon size={32} className="rounded-full" />
-          </span>
-        ) : isWUsdcIconUrl(iconUrl) ? (
-          <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon size={32} className="rounded-full" />
           </span>
         ) : isYtIconUrl(iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>

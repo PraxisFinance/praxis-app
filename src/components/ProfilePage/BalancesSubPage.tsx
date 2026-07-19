@@ -89,13 +89,13 @@ function buildOverallStats(
         kind: "won",
         label: "Won currency",
         amount: Number(wonCurrency) / 1_000_000,
-        currency: "$wUSDC",
+        currency: "$YT",
       },
       {
         kind: "lost",
         label: "Lost currency",
         amount: Number(lostCurrency) / 1_000_000,
-        currency: "$wUSDC",
+        currency: "$YT",
       },
     ],
   };

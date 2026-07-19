@@ -1,4 +1,4 @@
-import { WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import type { RewardClaimItem } from "@/shared/types/profile";
 import type { Claim } from "@/stores/claimsStore";
 
@@ -21,7 +21,7 @@ export function claimToRewardClaimItem(claim: Claim): RewardClaimItem {
     return {
       id: claim.id,
       name: `Prediction winnings #${poolId}`,
-      iconUrl: WUSDC_ICON_URL,
+      iconUrl: YT_ICON_URL,
       income: bigintToDisplayAmount(claim.income),
       incomeCurrency: "ytPraxis",
     };

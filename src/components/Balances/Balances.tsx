@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { HintIcon, UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { HintIcon, UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
 import { AppDrawerHeading } from "@/components/ui/AppDrawerHeading";
 import { DrawerShell } from "@/components/ui/DrawerShell";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { BalanceCard } from "./BalanceCard";
 import { BALANCE_INFO } from "@/shared/constants/balances";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
@@ -84,10 +84,6 @@ export function Balances() {
                 {isUsdcIconUrl(item.iconUrl) ? (
                   <span className="inline-flex shrink-0" aria-hidden>
                     <UsdcTokenIcon />
-                  </span>
-                ) : isWUsdcIconUrl(item.iconUrl) ? (
-                  <span className="inline-flex shrink-0" aria-hidden>
-                    <WUsdcTokenIcon />
                   </span>
                 ) : isYtIconUrl(item.iconUrl) ? (
                   <span className="inline-flex shrink-0" aria-hidden>

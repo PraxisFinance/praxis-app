@@ -13,7 +13,7 @@ export interface CurrencyStat {
   kind: CurrencyStatKind;
   label: string;
   amount: number;
-  /** Token ticker displayed after the amount, e.g. "$wUSDC" */
+  /** Token ticker displayed after the amount, e.g. "$YT" */
   currency: string;
 }
 

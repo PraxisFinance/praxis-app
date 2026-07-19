@@ -8,15 +8,6 @@ export function isUsdcIconUrl(url: string | undefined): boolean {
 }
 
 /**
- * Balance / pool data uses this path for wrapped USDC; UI renders `WUsdcTokenIcon` instead of `next/image`.
- */
-export const WUSDC_ICON_URL = "/icons/w-usdc.png" as const;
-
-export function isWUsdcIconUrl(url: string | undefined): boolean {
-  return url === WUSDC_ICON_URL;
-}
-
-/**
  * Balance / pool data uses this path for YT; UI renders `YtTokenIcon` instead of `next/image`.
  */
 export const YT_ICON_URL = "/icons/yt-token.png" as const;

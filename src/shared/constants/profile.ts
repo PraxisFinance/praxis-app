@@ -12,7 +12,7 @@ import type {
   ProfilePredictionStatusFilter,
   ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
-import { USDC_ICON_URL, WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { USDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 
 // ── Predictions stats chart ────────────────────────────────────────────────
 
@@ -143,8 +143,8 @@ export const PREDICTIONS_OVERALL_STATS_MOCK: PredictionsOverallStatsData = {
     { kind: "pending", label: "Pending matches", value: 15 },
   ],
   currencyStats: [
-    { kind: "won", label: "Won currency", amount: 1000, currency: "$wUSDC" },
-    { kind: "lost", label: "Lost currency", amount: 500, currency: "$wUSDC" },
+    { kind: "won", label: "Won currency", amount: 1000, currency: "$YT" },
+    { kind: "lost", label: "Lost currency", amount: 500, currency: "$YT" },
   ],
 };
 
@@ -235,9 +235,9 @@ export const PREDICTIONS_HISTORY_MOCK_DATA: Record<
 
 export const REWARDS_CLAIMS_MOCK: RewardClaimItem[] = [
   { id: "1", name: "Steakhouse USDT", iconUrl: USDC_ICON_URL, income: 500, incomeCurrency: "ytPraxis" },
-  { id: "2", name: "Match: AVULUS", iconUrl: WUSDC_ICON_URL, income: 5, incomeCurrency: "ytPraxis" },
+  { id: "2", name: "Match: AVULUS", iconUrl: YT_ICON_URL, income: 5, incomeCurrency: "ytPraxis" },
   { id: "3", name: "Random pool #1", iconUrl: YT_ICON_URL, income: 35, incomeCurrency: "ytPraxis" },
-  { id: "4", name: "AERO Up or Down: Up", iconUrl: WUSDC_ICON_URL, income: 15, incomeCurrency: "ytPraxis" },
+  { id: "4", name: "AERO Up or Down: Up", iconUrl: YT_ICON_URL, income: 15, incomeCurrency: "ytPraxis" },
 ];
 
 // ── Profile predictions ────────────────────────────────────────────────────
@@ -291,12 +291,12 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp3",
     kind: "match",
     name: "Match outcome: AVULUS",
-    iconUrl: WUSDC_ICON_URL,
+    iconUrl: YT_ICON_URL,
     ended: true,
     userWon: true,
     coeff: 3.4,
-    prediction: "$294 wUSDC",
-    earnings: "$1000 wUSDC",
+    prediction: "$294 YT",
+    earnings: "$1000 YT",
   },
   {
     id: "pp4",
@@ -314,12 +314,12 @@ export const PROFILE_PREDICTIONS_MOCK: ProfilePredictionItem[] = [
     id: "pp5",
     kind: "match",
     name: "Match outcome: Chelsea",
-    iconUrl: WUSDC_ICON_URL,
+    iconUrl: YT_ICON_URL,
     ended: false,
     userWon: false,
     coeff: 2.1,
-    prediction: "$150 wUSDC",
-    earnings: "$315 wUSDC",
+    prediction: "$150 YT",
+    earnings: "$315 YT",
   },
 ];
 

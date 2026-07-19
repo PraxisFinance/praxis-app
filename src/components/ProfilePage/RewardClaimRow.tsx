@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { Button } from "@/components/ui/button";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import type { RewardClaimItem } from "@/shared/types/profile";
 
 interface RewardClaimRowProps {
@@ -18,10 +18,6 @@ export function RewardClaimRow({ item, onClaim, isPending, errorMessage }: Rewar
         {isUsdcIconUrl(item.iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
             <UsdcTokenIcon />
-          </span>
-        ) : isWUsdcIconUrl(item.iconUrl) ? (
-          <span className="inline-flex shrink-0" aria-hidden>
-            <WUsdcTokenIcon />
           </span>
         ) : isYtIconUrl(item.iconUrl) ? (
           <span className="inline-flex shrink-0" aria-hidden>
