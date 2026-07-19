@@ -25,7 +25,7 @@ export const twoPoolContractsRouter = router({
     .input(z.object({ vault: z.string() }))
     .query(async ({ ctx, input }): Promise<TwoPoolContractOffchainData[]> => {
       return ctx.db.twoPoolContract.findMany({
-        where: { vault: input.vault },
+        where: { vault: { equals: input.vault, mode: "insensitive" } },
         select: {
           address: true,
           name: true,

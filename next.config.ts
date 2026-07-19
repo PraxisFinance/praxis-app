@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "media.api-sports.io",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.pandascore.co",
+        pathname: "/**",
+      },
     ],
   },
 };

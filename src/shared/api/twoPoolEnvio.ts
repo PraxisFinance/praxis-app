@@ -8,6 +8,11 @@ import type { CryptoPredictionStatus } from "@/shared/types/cryptoPrediction";
 import type { TwoPool } from "@/shared/types/twoPool";
 import { formatTokenBalance } from "@/shared/utils/format";
 
+/** Matches on-chain `RATE_SCALE` (1e18 = 100%). */
+const RATE_SCALE = 1_000_000_000_000_000_000n;
+/** Matches on-chain `FEE_DENOMINATOR` (10_000 = 100%). */
+const FEE_DENOMINATOR = 10_000n;
+
 // ── GraphQL (Envio) ───────────────────────────────────────────────────
 
 export const TWO_POOL_STATE_QUERY = `
@@ -15,22 +20,15 @@ export const TWO_POOL_STATE_QUERY = `
     TwoPoolState {
       id
       state
-      sideTVLStable
-      sideTVLElevated
-      subsidyBucketStable
-      subsidyBucketElevated
-      totalDeposits
-      uniqueDepositors
+      stableReserve
+      elevatedReserve
+      targetRate
+      buffer
+      feePercentage
+      stablePrice
       actualRate
-      curveStableOut
-      curveElevatedOut
-      subsidyStableAtResolve
-      subsidyElevatedAtResolve
-      sideFinalAllocationStable
-      sideFinalAllocationElevated
-      totalClaimedYtStable
-      totalClaimedYtElevated
-      claimCount
+      startTime
+      endTime
       resolvedAt
       lastUpdatedAt
     }
@@ -41,22 +39,15 @@ export const TWO_POOL_STATE_QUERY = `
 export interface RawTwoPoolState {
   id: string;
   state: string;
-  sideTVLStable: string;
-  sideTVLElevated: string;
-  subsidyBucketStable: string;
-  subsidyBucketElevated: string;
-  totalDeposits: number;
-  uniqueDepositors: number;
+  stableReserve: string;
+  elevatedReserve: string;
+  targetRate: string;
+  buffer: string;
+  feePercentage: string;
+  stablePrice: string;
   actualRate: string;
-  curveStableOut: string;
-  curveElevatedOut: string;
-  subsidyStableAtResolve: string;
-  subsidyElevatedAtResolve: string;
-  sideFinalAllocationStable: string;
-  sideFinalAllocationElevated: string;
-  totalClaimedYtStable: string;
-  totalClaimedYtElevated: string;
-  claimCount: number;
+  startTime: string;
+  endTime: string;
   resolvedAt: string;
   lastUpdatedAt: string;
 }
@@ -79,6 +70,49 @@ function tvlSplitPercents(
     stable: Math.round(stable * 100) / 100,
     elevated: Math.round(elevated * 100) / 100,
   };
+}
+
+/** Convert 1e18-scaled rate to APY percent (1e18 → 100). */
+function wadRateToPercent(wad: bigint): number {
+  if (wad <= BigInt(0)) return TWO_POOL_NOT_DEFINED_NUM;
+  // Keep 2 decimal places of percent: (wad * 10000) / 1e18 → percent*100
+  const scaled = (wad * 10_000n) / RATE_SCALE;
+  return Number(scaled) / 100;
+}
+
+/** Convert BPS fee (`FEE_DENOMINATOR = 10_000`) to percent. */
+function bpsFeeToPercent(bps: bigint): number {
+  if (bps < BigInt(0)) return TWO_POOL_NOT_DEFINED_NUM;
+  const scaled = (bps * 10_000n) / FEE_DENOMINATOR;
+  return Number(scaled) / 100;
+}
+
+/**
+ * Port of on-chain `marketImpliedAPY()` using indexer `stablePrice`, `targetRate`, `buffer`.
+ * Returns APY percent, or `TWO_POOL_NOT_DEFINED_NUM` when undefined.
+ */
+function marketImpliedApyPercent(
+  stablePrice: bigint,
+  targetRate: bigint,
+  buffer: bigint
+): number {
+  if (stablePrice <= BigInt(0) || targetRate <= BigInt(0)) return TWO_POOL_NOT_DEFINED_NUM;
+
+  const a = buffer >= targetRate ? 0n : targetRate - buffer;
+  if (a === 0n) return TWO_POOL_NOT_DEFINED_NUM;
+
+  const pA = (targetRate * RATE_SCALE) / (2n * a);
+
+  let impliedWad: bigint;
+  if (stablePrice >= pA) {
+    const denom = RATE_SCALE - pA;
+    if (denom === 0n) return TWO_POOL_NOT_DEFINED_NUM;
+    impliedWad = (a * (RATE_SCALE - stablePrice)) / denom;
+  } else {
+    impliedWad = (targetRate * RATE_SCALE) / (2n * stablePrice);
+  }
+
+  return wadRateToPercent(impliedWad);
 }
 
 function mapStateStringToStatus(state: string, resolvedAt: bigint): CryptoPredictionStatus {
@@ -111,51 +145,57 @@ function isTradingOpenFromState(state: string, resolvedAt: bigint): boolean {
 /**
  * Maps `TwoPoolState` → UI `TwoPool`.
  *
- * **Cannot be derived from `TwoPoolState` alone** (no matching fields on this type):
- * - **Market copy & branding**: `title`, `assetSymbol`, `iconUrl` — not on indexer; set to
- *   `TWO_POOL_NOT_DEFINED_STR` (UI may substitute a fallback icon URL for display).
- * - **Product economics used for fee-row vs target**: `targetApyPercent` and `predictedApyPercent`
- *   — not on `TwoPoolState`. `actualRate` exists but is an on-chain rate scalar, **not** the same
- *   semantics as “deploy target APY” vs “model predicted APY”, so we do **not** map it into those.
- * - **Quoted entrance fee % of deposit (per side)** — not on `TwoPoolState`. `TwoPoolUser` has
- *   per-wallet `stableFees` / `elevatedFees` vs gross deposits, but there is **no pool-level fee
- *   schedule** on this entity — mapped to `TWO_POOL_NOT_DEFINED_NUM` (-1) in the UI model.
+ * **Cannot be derived from `TwoPoolState` alone**:
+ * - **Market copy & branding**: `title`, `assetSymbol`, `iconUrl` — not on indexer; set from
+ *   off-chain `TwoPoolContract` in the store (or sentinels until then).
  *
- * **Partially derived / assumptions**:
- * - **`stablePoolPercent` / `elevatedPoolPercent`**: from `sideTVLStable` / `sideTVLElevated` TVL split.
- * - **`endsAt`**: if `resolvedAt` > 0, use that as period end; else use `lastUpdatedAt` (there is
- *   no dedicated “maturity” field on `TwoPoolState`).
+ * **Derived from current indexer schema**:
+ * - **`stablePoolPercent` / `elevatedPoolPercent`**: `stableReserve` / `elevatedReserve` TVL split.
+ * - **`endsAt`**: `endTime` (campaign maturity).
+ * - **`targetApyPercent`**: `targetRate` (1e18 = 100%).
+ * - **`predictedApyPercent`**: on-chain `marketImpliedAPY` from `stablePrice` + `targetRate` + `buffer`.
+ * - **Entrance fee %**: pool-level `feePercentage` (BPS / 10_000) applied to both sides.
+ * - **`actualRateRaw`**: `actualRate` converted to percent string when set (else sentinel).
  */
 export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
-  console.log("raw", raw);
-  const stableTvl = toBigInt(raw.sideTVLStable);
-  const elevatedTvl = toBigInt(raw.sideTVLElevated);
+  const stableTvl = toBigInt(raw.stableReserve);
+  const elevatedTvl = toBigInt(raw.elevatedReserve);
   const { stable: stablePoolPercent, elevated: elevatedPoolPercent } = tvlSplitPercents(
     stableTvl,
     elevatedTvl
   );
 
   const resolvedAt = toBigInt(raw.resolvedAt);
+  const endTime = toBigInt(raw.endTime);
   const endsAt =
-    resolvedAt > BigInt(0)
-      ? secondsBigIntToIso(raw.resolvedAt)
-      : secondsBigIntToIso(raw.lastUpdatedAt);
+    endTime > BigInt(0)
+      ? secondsBigIntToIso(raw.endTime)
+      : resolvedAt > BigInt(0)
+        ? secondsBigIntToIso(raw.resolvedAt)
+        : secondsBigIntToIso(raw.lastUpdatedAt);
 
   const status = mapStateStringToStatus(raw.state, resolvedAt);
   const isTradingOpen = isTradingOpenFromState(raw.state, resolvedAt);
 
+  const targetRate = toBigInt(raw.targetRate);
+  const buffer = toBigInt(raw.buffer);
+  const stablePrice = toBigInt(raw.stablePrice);
+  const actualRate = toBigInt(raw.actualRate);
+  const feeBps = toBigInt(raw.feePercentage);
+
+  const targetApyPercent = wadRateToPercent(targetRate);
+  const predictedApyPercent = marketImpliedApyPercent(stablePrice, targetRate, buffer);
+  const entranceFeePercent = bpsFeeToPercent(feeBps);
+
   const gaps = [
-    'TwoPoolState has no title, assetSymbol, or iconUrl — UI fields use "Not defined" (icon display falls back to a default asset).',
-    "TwoPoolState has no targetApyPercent or predictedApyPercent — UI uses -1; fee row vs target cannot be computed from this entity (actualRate is not a substitute).",
-    "TwoPoolState has no pool-level stable/elevated entrance fee % — UI uses -1 until a schedule exists on-chain or in metadata.",
-    "TwoPoolState has no explicit trading-end / maturity timestamp — endsAt uses resolvedAt when set, otherwise lastUpdatedAt.",
+    'TwoPoolState has no title, assetSymbol, or iconUrl — UI fields use "Not defined" until TwoPoolContract off-chain data is merged.',
   ] as const;
 
-  const actualRateTrimmed = raw.actualRate?.trim() ?? "";
+  const actualRatePercent = wadRateToPercent(actualRate);
   const actualRateRaw =
-    actualRateTrimmed.length > 0 && actualRateTrimmed !== "0"
-      ? raw.actualRate
-      : TWO_POOL_NOT_DEFINED_STR;
+    actualRatePercent === TWO_POOL_NOT_DEFINED_NUM
+      ? TWO_POOL_NOT_DEFINED_STR
+      : String(actualRatePercent);
 
   const totalTvl = stableTvl + elevatedTvl;
   const tvlLabel =
@@ -173,12 +213,12 @@ export function mapRawTwoPoolStateToTwoPool(raw: RawTwoPoolState): TwoPool {
     endsAt,
     isTradingOpen,
     tvlLabel,
-    targetApyPercent: TWO_POOL_NOT_DEFINED_NUM,
-    predictedApyPercent: TWO_POOL_NOT_DEFINED_NUM,
+    targetApyPercent,
+    predictedApyPercent,
     stablePoolPercent,
     elevatedPoolPercent,
-    stableEntranceFeePercent: TWO_POOL_NOT_DEFINED_NUM,
-    elevatedEntranceFeePercent: TWO_POOL_NOT_DEFINED_NUM,
+    stableEntranceFeePercent: entranceFeePercent,
+    elevatedEntranceFeePercent: entranceFeePercent,
     actualRateRaw,
     indexerGaps: gaps,
   };
