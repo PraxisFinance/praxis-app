@@ -1,6 +1,10 @@
 "use client";
 
 import type { EsportsMatch } from "@/shared/types/esportsMatch";
+import {
+  hubDetailMatchDisplayTitle,
+  hubDetailPoolPercentsFromOdds,
+} from "../shared/hubDetailFormat";
 import { EsportsMatchDetailMatchCard } from "./EsportsMatchDetailMatchCard";
 import { EsportsMatchDetailOutcomes } from "./EsportsMatchDetailOutcomes";
 import { EsportsMatchDetailProbabilityChart } from "./EsportsMatchDetailProbabilityChart";
@@ -13,29 +17,31 @@ interface EsportsMatchHubDetailProps {
 
 export function EsportsMatchHubDetail({ match, onPickTeam }: EsportsMatchHubDetailProps) {
   const detail = match.detail;
-
-  if (!detail) {
-    return (
-      <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this match.</p>
-    );
-  }
+  const displayTitle =
+    detail?.displayTitle ??
+    hubDetailMatchDisplayTitle(match.participantA.name, match.participantB.name);
+  const [team1PoolPercent, team2PoolPercent] = detail
+    ? [detail.participantAPoolPercent, detail.participantBPoolPercent]
+    : hubDetailPoolPercentsFromOdds(match.participantA.odds, match.participantB.odds);
 
   return (
     <div className="flex flex-col gap-4">
-      <EsportsMatchDetailMatchCard match={match} displayTitle={detail.displayTitle} />
-      <EsportsMatchDetailProbabilityChart
-        volumeLabel={detail.volumeLabel ?? ""}
-        points={detail.chartPoints}
-        team1={match.participantA}
-        team2={match.participantB}
-      />
+      <EsportsMatchDetailMatchCard match={match} displayTitle={displayTitle} />
+      {detail != null && (
+        <EsportsMatchDetailProbabilityChart
+          volumeLabel={detail.volumeLabel ?? ""}
+          points={detail.chartPoints}
+          team1={match.participantA}
+          team2={match.participantB}
+        />
+      )}
       <EsportsMatchDetailOutcomes
         match={match}
-        team1PoolPercent={detail.participantAPoolPercent}
-        team2PoolPercent={detail.participantBPoolPercent}
+        team1PoolPercent={team1PoolPercent}
+        team2PoolPercent={team2PoolPercent}
         onPickTeam={onPickTeam}
       />
-      <EsportsMatchDetailResolution match={match} />
+      {detail != null && <EsportsMatchDetailResolution match={match} />}
     </div>
   );
 }

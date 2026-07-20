@@ -28,6 +28,7 @@ import { EsportsMatchHubDetail } from "./esports/EsportsMatchHubDetail";
 import { FinanceEventHubDetail } from "./finance/FinanceEventHubDetail";
 import { PoliticsEventHubDetail } from "./politics/PoliticsEventHubDetail";
 import { RandomRewardHubDetail } from "./random-rewards/RandomRewardHubDetail";
+import { PredictionsHubDetailUnavailable } from "./shared";
 import { SportMatchHubDetail } from "./sport/SportMatchHubDetail";
 import { TechEventHubDetail } from "./tech/TechEventHubDetail";
 
@@ -48,62 +49,85 @@ export function PredictionsHubDetail({ item }: PredictionsHubDetailProps) {
 
   switch (getPredictionsHubItemKind(item)) {
     case "crypto":
-      return isCryptoPredictionCard(item) ? (
-        <CryptoPredictionHubDetail
-          prediction={item}
-          onPickOutcome={(outcomeId) => openCryptoDrawer(item, outcomeId)}
-        />
-      ) : null;
+      if (isCryptoPredictionCard(item)) {
+        return (
+          <CryptoPredictionHubDetail
+            prediction={item}
+            onPickOutcome={(outcomeId) => openCryptoDrawer(item, outcomeId)}
+          />
+        );
+      }
+      break;
     case "esports":
-      return isEsportsPredictionCard(item) ? (
-        <EsportsMatchHubDetail
-          match={item}
-          onPickTeam={(side) => openEsportsDrawer(item, side)}
-        />
-      ) : null;
+      if (isEsportsPredictionCard(item)) {
+        return (
+          <EsportsMatchHubDetail
+            match={item}
+            onPickTeam={(side) => openEsportsDrawer(item, side)}
+          />
+        );
+      }
+      break;
     case "random-reward":
-      return isRandomRewardsPredictionCard(item) ? (
-        <RandomRewardHubDetail
-          pool={item}
-          onJoin={() => {
-            if (isRandomRewardsLiveCard(item)) {
-              openRandomRewardJoinDrawer(item);
-            }
-          }}
-          onClaim={() => {
-            if (isRandomRewardsEndedCard(item) && item.userWon) {
-              openRandomRewardClaimDrawer(item);
-            }
-          }}
-        />
-      ) : null;
+      if (isRandomRewardsPredictionCard(item)) {
+        return (
+          <RandomRewardHubDetail
+            pool={item}
+            onJoin={() => {
+              if (isRandomRewardsLiveCard(item)) {
+                openRandomRewardJoinDrawer(item);
+              }
+            }}
+            onClaim={() => {
+              if (isRandomRewardsEndedCard(item) && item.userWon) {
+                openRandomRewardClaimDrawer(item);
+              }
+            }}
+          />
+        );
+      }
+      break;
     case "sport":
-      return isSportPredictionCard(item) ? (
-        <SportMatchHubDetail
-          match={item}
-          onPickTeam={(side) => openSportDrawer(item, side)}
-        />
-      ) : null;
+      if (isSportPredictionCard(item)) {
+        return (
+          <SportMatchHubDetail
+            match={item}
+            onPickTeam={(side) => openSportDrawer(item, side)}
+          />
+        );
+      }
+      break;
     case "politics":
-      return isPoliticsPredictionCard(item) ? (
-        <PoliticsEventHubDetail
-          event={item}
-          onPickOutcome={(outcomeId) => openPoliticsDrawer(item, outcomeId)}
-        />
-      ) : null;
+      if (isPoliticsPredictionCard(item)) {
+        return (
+          <PoliticsEventHubDetail
+            event={item}
+            onPickOutcome={(outcomeId) => openPoliticsDrawer(item, outcomeId)}
+          />
+        );
+      }
+      break;
     case "finance":
-      return isFinancePredictionCard(item) ? (
-        <FinanceEventHubDetail
-          event={item}
-          onPickOutcome={(outcomeId) => openFinanceDrawer(item, outcomeId)}
-        />
-      ) : null;
+      if (isFinancePredictionCard(item)) {
+        return (
+          <FinanceEventHubDetail
+            event={item}
+            onPickOutcome={(outcomeId) => openFinanceDrawer(item, outcomeId)}
+          />
+        );
+      }
+      break;
     case "tech":
-      return isTechPredictionCard(item) ? (
-        <TechEventHubDetail
-          event={item}
-          onPickOutcome={(outcomeId) => openTechDrawer(item, outcomeId)}
-        />
-      ) : null;
+      if (isTechPredictionCard(item)) {
+        return (
+          <TechEventHubDetail
+            event={item}
+            onPickOutcome={(outcomeId) => openTechDrawer(item, outcomeId)}
+          />
+        );
+      }
+      break;
   }
+
+  return <PredictionsHubDetailUnavailable />;
 }
