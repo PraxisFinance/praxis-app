@@ -2,6 +2,6 @@ export { CryptoPredictionHubDetailOutcomesSection } from "./CryptoPredictionHubD
 export { CryptoPredictionHubDetailPoolSplit } from "./CryptoPredictionHubDetailPoolSplit";
 export { CryptoPredictionHubDetailPriceChart } from "./CryptoPredictionHubDetailPriceChart";
 export { CryptoPredictionHubDetailResolution } from "./CryptoPredictionHubDetailResolution";
+export { CryptoPredictionHubDetailShell } from "./CryptoPredictionHubDetailShell";
 export { CryptoPredictionHubDetailTitle } from "./CryptoPredictionHubDetailTitle";
-export { CryptoPredictionHubDetailUnavailable } from "./CryptoPredictionHubDetailUnavailable";
 export { getCryptoPredictionHubMarketDetail } from "./getCryptoPredictionHubMarketDetail";

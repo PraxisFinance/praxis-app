@@ -11,8 +11,8 @@ const EMPTY_OVERALL_STATS: PredictionsOverallStatsData = {
     { kind: "pending", label: "Pending matches", value: 0 },
   ],
   currencyStats: [
-    { kind: "won", label: "Won currency", amount: 0, currency: "$wUSDC" },
-    { kind: "lost", label: "Lost currency", amount: 0, currency: "$wUSDC" },
+    { kind: "won", label: "Won currency", amount: 0, currency: "$YT" },
+    { kind: "lost", label: "Lost currency", amount: 0, currency: "$YT" },
   ],
 };
 

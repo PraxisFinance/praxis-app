@@ -14,18 +14,14 @@ interface PoliticsEventHubDetailProps {
 export function PoliticsEventHubDetail({ event, onPickOutcome }: PoliticsEventHubDetailProps) {
   const detail = event.detail;
 
-  if (!detail) {
-    return (
-      <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this market.</p>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <PoliticsEventDetailTitleCard thumbnailUrl={event.imageUrl} title={event.title} />
-      <PoliticsEventDetailProbabilityChart points={detail.chartPoints} />
+      {detail != null && <PoliticsEventDetailProbabilityChart points={detail.chartPoints} />}
       <PoliticsEventDetailOutcomes event={event} onPickOutcome={onPickOutcome} />
-      <PoliticsEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
+      {detail != null && (
+        <PoliticsEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
+      )}
     </div>
   );
 }

@@ -1,13 +1,7 @@
 "use client";
 
 import type { CryptoPredictionHit } from "@/shared/types/cryptoPrediction";
-import {
-  CryptoPredictionHubDetailPriceChart,
-  CryptoPredictionHubDetailResolution,
-  CryptoPredictionHubDetailTitle,
-  CryptoPredictionHubDetailUnavailable,
-  getCryptoPredictionHubMarketDetail,
-} from "../shared";
+import { CryptoPredictionHubDetailShell } from "../shared";
 import { CryptoPredictionHitOutcomes } from "./CryptoPredictionHitOutcomes";
 
 interface CryptoPredictionHitHubDetailProps {
@@ -19,21 +13,9 @@ export function CryptoPredictionHitHubDetail({
   prediction,
   onPickOutcome,
 }: CryptoPredictionHitHubDetailProps) {
-  const detail = getCryptoPredictionHubMarketDetail(prediction);
-
-  if (!detail) {
-    return <CryptoPredictionHubDetailUnavailable />;
-  }
-
   return (
-    <div className="flex flex-col gap-4">
-      <CryptoPredictionHubDetailTitle iconUrl={prediction.iconUrl} title={prediction.title} />
-      <CryptoPredictionHubDetailPriceChart
-        baselinePriceLabel={detail.baselinePriceLabel}
-        points={detail.priceChartPoints}
-      />
+    <CryptoPredictionHubDetailShell prediction={prediction}>
       <CryptoPredictionHitOutcomes prediction={prediction} onPickOutcome={onPickOutcome} />
-      <CryptoPredictionHubDetailResolution prediction={prediction} detail={detail} />
-    </div>
+    </CryptoPredictionHubDetailShell>
   );
 }

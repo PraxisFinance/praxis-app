@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { EndTimeBadge } from "../shared/EndTimeBadge";
 
 export interface CryptoPredictionHubCardHeaderProps {
@@ -26,10 +26,6 @@ export function CryptoPredictionHubCardHeader({
             isUsdcIconUrl(iconUrl) ? (
               <span className="inline-flex" aria-hidden>
                 <UsdcTokenIcon size={32} />
-              </span>
-            ) : isWUsdcIconUrl(iconUrl) ? (
-              <span className="inline-flex" aria-hidden>
-                <WUsdcTokenIcon size={32} />
               </span>
             ) : isYtIconUrl(iconUrl) ? (
               <span className="inline-flex" aria-hidden>

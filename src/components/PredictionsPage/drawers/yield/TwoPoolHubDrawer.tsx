@@ -10,7 +10,13 @@ import { Switch } from "@/components/ui/Switch";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
 import { useTwoPool } from "@/hooks/useTwoPool";
 import { formatTwoPoolSideLabel } from "@/shared/utils/twoPoolFormat";
+import { parseTokenAmount } from "@/shared/utils/format";
+import { TOKEN_DECIMALS } from "@/config/tokens";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
+import {
+  PredictionsDrawerAmountInput,
+  usePredictionsDrawerMaxBalance,
+} from "../shared";
 import { TwoPoolExpectedPerformanceTable } from "./TwoPoolExpectedPerformanceTable";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -68,29 +74,42 @@ function TwoPoolHubDrawerBody({
   onOpenChange,
 }: TwoPoolHubDrawerBodyProps) {
   const [selectedSide, setSelectedSide] = useState<TwoPoolSide>(initialSide);
+  const [amount, setAmount] = useState(pool.detail?.depositAmountInput ?? "");
   const [demoSuccess, setDemoSuccess] = useState(false);
 
   const detail = pool.detail;
-  const amountInput = detail?.depositAmountInput ?? "";
   const onChain = isOnChainPoolId(pool.id);
+
+  const { maxBalance, ytBalance } = usePredictionsDrawerMaxBalance();
 
   const { deposit, depositStatus, depositError, resetDeposit, isDepositPending } = useTwoPool(
     pool,
     selectedSide,
-    amountInput
+    amount
   );
 
   useEffect(() => {
     if (!open) return;
     setSelectedSide(initialSide);
+    setAmount(pool.detail?.depositAmountInput ?? "");
     setDemoSuccess(false);
     resetDeposit();
-  }, [open, initialSide, resetDeposit]);
+  }, [open, initialSide, pool.detail?.depositAmountInput, resetDeposit]);
 
   const sideLabel = formatTwoPoolSideLabel(selectedSide);
   const isSuccess = depositStatus === "success" || demoSuccess;
   const isPending = isDepositPending;
-  const canDeposit = pool.isTradingOpen && !isPending && !!detail && !isSuccess;
+
+  const amountValue = parseTokenAmount(amount, TOKEN_DECIMALS.USDC);
+  const hasAmount = amountValue > BigInt(0);
+  const insufficientBalance = onChain && amountValue > ytBalance;
+  const canDeposit =
+    pool.isTradingOpen &&
+    !isPending &&
+    !!detail &&
+    !isSuccess &&
+    hasAmount &&
+    !insufficientBalance;
 
   function handleToggleSide(next: TwoPoolSide, checked: boolean) {
     if (!checked) return;
@@ -202,6 +221,24 @@ function TwoPoolHubDrawerBody({
                 value={detail?.poolLifetimeLabel ?? "—"}
               />
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-main-darkPurple text-sm font-medium leading-5">
+              Deposit amount:
+            </span>
+            <PredictionsDrawerAmountInput
+              value={amount}
+              onChange={setAmount}
+              maxValue={maxBalance}
+              placeholder="Deposit amount"
+              disabled={isPending || isSuccess}
+            />
+            {insufficientBalance ? (
+              <p className="text-main-red text-xs leading-snug" role="alert">
+                Insufficient YT balance.
+              </p>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-2">

@@ -14,7 +14,7 @@ import type {
   ProfilePredictionStatusFilter,
   ProfilePredictionTimeInterval,
 } from "@/shared/types/profile";
-import { WUSDC_ICON_URL, YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
+import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import { useStatisticsStore } from "@/stores/statisticsStore";
 import type { PredictionHistoryItem as StorePredictionHistoryItem } from "@/stores/statisticsStore";
 
@@ -45,12 +45,12 @@ function useProfilePredictionsNowMs(): number {
   return bucket * NOW_BUCKET_MS;
 }
 
-function formatWUsdcAmount(amount: bigint): string {
+function formatYtAmount(amount: bigint): string {
   const value = Number(amount < 0n ? -amount : amount) / 1_000_000;
   return `${new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 2,
     minimumFractionDigits: value === 0 ? 0 : 2,
-  }).format(value)} wUSDC`;
+  }).format(value)} YT`;
 }
 
 function historyItemToProfilePrediction(
@@ -60,8 +60,8 @@ function historyItemToProfilePrediction(
   const ended = item.status !== "pending";
 
   if (item.kind === "ryd") {
-    const deposit = formatWUsdcAmount(item.amount);
-    const prize = formatWUsdcAmount(item.prize ?? 0n);
+    const deposit = formatYtAmount(item.amount);
+    const prize = formatYtAmount(item.prize ?? 0n);
     return {
       id: item.id,
       kind: "pool",
@@ -70,24 +70,24 @@ function historyItemToProfilePrediction(
       ended,
       userWon,
       tvl: `$${deposit}`,
-      earnings: userWon ? `$${prize}` : "$0 wUSDC",
+      earnings: userWon ? `$${prize}` : "$0 YT",
       usersWon: 0,
       progressPercent: ended ? 100 : 0,
       date: item.date,
     };
   }
 
-  const amount = formatWUsdcAmount(item.amount);
+  const amount = formatYtAmount(item.amount);
   return {
     id: item.id,
     kind: "match",
     name: item.label,
-    iconUrl: WUSDC_ICON_URL,
+    iconUrl: YT_ICON_URL,
     ended,
     userWon,
     coeff: 1,
     prediction: `$${amount}`,
-    earnings: userWon ? `$${amount}` : "$0 wUSDC",
+    earnings: userWon ? `$${amount}` : "$0 YT",
     date: item.date,
   };
 }

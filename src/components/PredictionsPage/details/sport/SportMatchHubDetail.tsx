@@ -2,6 +2,10 @@
 
 import type { SportHubMatch } from "@/shared/types/sportHubMatch";
 import {
+  hubDetailMatchDisplayTitle,
+  hubDetailPoolPercentsFromOdds,
+} from "../shared/hubDetailFormat";
+import {
   HubMatchDetailOutcomes,
   HubMatchDetailProbabilityChart,
 } from "../shared/match";
@@ -15,33 +19,37 @@ interface SportMatchHubDetailProps {
 
 export function SportMatchHubDetail({ match, onPickTeam }: SportMatchHubDetailProps) {
   const detail = match.detail;
-
-  if (!detail) {
-    return (
-      <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this match.</p>
-    );
-  }
+  const displayTitle =
+    detail?.displayTitle ??
+    hubDetailMatchDisplayTitle(match.participantA.name, match.participantB.name);
+  const [team1PoolPercent, team2PoolPercent] = detail
+    ? [detail.participantAPoolPercent, detail.participantBPoolPercent]
+    : hubDetailPoolPercentsFromOdds(match.participantA.odds, match.participantB.odds);
 
   return (
     <div className="flex flex-col gap-4">
-      <SportMatchDetailMatchCard match={match} displayTitle={detail.displayTitle} />
-      <HubMatchDetailProbabilityChart
-        volumeLabel={detail.volumeLabel ?? ""}
-        points={detail.chartPoints}
-        team1={match.participantA}
-        team2={match.participantB}
-      />
+      <SportMatchDetailMatchCard match={match} displayTitle={displayTitle} />
+      {detail != null && (
+        <HubMatchDetailProbabilityChart
+          volumeLabel={detail.volumeLabel ?? ""}
+          points={detail.chartPoints}
+          team1={match.participantA}
+          team2={match.participantB}
+        />
+      )}
       <HubMatchDetailOutcomes
         match={match}
-        team1PoolPercent={detail.participantAPoolPercent}
-        team2PoolPercent={detail.participantBPoolPercent}
+        team1PoolPercent={team1PoolPercent}
+        team2PoolPercent={team2PoolPercent}
         onPickTeam={onPickTeam}
       />
-      <SportMatchDetailResolution
-        clubName={match.participantA.name}
-        opponentName={match.participantB.name}
-        resolutionDeadlineLabel={detail.resolutionDeadlineLabel}
-      />
+      {detail != null && (
+        <SportMatchDetailResolution
+          clubName={match.participantA.name}
+          opponentName={match.participantB.name}
+          resolutionDeadlineLabel={detail.resolutionDeadlineLabel}
+        />
+      )}
     </div>
   );
 }

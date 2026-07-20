@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface CryptoPredictionHubDetailTitleProps {
   iconUrl: string;
@@ -19,8 +19,6 @@ export function CryptoPredictionHubDetailTitle({
         {iconUrl ? (
           isUsdcIconUrl(iconUrl) ? (
             <UsdcTokenIcon size={32} />
-          ) : isWUsdcIconUrl(iconUrl) ? (
-            <WUsdcTokenIcon size={32} />
           ) : isYtIconUrl(iconUrl) ? (
             <YtTokenIcon size={32} />
           ) : (

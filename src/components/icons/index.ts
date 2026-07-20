@@ -6,7 +6,6 @@ export {
   TOKEN_ICON_SIZES,
   UsdcTokenIcon,
   UsdtTokenIcon,
-  WUsdcTokenIcon,
   YtTokenIcon,
   type TokenIconSize,
 } from "./base";

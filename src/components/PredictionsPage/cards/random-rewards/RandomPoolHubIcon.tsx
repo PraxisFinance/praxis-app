@@ -1,9 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { HintIcon, UsdcTokenIcon, WUsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
+import { HintIcon, UsdcTokenIcon, YtTokenIcon } from "@/components/icons/base";
 import { isInlineHintIconUrl } from "@/shared/constants/inlineIcons";
-import { isUsdcIconUrl, isWUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
+import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 
 interface RandomPoolHubIconProps {
   iconUrl?: string;
@@ -22,10 +22,6 @@ export function RandomPoolHubIcon({ iconUrl, alt }: RandomPoolHubIconProps) {
       ) : isUsdcIconUrl(iconUrl) ? (
         <span className="flex h-full w-full items-center justify-center" aria-hidden>
           <UsdcTokenIcon size={32} />
-        </span>
-      ) : isWUsdcIconUrl(iconUrl) ? (
-        <span className="flex h-full w-full items-center justify-center" aria-hidden>
-          <WUsdcTokenIcon size={32} />
         </span>
       ) : isYtIconUrl(iconUrl) ? (
         <span className="flex h-full w-full items-center justify-center" aria-hidden>

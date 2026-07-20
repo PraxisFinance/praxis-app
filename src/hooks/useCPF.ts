@@ -10,6 +10,7 @@ import { TOKEN_DECIMALS } from "@/config/tokens";
 import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
 import { ensureAppChain } from "@/lib/ensureAppChain";
+import { runBatchedWrite } from "@/lib/batchedWrite";
 import { useTrackAchievement } from "./useTrackAchievement";
 
 export type CPFBetStatus = "idle" | "approving" | "depositing" | "success" | "error";
@@ -88,28 +89,31 @@ export function useCPF(
         args: [address, cpfAddress],
       });
 
-      if (allowance < amount) {
-        setBetStatus("approving");
-        const approveTx = await writeContractAsync({
-          address: yt,
-          abi: erc20Abi,
-          functionName: "approve",
-          args: [cpfAddress, amount],
-        });
-        await waitForTransactionReceipt(config, { hash: approveTx });
-      }
+      const needsApproval = allowance < amount;
+      setBetStatus(needsApproval ? "approving" : "depositing");
 
-      setBetStatus("depositing");
+      const { hash } = await runBatchedWrite(
+        [
+          needsApproval && {
+            address: yt,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [cpfAddress, amount],
+          },
+          {
+            address: cpfAddress,
+            abi: praxisCPFAbi,
+            functionName: "buy",
+            args: [cpfPoolId, amount, inFavor, minTokensOut],
+          },
+        ],
+        {
+          onStep: (index, total) =>
+            setBetStatus(needsApproval && total > 1 && index === 0 ? "approving" : "depositing"),
+        },
+      );
 
-      const betTx = await writeContractAsync({
-        address: cpfAddress,
-        abi: praxisCPFAbi,
-        functionName: "buy",
-        args: [cpfPoolId, amount, inFavor, minTokensOut],
-      });
-
-      await waitForTransactionReceipt(config, { hash: betTx });
-      trackAchievement("cpf.predict", betTx);
+      if (hash) trackAchievement("cpf.predict", hash);
       setBetStatus("success");
     } catch (err) {
       setBetStatus("error");

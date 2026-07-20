@@ -11,6 +11,7 @@ import { useActiveVault } from "@/stores/activeVaultStore";
 import { parseTokenAmount } from "@/shared/utils/format";
 import type { TwoPool, TwoPoolSide } from "@/shared/types/twoPool";
 import { ensureAppChain } from "@/lib/ensureAppChain";
+import { runBatchedWrite } from "@/lib/batchedWrite";
 import { useTrackAchievement } from "./useTrackAchievement";
 
 export type TwoPoolDepositStatus = "idle" | "approving" | "depositing" | "success" | "error";
@@ -69,29 +70,32 @@ export function useTwoPool(pool: TwoPool, side: TwoPoolSide, amountInput: string
         args: [address, poolAddress],
       });
 
-      if (allowance < amount) {
-        setDepositStatus("approving");
-        const approveTx = await writeContractAsync({
-          address: yt,
-          abi: erc20Abi,
-          functionName: "approve",
-          args: [poolAddress, amount],
-        });
-        await waitForTransactionReceipt(config, { hash: approveTx });
-      }
+      const needsApproval = allowance < amount;
+      setDepositStatus(needsApproval ? "approving" : "depositing");
 
-      setDepositStatus("depositing");
+      const { hash } = await runBatchedWrite(
+        [
+          needsApproval && {
+            address: yt,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [poolAddress, amount],
+          },
+          {
+            address: poolAddress,
+            abi: twoPoolAbi,
+            functionName: "deposit",
+            // TODO: Add minNet
+            args: [sideToUint8(side), amount, BigInt(0)],
+          },
+        ],
+        {
+          onStep: (index, total) =>
+            setDepositStatus(needsApproval && total > 1 && index === 0 ? "approving" : "depositing"),
+        },
+      );
 
-      const depositTx = await writeContractAsync({
-        address: poolAddress,
-        abi: twoPoolAbi,
-        functionName: "deposit",
-        // TODO: Add minNet
-        args: [sideToUint8(side), amount, BigInt(0)],
-      });
-
-      await waitForTransactionReceipt(config, { hash: depositTx });
-      trackAchievement("twopool.deposit", depositTx);
+      if (hash) trackAchievement("twopool.deposit", hash);
       setDepositStatus("success");
     } catch (err) {
       setDepositStatus("error");

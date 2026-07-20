@@ -1,6 +1,7 @@
 "use client";
 
 import type { CryptoPrediction } from "@/shared/types/cryptoPrediction";
+import { PredictionsHubDetailUnavailable } from "../shared";
 import { CryptoPredictionAboveBelowHubDetail } from "./above-below";
 import { CryptoPredictionHitHubDetail } from "./hit";
 import { CryptoPredictionPriceRangeHubDetail } from "./price-range";
@@ -36,5 +37,7 @@ export function CryptoPredictionHubDetail({
       );
     case "crypto_hit":
       return <CryptoPredictionHitHubDetail prediction={prediction} onPickOutcome={onPickOutcome} />;
+    default:
+      return <PredictionsHubDetailUnavailable />;
   }
 }

@@ -14,18 +14,14 @@ interface TechEventHubDetailProps {
 export function TechEventHubDetail({ event, onPickOutcome }: TechEventHubDetailProps) {
   const detail = event.detail;
 
-  if (!detail) {
-    return (
-      <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this market.</p>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <TechEventDetailTitleCard thumbnailUrl={event.imageUrl} title={event.title} />
-      <TechEventDetailProbabilityChart points={detail.chartPoints} />
+      {detail != null && <TechEventDetailProbabilityChart points={detail.chartPoints} />}
       <TechEventDetailOutcomes event={event} onPickOutcome={onPickOutcome} />
-      <TechEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
+      {detail != null && (
+        <TechEventDetailResolution paragraphs={detail.resolutionParagraphs ?? []} />
+      )}
     </div>
   );
 }

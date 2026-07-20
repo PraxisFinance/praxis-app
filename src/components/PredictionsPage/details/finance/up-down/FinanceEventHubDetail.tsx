@@ -26,12 +26,6 @@ export function FinanceEventHubDetail({ event, onPickOutcome }: FinanceEventHubD
       ? { baselinePriceLabel: detail.baselinePriceLabel, points: detail.priceChartPoints }
       : null;
 
-  if (chartData == null && oraclePrice == null) {
-    return (
-      <p className="text-main-darkPurple/60 text-sm">Detail data is not available for this market.</p>
-    );
-  }
-
   return (
     <div className="flex flex-col gap-4">
       <CryptoPredictionUpDownDetailTitle iconUrl={event.imageUrl} title={event.title} />

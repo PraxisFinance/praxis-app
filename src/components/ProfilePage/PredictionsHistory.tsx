@@ -52,7 +52,7 @@ function buildPredHistoryData(
         prediction: i.label,
         date: fmt(i.date),
         amount: Number(i.amount < 0n ? -i.amount : i.amount) / 1_000_000,
-        currency: "$wUSDC",
+        currency: "$YT",
       }));
   }
 

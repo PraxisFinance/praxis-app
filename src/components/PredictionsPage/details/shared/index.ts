@@ -4,6 +4,8 @@ export { PredictionsHubDetailHeader } from "./PredictionsHubDetailHeader";
 export type { PredictionsHubDetailHeaderProps } from "./PredictionsHubDetailHeader";
 export { PredictionsHubDetailNav } from "./PredictionsHubDetailNav";
 export type { PredictionsHubDetailNavProps } from "./PredictionsHubDetailNav";
+export { PredictionsHubDetailUnavailable } from "./PredictionsHubDetailUnavailable";
+export type { PredictionsHubDetailUnavailableProps } from "./PredictionsHubDetailUnavailable";
 export { formatHubDetailPoolPercent } from "./hubDetailFormat";
 export { getPredictionCountdownParts, usePredictionCountdown } from "./usePredictionCountdown";
 export type { PredictionCountdownParts } from "./usePredictionCountdown";

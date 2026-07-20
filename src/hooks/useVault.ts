@@ -2,19 +2,14 @@
 
 import { useState, useCallback } from "react";
 import { useAccount, useChainId, useReadContract, useSwitchChain, useWriteContract } from "wagmi";
-import {
-  readContract,
-  waitForTransactionReceipt,
-  sendCalls,
-  waitForCallsStatus,
-  getCapabilities,
-} from "wagmi/actions";
-import { erc20Abi, encodeFunctionData } from "viem";
+import { readContract, waitForTransactionReceipt } from "wagmi/actions";
+import { erc20Abi } from "viem";
 import { baseSepolia } from "wagmi/chains";
 import { config } from "@/config/wagmi";
 import { TOKEN_ADDRESSES, TOKEN_DECIMALS } from "@/config/tokens";
 import { praxisVaultAbi } from "@/config/contracts";
 import { parseTokenAmount, formatTokenBalance } from "@/shared/utils/format";
+import { runBatchedWrite } from "@/lib/batchedWrite";
 import { useTrackAchievement } from "./useTrackAchievement";
 
 // ── Deposit ───────────────────────────────────────────────────────────
@@ -88,33 +83,31 @@ export function useVaultDeposit(
         chainId: baseSepolia.id,
       });
 
-      if (allowance < totalCost) {
-        setStatus("approving");
+      const needsApproval = allowance < totalCost;
+      setStatus(needsApproval ? "approving" : "depositing");
 
-        const approveTx = await writeContractAsync({
-          address: TOKEN_ADDRESSES.USDC,
-          abi: erc20Abi,
-          functionName: "approve",
-          args: [vaultAddress, totalCost],
-          chainId: baseSepolia.id,
-        });
+      const { hash } = await runBatchedWrite(
+        [
+          needsApproval && {
+            address: TOKEN_ADDRESSES.USDC,
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [vaultAddress, totalCost],
+          },
+          {
+            address: vaultAddress,
+            abi: praxisVaultAbi,
+            functionName: "deposit",
+            args: [principalAmount, address, maxBuyIn],
+          },
+        ],
+        {
+          onStep: (index, total) =>
+            setStatus(needsApproval && total > 1 && index === 0 ? "approving" : "depositing"),
+        },
+      );
 
-        await waitForTransactionReceipt(config, { hash: approveTx });
-      }
-
-      setStatus("depositing");
-
-      const depositTx = await writeContractAsync({
-        address: vaultAddress,
-        abi: praxisVaultAbi,
-        functionName: "deposit",
-        args: [principalAmount, address, maxBuyIn],
-        chainId: baseSepolia.id,
-      });
-
-      await waitForTransactionReceipt(config, { hash: depositTx });
-
-      trackAchievement("vault.deposit", depositTx);
+      if (hash) trackAchievement("vault.deposit", hash);
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -301,9 +294,7 @@ export function useVaultClaimBoth(
   yieldAmountInput: string
 ) {
   const { address } = useAccount();
-  const chainId = useChainId();
   const { switchChainAsync } = useSwitchChain();
-  const { writeContractAsync } = useWriteContract();
   const [status, setStatus] = useState<ClaimBothStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -328,77 +319,20 @@ export function useVaultClaimBoth(
         await switchChainAsync({ chainId: baseSepolia.id });
         setStatus("claiming");
 
-        if (wantPrincipal && wantYield) {
-          // Try atomic batch (EIP-5792); fall back to sequential if unsupported.
-          let useBatch = false;
-          try {
-            const capabilities = await getCapabilities(config);
-            useBatch = capabilities?.[baseSepolia.id]?.atomicBatch?.supported ?? false;
-          } catch {
-            // Wallet doesn't support capability queries (e.g. injected EOA wallet).
-          }
-
-          if (useBatch) {
-            const id = await sendCalls(config, {
-              calls: [
-                {
-                  to: vaultAddress,
-                  data: encodeFunctionData({
-                    abi: praxisVaultAbi,
-                    functionName: "withdraw",
-                    args: [ptAmount, address],
-                  }),
-                },
-                {
-                  to: vaultAddress,
-                  data: encodeFunctionData({
-                    abi: praxisVaultAbi,
-                    functionName: "redeemYield",
-                    args: [ytAmount, address],
-                  }),
-                },
-              ],
-              chainId: baseSepolia.id,
-            });
-            await waitForCallsStatus(config, id);
-          } else {
-            const withdrawTx = await writeContractAsync({
-              address: vaultAddress,
-              abi: praxisVaultAbi,
-              functionName: "withdraw",
-              args: [ptAmount, address],
-              chainId: baseSepolia.id,
-            });
-            await waitForTransactionReceipt(config, { hash: withdrawTx });
-
-            const redeemTx = await writeContractAsync({
-              address: vaultAddress,
-              abi: praxisVaultAbi,
-              functionName: "redeemYield",
-              args: [ytAmount, address],
-              chainId: baseSepolia.id,
-            });
-            await waitForTransactionReceipt(config, { hash: redeemTx });
-          }
-        } else if (wantPrincipal) {
-          const tx = await writeContractAsync({
+        await runBatchedWrite([
+          wantPrincipal && {
             address: vaultAddress,
             abi: praxisVaultAbi,
             functionName: "withdraw",
             args: [ptAmount, address],
-            chainId: baseSepolia.id,
-          });
-          await waitForTransactionReceipt(config, { hash: tx });
-        } else {
-          const tx = await writeContractAsync({
+          },
+          wantYield && {
             address: vaultAddress,
             abi: praxisVaultAbi,
             functionName: "redeemYield",
             args: [ytAmount, address],
-            chainId: baseSepolia.id,
-          });
-          await waitForTransactionReceipt(config, { hash: tx });
-        }
+          },
+        ]);
 
         setStatus("success");
       } catch (err) {
@@ -406,7 +340,7 @@ export function useVaultClaimBoth(
         setErrorMessage(err instanceof Error ? err.message : "Transaction failed");
       }
     },
-    [address, chainId, switchChainAsync, vaultAddress, ptAmount, ytAmount, writeContractAsync]
+    [address, switchChainAsync, vaultAddress, ptAmount, ytAmount]
   );
 
   const reset = useCallback(() => {
