@@ -50,16 +50,15 @@ export function WelcomePage() {
         Welcome to Praxis: A new approach to prediction markets
       </h1>
 
-      <div className="w-full">
+      <div className="flex min-h-0 flex-1 items-end justify-center">
         <Image
           src="/welcome.png"
           alt="Praxis handheld console"
           width={385}
-          height={492}
+          height={451}
           priority
-          sizes="100vw"
-          className="h-auto w-full"
-          style={{ width: "100%", height: "auto" }}
+          sizes="(max-width: 28rem) 100vw, 28rem"
+          className="h-auto max-h-full w-full object-contain"
         />
       </div>
 
