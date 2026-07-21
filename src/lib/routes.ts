@@ -1,7 +1,8 @@
 import { isPredictionsHubCategoryId } from "@/shared/constants/predictionsHubFilters";
 
-/** App route paths — keep in sync with `src/app/(app)` page files. */
+/** App route paths — keep in sync with `src/app` page files. */
 
+export const WELCOME_ROUTE = "/";
 export const MAIN_ROUTE = "/main";
 export const EARN_ROUTE = "/earn";
 export const PROGRESS_ROUTE = "/progress";

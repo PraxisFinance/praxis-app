@@ -1,5 +1,11 @@
-import { redirect } from "next/navigation";
+import { WelcomePage } from "@/components/WelcomePage";
+import { AuthBoot } from "@/components/AuthBoot";
 
 export default function Home() {
-  redirect("/main");
+  return (
+    <>
+      <AuthBoot />
+      <WelcomePage />
+    </>
+  );
 }
