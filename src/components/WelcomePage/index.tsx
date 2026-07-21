@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AlertCircle, Check } from "lucide-react";
@@ -50,17 +49,12 @@ export function WelcomePage() {
         Welcome to Praxis: A new approach to prediction markets
       </h1>
 
-      <div className="flex min-h-0 flex-1 items-end justify-center">
-        <Image
-          src="/welcome.png"
-          alt="Praxis handheld console"
-          width={385}
-          height={451}
-          priority
-          sizes="(max-width: 28rem) 100vw, 28rem"
-          className="h-auto max-h-full w-full object-contain"
-        />
-      </div>
+      <div
+        role="img"
+        aria-label="Praxis handheld console"
+        className="min-h-0 w-full flex-1 bg-contain bg-bottom bg-no-repeat"
+        style={{ backgroundImage: "url(/welcome.png)" }}
+      />
 
       <div className="flex shrink-0 flex-col gap-3">
         <div className="flex flex-col gap-1.5">
