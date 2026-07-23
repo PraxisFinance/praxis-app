@@ -3,6 +3,7 @@
 import { AchievementsCommonStats } from "@/components/ProgressPage/categories/achievements/AchievementsCommonStats";
 import { AchievementsCategoryList } from "@/components/ProgressPage/categories/achievements/AchievementsCategoryList";
 import { SectionHeader } from "@/components/ui";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import { useProgressStore } from "@/stores/progress/store";
 import { selectUserProgressStats } from "@/stores/progress/achievements/selectors";
 
@@ -25,11 +26,7 @@ export function ProgressAchievementsPanel() {
 
       <SectionHeader>Achievements</SectionHeader>
 
-      {definitionsLoading ? (
-        <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-          Loading achievements…
-        </p>
-      ) : null}
+      {definitionsLoading ? <PageSkeleton variant="list" rows={4} /> : null}
 
       {definitionsError != null ? (
         <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">

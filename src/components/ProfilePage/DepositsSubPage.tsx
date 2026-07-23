@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { Balances } from "../Balances/Balances";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import { EarnMyPositionsCard } from "../EarnPage/EarnMyPositionsCard";
 import { DepositDrawer } from "../EarnPage/DepositDrawer";
 import { WithdrawDrawer } from "../EarnPage/WithdrawDrawer";
@@ -84,9 +85,7 @@ export function DepositsSubPage() {
         <SectionHeader>Deposits</SectionHeader>
 
         <div className="flex flex-col gap-3">
-          {loading && positions.length === 0 && (
-            <p className="px-1 text-sm text-gray-400">Loading deposits...</p>
-          )}
+          {loading && positions.length === 0 && <PageSkeleton variant="cards" rows={2} />}
           {!loading && positions.length === 0 && (
             <p className="px-1 text-sm text-gray-400">No deposits yet</p>
           )}

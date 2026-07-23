@@ -12,6 +12,7 @@ import { formatScore } from "@/stores";
 import { PraxisBtnIcon } from "@/components/icons/brand/praxisBtnIcon";
 import { useReferral } from "@/hooks/useReferral";
 import { shortenAddress } from "@/stores/rydStore";
+import { PageSkeleton } from "@/components/ui/skeleton";
 
 export function InviteFriendsPage() {
   const router = useRouter();
@@ -171,9 +172,7 @@ export function InviteFriendsPage() {
           )}
         </SectionHeader>
 
-        {statsLoading && (
-          <p className="text-main-darkPurple/60 text-sm">Loading…</p>
-        )}
+        {statsLoading && <PageSkeleton variant="list" rows={3} />}
 
         {!statsLoading && stats?.referees.length === 0 && (
           <p className="text-main-darkPurple/60 text-sm">

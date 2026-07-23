@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState, useSyncExternalStore } from "react";
+import { useAccount } from "wagmi";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import {
   HISTORY_PAGE_CLOCK_ANCHOR_MS,
   HISTORY_TIME_FILTER_OPTIONS,
@@ -10,6 +12,7 @@ import {
 } from "@/shared/constants/history";
 import type { HistoryTimeFilter } from "@/shared/types/history";
 import { useHistoryStore } from "@/stores/historyStore";
+import { useStatisticsStore } from "@/stores/statisticsStore";
 import { HistoryEventCard } from "./HistoryEventCard";
 import { historyItemToDisplayEvent } from "./historyItemAdapter";
 
@@ -30,7 +33,10 @@ function useHistoryPageNowMs(): number {
 export function HistoryPage() {
   const [timeFilter, setTimeFilter] = useState<HistoryTimeFilter>("3D");
   const nowMs = useHistoryPageNowMs();
+  const { address } = useAccount();
   const history = useHistoryStore((s) => s.history);
+  const historyLoaded = useStatisticsStore((s) => s.historyLoaded);
+  const isLoading = Boolean(address) && !historyLoaded;
 
   const visibleEvents = useMemo(() => {
     const from = historyTimeFilterCutoffMs(timeFilter, nowMs);
@@ -54,7 +60,9 @@ export function HistoryPage() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {visibleEvents.length > 0 ? (
+        {isLoading ? (
+          <PageSkeleton variant="list" rows={4} />
+        ) : visibleEvents.length > 0 ? (
           visibleEvents.map((event) => (
             <HistoryEventCard key={event.id} event={event} label={event.label} />
           ))

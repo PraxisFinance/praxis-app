@@ -13,6 +13,7 @@ import { isUsdcIconUrl, isYtIconUrl } from "@/shared/constants/tokenIconUrls";
 import { useWalletBalances } from "@/hooks/useWalletBalances";
 import { useMintTestnetUsdc } from "@/hooks/useMintTestnetUsdc";
 import { RequestResultDialog } from "@/components/ui/RequestResultDialog";
+import { BalancesSkeleton } from "@/components/ui/skeleton";
 
 export function Balances() {
   const [open, setOpen] = useState(false);
@@ -42,16 +43,20 @@ export function Balances() {
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-2.5">
-        {balances.map((balance) => (
-          <BalanceCard
-            key={balance.label}
-            label={balance.label}
-            value={balance.value}
-            iconUrl={balance.iconUrl}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <BalancesSkeleton />
+      ) : (
+        <div className="flex flex-wrap gap-2.5">
+          {balances.map((balance) => (
+            <BalanceCard
+              key={balance.label}
+              label={balance.label}
+              value={balance.value}
+              iconUrl={balance.iconUrl}
+            />
+          ))}
+        </div>
+      )}
 
       {allZero && !isPending && status !== "error" && (
         <Button variant="outline" size="sm" className="mt-2" onClick={mint}>

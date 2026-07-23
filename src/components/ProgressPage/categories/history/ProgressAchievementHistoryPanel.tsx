@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ProgressAchievementHistoryRow } from "@/components/ProgressPage/categories/history/ProgressAchievementHistoryRow";
 import { FilterDropdown } from "@/components/ui/FilterDropdown";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import { useStableNowMs } from "@/hooks/useStableNowMs";
 import { selectAchievementHistoryItems } from "@/stores/progress/achievement-history/selectors";
 import { useProgressStore } from "@/stores/progress/store";
@@ -35,11 +36,7 @@ export function ProgressAchievementHistoryPanel() {
         />
       </div>
 
-      {loading ? (
-        <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">
-          Loading actions history…
-        </p>
-      ) : null}
+      {loading ? <PageSkeleton variant="list" rows={4} /> : null}
 
       {error != null ? (
         <p className="text-main-darkPurple/50 py-8 text-center text-xs leading-5">{error}</p>

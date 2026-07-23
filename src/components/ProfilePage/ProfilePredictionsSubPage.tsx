@@ -17,6 +17,8 @@ import type {
 import { YT_ICON_URL } from "@/shared/constants/tokenIconUrls";
 import { useStatisticsStore } from "@/stores/statisticsStore";
 import type { PredictionHistoryItem as StorePredictionHistoryItem } from "@/stores/statisticsStore";
+import { PageSkeleton } from "@/components/ui/skeleton";
+import { useAccount } from "wagmi";
 
 type DatedProfilePredictionItem = ProfilePredictionItem & {
   date: number;
@@ -96,7 +98,10 @@ export function ProfilePredictionsSubPage() {
   const [statusFilter, setStatusFilter] = useState<ProfilePredictionStatusFilter>("all");
   const [timeInterval, setTimeInterval] = useState<ProfilePredictionTimeInterval>("1D");
   const nowMs = useProfilePredictionsNowMs();
+  const { address } = useAccount();
   const predictionHistory = useStatisticsStore((s) => s.predictionHistory);
+  const historyLoaded = useStatisticsStore((s) => s.historyLoaded);
+  const isLoading = Boolean(address) && !historyLoaded;
 
   const predictions = useMemo(
     () => predictionHistory.map(historyItemToProfilePrediction),
@@ -141,7 +146,9 @@ export function ProfilePredictionsSubPage() {
         </div>
 
         <div className="flex flex-col gap-3">
-          {filtered.length > 0 ? (
+          {isLoading ? (
+            <PageSkeleton variant="cards" rows={2} />
+          ) : filtered.length > 0 ? (
             filtered.map((item) => (
               <ProfilePredictionCard key={item.id} item={item} onClaim={handleClaim} />
             ))

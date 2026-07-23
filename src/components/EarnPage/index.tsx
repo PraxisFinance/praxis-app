@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import { Balances } from "../Balances/Balances";
 import { EarnAvailableCard } from "./EarnAvailableCard";
 import { EarnMyPositionsCard } from "./EarnMyPositionsCard";
@@ -85,9 +86,7 @@ export function EarnPage() {
       <section className="flex flex-col gap-3">
         <SectionHeader>My positions</SectionHeader>
         <div className="flex flex-col gap-3">
-          {loading && myPositions.length === 0 && (
-            <p className="text-sm text-gray-400 px-1">Loading positions…</p>
-          )}
+          {loading && myPositions.length === 0 && <PageSkeleton variant="cards" rows={2} />}
           {!loading && myPositions.length === 0 && (
             <p className="text-sm text-gray-400 px-1">No active positions</p>
           )}
@@ -107,9 +106,7 @@ export function EarnPage() {
       <section className="flex flex-col gap-3">
         <SectionHeader>Available pools</SectionHeader>
         <div className="flex flex-col gap-3">
-          {loading && availableItems.length === 0 && (
-            <p className="text-sm text-gray-400 px-1">Loading pools…</p>
-          )}
+          {loading && availableItems.length === 0 && <PageSkeleton variant="cards" rows={2} />}
           {!loading && availableItems.length === 0 && (
             <p className="text-sm text-gray-400 px-1">No available pools</p>
           )}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useAccount } from "wagmi";
 import { useStatisticsStore } from "@/stores/statisticsStore";
 import type { BalanceChartPoint, PredictionHistoryItem as StorePredItem } from "@/stores/statisticsStore";
 import type { BalancesChartDataPoint, BalancesChartInterval } from "@/shared/types/balances";
@@ -14,6 +15,7 @@ import { PredictionsOverallStats } from "./PredictionsOverallStats";
 import { PredictionsStatsChart } from "./PredictionsStatsChart";
 import { PredictionsHistory } from "./PredictionsHistory";
 import { Balances } from "../Balances/Balances";
+import { PageSkeleton } from "@/components/ui/skeleton";
 
 // ── Constants ───────────────────────────────────────────────────────────────
 
@@ -164,6 +166,7 @@ function buildPredStatsData(
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function BalancesSubPage() {
+  const { address } = useAccount();
   const historyLoaded = useStatisticsStore((s) => s.historyLoaded);
   const balanceChart = useStatisticsStore((s) => s.balanceChart);
   const predictionHistory = useStatisticsStore((s) => s.predictionHistory);
@@ -172,6 +175,7 @@ export function BalancesSubPage() {
   const pendingMatches = useStatisticsStore((s) => s.pendingMatches);
   const wonCurrency = useStatisticsStore((s) => s.wonCurrency);
   const lostCurrency = useStatisticsStore((s) => s.lostCurrency);
+  const isLoading = Boolean(address) && !historyLoaded;
 
   const balancesData = useMemo(() => buildBalancesChartData(balanceChart), [balanceChart]);
 
@@ -193,10 +197,16 @@ export function BalancesSubPage() {
   return (
     <div className="flex flex-col gap-6">
       <Balances />
-      <BalancesChart data={balancesData} />
-      <PredictionsOverallStats data={overallStats} />
-      <PredictionsStatsChart data={predStatsData} />
-      <PredictionsHistory />
+      {isLoading ? (
+        <PageSkeleton variant="detail" />
+      ) : (
+        <>
+          <BalancesChart data={balancesData} />
+          <PredictionsOverallStats data={overallStats} />
+          <PredictionsStatsChart data={predStatsData} />
+          <PredictionsHistory />
+        </>
+      )}
     </div>
   );
 }
