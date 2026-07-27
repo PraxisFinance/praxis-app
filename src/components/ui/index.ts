@@ -11,5 +11,13 @@ export { PoolHeader } from "./PoolHeader";
 export { ProgressBar, type ProgressBarProps, type ProgressBarVariant } from "./ProgressBar";
 export { StatBadge, type StatBadgeProps } from "./StatBadge";
 export { MenuCard } from "./MenuCard";
+export {
+  Skeleton,
+  PageSkeleton,
+  BalancesSkeleton,
+  type PageSkeletonVariant,
+  type PageSkeletonProps,
+} from "./skeleton";
 export { ArrowIcon } from "../icons/base";
 export * from "../icons/navigation";
+

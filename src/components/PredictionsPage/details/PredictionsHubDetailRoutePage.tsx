@@ -20,6 +20,7 @@ import { PredictionsHubDetail } from "./PredictionsHubDetail";
 import { PredictionsHubDetailPage } from "./PredictionsHubDetailPage";
 import { TwoPoolHubDetail } from "./yield";
 import { usePredictionsHubTwoPoolDrawer } from "@/components/PredictionsPage/drawers";
+import { PageSkeleton } from "@/components/ui/skeleton";
 
 export interface PredictionsHubDetailRoutePageProps {
   id: string;
@@ -83,7 +84,7 @@ export function PredictionsHubDetailRoutePage({ id }: PredictionsHubDetailRouteP
     if (!fetchInitiated || rydLoading || twoPoolsLoading || eventsLoading) {
       return (
         <PredictionsHubDetailPage categoryId="all">
-          <p className="text-main-darkPurple/60 text-sm">Loading…</p>
+          <PageSkeleton variant="detail" />
         </PredictionsHubDetailPage>
       );
     }

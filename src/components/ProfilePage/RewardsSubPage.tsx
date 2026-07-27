@@ -6,8 +6,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Balances } from "../Balances/Balances";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/ui/SectionHeader";
+import { PageSkeleton } from "@/components/ui/skeleton";
 import { useClaimsStore } from "@/stores/claimsStore";
 import { useClaimAll } from "@/hooks/useClaimAll";
+import { useStatisticsStore } from "@/stores/statisticsStore";
 import { ClaimableRewardRow } from "./ClaimableRewardRow";
 
 export function RewardsSubPage() {
@@ -16,6 +18,8 @@ export function RewardsSubPage() {
 
   const claims = useClaimsStore((s) => s.claims);
   const markClaimed = useClaimsStore((s) => s.markClaimed);
+  const historyLoaded = useStatisticsStore((s) => s.historyLoaded);
+  const isLoading = Boolean(address) && !historyLoaded;
 
   const pendingClaims = useMemo(
     () => claims.filter((c) => c.status === "pending"),
@@ -53,7 +57,9 @@ export function RewardsSubPage() {
         <SectionHeader>Claims</SectionHeader>
 
         <div className="flex flex-col gap-2">
-          {pendingClaims.length > 0 ? (
+          {isLoading ? (
+            <PageSkeleton variant="list" rows={3} />
+          ) : pendingClaims.length > 0 ? (
             pendingClaims.map((claim) => (
               <ClaimableRewardRow key={claim.id} claim={claim} onSuccess={handleSuccess} />
             ))
@@ -68,7 +74,7 @@ export function RewardsSubPage() {
           <p className="text-xs text-red-500 text-center">{claimAllError}</p>
         )}
 
-        {pendingClaims.length > 0 && (
+        {!isLoading && pendingClaims.length > 0 && (
           <Button
             variant="primary"
             size="action"

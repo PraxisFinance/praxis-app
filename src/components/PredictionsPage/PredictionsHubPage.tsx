@@ -21,6 +21,7 @@ import { useEventsStore, type CPFPoolState } from "@/stores/eventsStore";
 import { mapCPFPoolsToHubCards, resolveOffchainDataForPool } from "@/shared/utils/cpfPoolMapper";
 import { useSourceConnection, useMarketsConnection } from "@/hooks/useLiveDataConnection";
 import { usePredictionsHubTwoPoolDrawer } from "@/components/PredictionsPage/drawers";
+import { PageSkeleton } from "@/components/ui/skeleton";
 
 export interface PredictionsHubPageProps {
   /** Preset category filter when the page opens or when the prop changes. */
@@ -41,17 +42,17 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
 
   const { address } = useAccount();
 
-  const { ryds, fetchAll: fetchAllRyd } = useRYDStore();
+  const { ryds, loading: rydLoading, fetchAll: fetchAllRyd } = useRYDStore();
   useEffect(() => {
     void fetchAllRyd(address);
   }, [fetchAllRyd, address]);
 
-  const { pools, offchainByContractId, fetchAllPoolStates } = useEventsStore();
+  const { pools, offchainByContractId, loading: eventsLoading, fetchAllPoolStates } = useEventsStore();
   useEffect(() => {
     void fetchAllPoolStates();
   }, [fetchAllPoolStates]);
 
-  const { pools: twoPools, fetchPools } = useTwoPoolsStore();
+  const { pools: twoPools, loading: twoPoolsLoading, fetchPools } = useTwoPoolsStore();
   useEffect(() => {
     void fetchPools();
   }, [fetchPools]);
@@ -101,6 +102,7 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
     return activeCategory?.title;
   }, [filters.categoryId]);
 
+  const isLoading = rydLoading || eventsLoading || twoPoolsLoading;
   const isEmpty =
     (showHubItems ? items.length === 0 : true) && (showYieldPools ? yieldPools.length === 0 : true);
 
@@ -108,7 +110,9 @@ export function PredictionsHubPage({ initialCategoryId = "all" }: PredictionsHub
     <div className="flex flex-col gap-6">
       <PredictionsHubFilter value={filters} onChange={setFilters} />
       {sectionTitle != null ? <SectionHeader>{sectionTitle}</SectionHeader> : null}
-      {isEmpty ? (
+      {isLoading && isEmpty ? (
+        <PageSkeleton variant="hub" rows={4} />
+      ) : isEmpty ? (
         <p className="text-main-darkPurple/70 px-1 text-sm">No predictions found.</p>
       ) : (
         <div className="flex flex-col gap-3">
