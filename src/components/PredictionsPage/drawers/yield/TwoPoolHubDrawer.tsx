@@ -104,12 +104,7 @@ function TwoPoolHubDrawerBody({
   const hasAmount = amountValue > BigInt(0);
   const insufficientBalance = onChain && amountValue > ytBalance;
   const canDeposit =
-    pool.isTradingOpen &&
-    !isPending &&
-    !!detail &&
-    !isSuccess &&
-    hasAmount &&
-    !insufficientBalance;
+    pool.isTradingOpen && !isPending && !isSuccess && hasAmount && !insufficientBalance;
 
   function handleToggleSide(next: TwoPoolSide, checked: boolean) {
     if (!checked) return;
@@ -125,7 +120,7 @@ function TwoPoolHubDrawerBody({
   }
 
   async function handleDeposit() {
-    if (!detail || !canDeposit) return;
+    if (!canDeposit) return;
     if (!onChain) {
       setDemoSuccess(true);
       return;

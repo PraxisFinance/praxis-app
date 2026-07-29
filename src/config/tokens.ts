@@ -1,5 +1,5 @@
 export const TOKEN_ADDRESSES = {
-  USDC: "0x34Ec00F241646d115F1353C2b7B23DdCA03454E8" as `0x${string}`,
+  USDC: "0x56dB55a97B02e5b802C82E76faa5Fe59Fb700574" as `0x${string}`,
 } as const;
 
 export const TOKEN_DECIMALS = {
