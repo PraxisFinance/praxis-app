@@ -97,13 +97,14 @@ export function WithdrawDrawer({ item, open, onOpenChange }: WithdrawDrawerProps
         }
         footer={
           status === "success" ? (
-            <Button variant="destructiveBrand" size="action" onClick={handleClose}>
+            <Button variant="destructiveBrand" size="action" className="h-12" onClick={handleClose}>
               {buttonLabel}
             </Button>
           ) : (
             <Button
               variant="destructiveBrand"
               size="action"
+              className="h-12"
               onClick={handleWithdraw}
               disabled={isPending || !amount || Number(amount) <= 0 || exceedsDeposit}
             >

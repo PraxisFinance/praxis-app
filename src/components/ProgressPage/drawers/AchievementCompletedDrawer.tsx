@@ -45,7 +45,7 @@ export function AchievementCompletedDrawer({
           type="button"
           variant="primary"
           size="action"
-          className="text-header-5 h-11 font-medium"
+          className="text-header-5 h-12 font-medium"
           onClick={handleShowAchievements}
         >
           Show my achievements

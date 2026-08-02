@@ -168,14 +168,14 @@ function TwoPoolHubDrawerBody({
         }
         footer={
           isSuccess ? (
-            <Button variant="primary" size="action" className="h-8 text-white" onClick={handleClose}>
+            <Button variant="primary" size="action" className="h-12 text-white" onClick={handleClose}>
               {buttonLabel}
             </Button>
           ) : (
             <Button
               variant="primary"
               size="action"
-              className="h-8 text-white"
+              className="h-12 text-white"
               disabled={!canDeposit}
               onClick={() => void handleDeposit()}
             >

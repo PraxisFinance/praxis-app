@@ -120,13 +120,14 @@ export function ClaimDrawer({ item, open, onOpenChange }: ClaimDrawerProps) {
         }
         footer={
           isSuccess ? (
-            <Button variant="success" size="action" onClick={handleClose}>
+            <Button variant="success" size="action" className="h-12" onClick={handleClose}>
               {buttonLabel}
             </Button>
           ) : (
             <Button
               variant="success"
               size="action"
+              className="h-12"
               onClick={() => void handleClaim()}
               disabled={isPending || !canSubmit}
             >
