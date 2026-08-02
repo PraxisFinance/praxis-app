@@ -1,11 +1,10 @@
-import { MenuCard } from "@/components/ui/MenuCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
-import { MENU_ITEMS } from "@/shared/constants/main";
+import { MENU_ITEMS_V2 } from "@/shared/constants/main";
+import { MenuCardV2 } from "./MenuCardV2";
 
-/** V1 application menu. MainPage uses `MainMenuV2`; keep this for rollback. */
-export function MainMenu() {
-  const largeItems = MENU_ITEMS.filter((item) => item.type === "large");
-  const middleItems = MENU_ITEMS.filter((item) => item.type === "middle");
+export function MainMenuV2() {
+  const largeItems = MENU_ITEMS_V2.filter((item) => item.type === "large");
+  const middleItems = MENU_ITEMS_V2.filter((item) => item.type === "middle");
 
   return (
     <section>
@@ -13,7 +12,7 @@ export function MainMenu() {
 
       <div className="flex flex-col gap-3">
         {largeItems.map((item) => (
-          <MenuCard
+          <MenuCardV2
             key={item.key}
             size="lg"
             title={item.title}
@@ -28,7 +27,7 @@ export function MainMenu() {
 
         <div className="grid grid-cols-2 gap-3">
           {middleItems.map((item) => (
-            <MenuCard
+            <MenuCardV2
               key={item.key}
               title={item.title}
               description={item.description}
@@ -36,7 +35,7 @@ export function MainMenu() {
               redirectUrl={item.redirectUrl}
               redirectLabel={item.redirectLabel}
               hubCategoryId={item.hubCategoryId}
-            progressHubCategoryId={item.progressHubCategoryId}
+              progressHubCategoryId={item.progressHubCategoryId}
             />
           ))}
         </div>
