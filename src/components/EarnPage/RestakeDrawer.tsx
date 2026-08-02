@@ -182,6 +182,7 @@ export function RestakeDrawer({ item, targetVault, open, onOpenChange }: Restake
           <Button
             variant="primary"
             size="action"
+            className="h-12"
             onClick={() => void handleRestake()}
             disabled={isPending || !canSubmit}
           >

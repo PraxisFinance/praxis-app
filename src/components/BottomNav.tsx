@@ -26,6 +26,10 @@ const navItems: NavItem[] = [
   { id: "profile", label: "Profile", href: "/profile", icon: ProfileIcon },
 ];
 
+function scrollAppMainToTop() {
+  document.getElementById("app-main-scroll")?.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 export function BottomNav() {
   const pathname = usePathname();
 
@@ -47,6 +51,12 @@ export function BottomNav() {
               <Link
                 key={item.id}
                 href={item.href}
+                onClick={(event) => {
+                  if (pathname === item.href) {
+                    event.preventDefault();
+                  }
+                  scrollAppMainToTop();
+                }}
                 className="flex flex-col items-center gap-1 min-w-[48px] transition-colors"
               >
                 <Icon className="w-6 h-6" active={isActive} />

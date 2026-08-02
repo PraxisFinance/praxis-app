@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 export type PredictionCountdownParts = {
+  days: number;
+  hours: number;
   minutes: number;
   seconds: number;
 };
@@ -10,10 +12,11 @@ export type PredictionCountdownParts = {
 export function getPredictionCountdownParts(endsAt: string, nowMs = Date.now()): PredictionCountdownParts {
   const endMs = new Date(endsAt).getTime();
   const totalSeconds = Math.max(0, Math.floor((endMs - nowMs) / 1000));
-  return {
-    minutes: Math.floor(totalSeconds / 60),
-    seconds: totalSeconds % 60,
-  };
+  const days = Math.floor(totalSeconds / 86_400);
+  const hours = Math.floor((totalSeconds % 86_400) / 3_600);
+  const minutes = Math.floor((totalSeconds % 3_600) / 60);
+  const seconds = totalSeconds % 60;
+  return { days, hours, minutes, seconds };
 }
 
 export function usePredictionCountdown(endsAt: string): PredictionCountdownParts {

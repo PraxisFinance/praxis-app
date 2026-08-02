@@ -90,13 +90,14 @@ export function DepositDrawer({ item, open, onOpenChange }: DepositDrawerProps) 
         }
         footer={
           status === "success" ? (
-            <Button variant="success" size="action" onClick={handleClose}>
+            <Button variant="success" size="action" className="h-12" onClick={handleClose}>
               {buttonLabel}
             </Button>
           ) : (
             <Button
               variant="success"
               size="action"
+              className="h-12"
               onClick={handleDeposit}
               disabled={isPending || !amount || Number(amount) <= 0 || insufficientBalance}
             >

@@ -23,7 +23,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Header username={username} points={1000} />
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pt-6 pb-24">
+        <main
+          id="app-main-scroll"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-5 pt-6 pb-24"
+        >
           <StaleVaultBanner />
           {children}
         </main>

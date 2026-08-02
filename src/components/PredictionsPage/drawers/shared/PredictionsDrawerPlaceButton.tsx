@@ -14,7 +14,7 @@ export function PredictionsDrawerPlaceButton({
   label = "Place prediction",
 }: PredictionsDrawerPlaceButtonProps) {
   return (
-    <Button variant="primary" size="action" disabled={disabled} onClick={onClick}>
+    <Button variant="primary" size="action" className="h-12" disabled={disabled} onClick={onClick}>
       {label}
     </Button>
   );

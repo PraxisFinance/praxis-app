@@ -70,7 +70,7 @@ export function RandomRewardClaimDrawer({
           <Button
             variant="primary"
             size="action"
-            className="h-8 text-white"
+            className="h-12 text-white"
             disabled={isPending}
             onClick={claim}
           >

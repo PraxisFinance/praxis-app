@@ -85,7 +85,7 @@ export function RandomRewardJoinDrawer({ pool, open, onOpenChange }: RandomRewar
           <Button
             variant="primary"
             size="action"
-            className="h-8 text-white"
+            className="h-12 text-white"
             disabled={!canDeposit}
             onClick={deposit}
           >
